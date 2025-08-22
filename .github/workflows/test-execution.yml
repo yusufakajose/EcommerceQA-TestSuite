@@ -1,0 +1,372 @@
+name: Automated Test Execution
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+      browsers:
+        description: 'Browsers to test (comma-separated)'
+        required: true
+        default: 'chromium,firefox,webkit'
+        type: string
+      test_pattern:
+        description: 'Test pattern to run'
+        required: false
+        default: ''
+        type: string
+
+env:
+  NODE_VERSION: '18'
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/ms-playwright
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up test matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENVIRONMENTS='["${{ github.event.inputs.environment }}"]'
+            BROWSERS=$(echo '${{ github.event.inputs.browsers }}' | jq -R 'split(",") | map(select(length > 0))')
+          else
+            ENVIRONMENTS='["development", "staging"]'
+            BROWSERS='["chromium", "firefox", "webkit"]'
+          fi
+          
+          MATRIX=$(jq -n --argjson envs "$ENVIRONMENTS" --argjson browsers "$BROWSERS" '{
+            include: [
+              $envs[] as $env | $browsers[] as $browser | {
+                environment: $env,
+                browser: $browser,
+                os: "ubuntu-latest"
+              }
+            ]
+          }')
+          
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  test-execution:
+    needs: setup
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Create test directories
+        run: |
+          mkdir -p test-results/${{ matrix.environment }}/${{ matrix.browser }}
+          mkdir -p reports
+          mkdir -p test-results/screenshots
+          mkdir -p test-results/videos
+          mkdir -p test-results/traces
+
+      - name: Run tests
+        env:
+          TEST_ENVIRONMENT: ${{ matrix.environment }}
+          BROWSER_NAME: ${{ matrix.browser }}
+          PWTEST_OUTPUT_DIR: test-results/${{ matrix.environment }}/${{ matrix.browser }}
+          CI: true
+        run: |
+          TEST_PATTERN="${{ github.event.inputs.test_pattern || '' }}"
+          
+          npx playwright test \
+            --config=config/playwright.config.js \
+            --project=${{ matrix.browser }} \
+            --reporter=json \
+            --output-dir=test-results/${{ matrix.environment }}/${{ matrix.browser }} \
+            --workers=2 \
+            --retries=2 \
+            ${TEST_PATTERN}
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.environment }}-${{ matrix.browser }}
+          path: |
+            test-results/${{ matrix.environment }}/${{ matrix.browser }}
+            test-results/screenshots
+            test-results/videos
+            test-results/traces
+          retention-days: 30
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.environment }}-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+
+  aggregate-results:
+    needs: [setup, test-execution]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          path: test-results/
+          merge-multiple: true
+
+      - name: Download all Playwright reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-report-*
+          path: playwright-reports/
+          merge-multiple: true
+
+      - name: Aggregate test results
+        env:
+          ENVIRONMENTS: ${{ needs.setup.outputs.matrix }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          NOTIFICATION_FROM: ${{ secrets.NOTIFICATION_FROM }}
+          SUMMARY_RECIPIENTS: ${{ secrets.SUMMARY_RECIPIENTS }}
+          FAILURE_RECIPIENTS: ${{ secrets.FAILURE_RECIPIENTS }}
+          CRITICAL_RECIPIENTS: ${{ secrets.CRITICAL_RECIPIENTS }}
+          NOTIFICATIONS_ENABLED: ${{ secrets.NOTIFICATIONS_ENABLED || 'true' }}
+        run: |
+          node scripts/ci/aggregate-results.js
+
+      - name: Generate comprehensive report
+        run: |
+          node scripts/reporting/generate-report.js
+
+      - name: Upload aggregated results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aggregated-test-results
+          path: |
+            reports/
+            test-results/
+          retention-days: 90
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results
+          path: reports/junit-results.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const resultsPath = path.join('reports', 'test-results.json');
+              if (fs.existsSync(resultsPath)) {
+                const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+                
+                const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
+                const statusEmoji = results.failed === 0 ? '✅' : results.failed > results.total * 0.1 ? '🚨' : '⚠️';
+                
+                const comment = `## ${statusEmoji} Test Results
+                
+                **Summary:**
+                - **Total Tests:** ${results.total}
+                - **Passed:** ${results.passed} ✅
+                - **Failed:** ${results.failed} ❌
+                - **Skipped:** ${results.skipped} ⏭️
+                - **Pass Rate:** ${passRate}%
+                
+                **Environments Tested:**
+                ${Object.entries(results.environments).map(([env, stats]) => {
+                  const envPassRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
+                  return `- **${env}:** ${stats.passed}/${stats.total} (${envPassRate}%)`;
+                }).join('\n')}
+                
+                **Browsers Tested:**
+                ${Object.entries(results.browsers).map(([browser, stats]) => {
+                  const browserPassRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
+                  return `- **${browser}:** ${stats.passed}/${stats.total} (${browserPassRate}%)`;
+                }).join('\n')}
+                
+                ${results.failed > 0 ? '⚠️ **Action Required:** Some tests have failed. Please review the detailed results.' : '🎉 **All tests passed!**'}
+                `;
+                
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              }
+            } catch (error) {
+              console.error('Failed to post test results comment:', error);
+            }
+
+      - name: Set job status
+        if: always()
+        run: |
+          if [ -f "reports/test-results.json" ]; then
+            FAILED_TESTS=$(node -e "
+              const results = require('./reports/test-results.json');
+              console.log(results.failed || 0);
+            ")
+            
+            if [ "$FAILED_TESTS" -gt "0" ]; then
+              echo "Tests failed: $FAILED_TESTS failures detected"
+              exit 1
+            else
+              echo "All tests passed successfully"
+            fi
+          else
+            echo "No test results found"
+            exit 1
+          fi
+
+  performance-tests:
+    needs: [setup, test-execution]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run performance tests
+        env:
+          TEST_ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          # Run JMeter performance tests if available
+          if [ -d "automated-tests/performance-tests" ]; then
+            echo "Running performance tests..."
+            # Add performance test execution logic here
+          fi
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            automated-tests/performance-tests/results/
+          retention-days: 30
+
+  security-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  cleanup:
+    needs: [aggregate-results, performance-tests, security-scan]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Cleanup old artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            
+            const oldArtifacts = artifacts.data.artifacts.filter(artifact => {
+              const createdAt = new Date(artifact.created_at);
+              const thirtyDaysAgo = new Date();
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+              return createdAt < thirtyDaysAgo;
+            });
+            
+            for (const artifact of oldArtifacts) {
+              try {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id
+                });
+                console.log(`Deleted artifact: ${artifact.name}`);
+              } catch (error) {
+                console.error(`Failed to delete artifact ${artifact.name}:`, error.message);
+              }
+            }

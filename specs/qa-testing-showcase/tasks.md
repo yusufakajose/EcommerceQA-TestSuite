@@ -80,7 +80,7 @@
   - _Requirements: 1.3, 2.1, 2.4_
 
 - [ ] 5. Implement performance testing with JMeter
-- [ ] 5.1 Create JMeter test plan structure
+- [-] 5.1 Create JMeter test plan structure
   - Build JMeter test plans for load testing user registration and login flows
   - Create performance test scenarios for product browsing and search functionality
   - Implement shopping cart and checkout performance testing

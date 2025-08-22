@@ -1,0 +1,196 @@
+{
+  "environments": {
+    "development": {
+      "baseUrl": "http://localhost:3000",
+      "description": "Local development environment",
+      "maxUsers": 100,
+      "defaultTimeout": 30000
+    },
+    "staging": {
+      "baseUrl": "http://staging.example.com",
+      "description": "Staging environment for pre-production testing",
+      "maxUsers": 300,
+      "defaultTimeout": 45000
+    },
+    "production": {
+      "baseUrl": "http://production.example.com",
+      "description": "Production environment for live system testing",
+      "maxUsers": 500,
+      "defaultTimeout": 60000
+    }
+  },
+  "testProfiles": {
+    "smoke": {
+      "description": "Quick smoke test to verify basic functionality",
+      "users": 5,
+      "rampUp": 30,
+      "duration": 300,
+      "thinkTimeMin": 1000,
+      "thinkTimeMax": 3000
+    },
+    "baseline": {
+      "description": "Baseline performance test for comparison",
+      "users": 25,
+      "rampUp": 60,
+      "duration": 600,
+      "thinkTimeMin": 2000,
+      "thinkTimeMax": 5000
+    },
+    "load": {
+      "description": "Standard load test for normal traffic simulation",
+      "users": 100,
+      "rampUp": 180,
+      "duration": 1200,
+      "thinkTimeMin": 1500,
+      "thinkTimeMax": 4000
+    },
+    "stress": {
+      "description": "Stress test to identify system limits",
+      "users": 300,
+      "rampUp": 300,
+      "duration": 1800,
+      "thinkTimeMin": 500,
+      "thinkTimeMax": 2000
+    },
+    "spike": {
+      "description": "Spike test for sudden traffic increases",
+      "users": 200,
+      "rampUp": 60,
+      "duration": 600,
+      "thinkTimeMin": 200,
+      "thinkTimeMax": 1000
+    },
+    "endurance": {
+      "description": "Endurance test for sustained load over time",
+      "users": 75,
+      "rampUp": 300,
+      "duration": 7200,
+      "thinkTimeMin": 3000,
+      "thinkTimeMax": 8000
+    }
+  },
+  "userBehaviorPatterns": {
+    "browser": {
+      "description": "Users who browse without purchasing",
+      "weight": 40,
+      "actions": [
+        "browse_products",
+        "search_products",
+        "view_product_details"
+      ],
+      "purchaseProbability": 0.1,
+      "sessionDuration": "short"
+    },
+    "researcher": {
+      "description": "Users who research products extensively",
+      "weight": 25,
+      "actions": [
+        "search_products",
+        "filter_products",
+        "compare_products",
+        "read_reviews"
+      ],
+      "purchaseProbability": 0.3,
+      "sessionDuration": "long"
+    },
+    "shopper": {
+      "description": "Users who actively shop and make purchases",
+      "weight": 30,
+      "actions": [
+        "browse_products",
+        "add_to_cart",
+        "checkout",
+        "complete_purchase"
+      ],
+      "purchaseProbability": 0.8,
+      "sessionDuration": "medium"
+    },
+    "returner": {
+      "description": "Returning users with specific purchase intent",
+      "weight": 5,
+      "actions": [
+        "login",
+        "search_specific_product",
+        "add_to_cart",
+        "checkout"
+      ],
+      "purchaseProbability": 0.9,
+      "sessionDuration": "short"
+    }
+  },
+  "performanceThresholds": {
+    "responseTime": {
+      "excellent": 500,
+      "good": 1000,
+      "acceptable": 2000,
+      "poor": 5000
+    },
+    "throughput": {
+      "minimum": 10,
+      "target": 50,
+      "optimal": 100
+    },
+    "errorRate": {
+      "acceptable": 0.1,
+      "warning": 1.0,
+      "critical": 5.0
+    },
+    "resourceUtilization": {
+      "cpu": {
+        "normal": 70,
+        "warning": 85,
+        "critical": 95
+      },
+      "memory": {
+        "normal": 80,
+        "warning": 90,
+        "critical": 95
+      }
+    }
+  },
+  "testDataConfiguration": {
+    "userGeneration": {
+      "uniqueUsers": true,
+      "emailDomain": "loadtest.example.com",
+      "passwordComplexity": "medium"
+    },
+    "productSelection": {
+      "categories": [
+        "electronics",
+        "clothing",
+        "books",
+        "home",
+        "sports"
+      ],
+      "priceRanges": [
+        {"min": 10, "max": 50},
+        {"min": 50, "max": 200},
+        {"min": 200, "max": 1000},
+        {"min": 1000, "max": 5000}
+      ]
+    },
+    "cartBehavior": {
+      "averageItemsPerCart": 2.5,
+      "abandonmentRate": 0.3,
+      "multipleQuantityProbability": 0.4
+    }
+  },
+  "reportingConfiguration": {
+    "metricsToCapture": [
+      "response_time",
+      "throughput",
+      "error_rate",
+      "concurrent_users",
+      "resource_utilization"
+    ],
+    "aggregationIntervals": [
+      "1s",
+      "10s",
+      "1m",
+      "5m"
+    ],
+    "percentiles": [50, 75, 90, 95, 99],
+    "generateCharts": true,
+    "includeRawData": false
+  }
+}

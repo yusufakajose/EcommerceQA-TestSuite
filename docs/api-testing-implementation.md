@@ -493,3 +493,153 @@ node scripts/api-tests/run-newman.js run collection environment --verbose
 The API testing implementation provides a comprehensive, maintainable, and scalable framework for testing the e-commerce application's API endpoints. With organized collections, environment-specific configurations, data-driven testing capabilities, and automated execution through Newman, the framework supports both manual testing in Postman and automated testing in CI/CD pipelines.
 
 The implementation follows industry best practices for API testing, including proper authentication management, comprehensive validation, error handling, and performance monitoring, ensuring reliable and thorough testing coverage of all API functionality.
+## Enh
+anced Test Runners (Task 4.2 Implementation)
+
+### Advanced API Test Runner (`api-test-runner.js`)
+The enhanced test runner provides advanced capabilities beyond the basic Newman runner:
+
+#### Key Features:
+- **Multiple collection execution** with consolidated reporting
+- **Data-driven testing** with automatic iteration detection
+- **Enhanced reporting** with HTML dashboard generation
+- **Result consolidation** across multiple test runs
+- **Failure analysis** and detailed error reporting
+- **Performance metrics** tracking and analysis
+
+#### Usage Examples:
+```bash
+# Run single collection with enhanced features
+node scripts/api-tests/api-test-runner.js single user-management development
+
+# Run multiple collections with consolidated reporting
+node scripts/api-tests/api-test-runner.js multiple user-management,product-catalog,order-processing staging
+
+# Data-driven testing with automatic iteration detection
+node scripts/api-tests/api-test-runner.js data-driven user-management development users
+
+# Run all collections with comprehensive reporting
+node scripts/api-tests/api-test-runner.js all production
+```
+
+### Setup Validator (`validate-setup.js`)
+Comprehensive validation utility that ensures your API test setup is correct:
+
+#### Validation Features:
+- **Configuration validation** for all Newman settings
+- **File existence checks** for collections, environments, and data
+- **Dependency verification** for required npm packages
+- **Structure validation** for Postman collections and environments
+- **Script validation** for npm test commands
+
+#### Usage:
+```bash
+# Validate complete setup
+npm run test:api:validate
+
+# Or run directly
+node scripts/api-tests/validate-setup.js
+```
+
+### Enhanced NPM Scripts
+New npm scripts added for advanced API testing:
+
+```bash
+# Advanced test execution
+npm run test:api:all               # Run all collections with enhanced runner
+npm run test:api:all:staging       # Run all collections on staging
+npm run test:api:all:prod          # Run all collections on production
+npm run test:api:multiple          # Run multiple specific collections
+npm run test:api:data-driven       # Run data-driven tests with CSV data
+npm run test:api:regression        # Run regression test suite
+npm run test:api:validate          # Validate API test setup
+```
+
+## Data-Driven Testing Implementation
+
+### Automatic Iteration Detection
+The enhanced runner can automatically detect the number of iterations needed based on CSV data:
+
+```bash
+# Automatically uses all rows in users.csv
+node scripts/api-tests/api-test-runner.js data-driven user-management development users
+
+# Or specify custom iteration count
+node scripts/api-tests/api-test-runner.js data-driven user-management development users 10
+```
+
+### CSV Data Integration
+- **Automatic CSV parsing** to determine iteration counts
+- **Dynamic data injection** into test requests
+- **Data validation** before test execution
+- **Error handling** for malformed data files
+
+## Advanced Reporting Features
+
+### Consolidated Reports
+The enhanced runner generates consolidated reports when running multiple collections:
+
+- **Cross-collection metrics** aggregation
+- **Performance comparison** across different API modules
+- **Failure pattern analysis** across multiple test runs
+- **Executive summary** with key findings
+
+### HTML Dashboard Generation
+Enhanced HTML reports include:
+
+- **Interactive charts** and performance visualizations
+- **Drill-down capabilities** for detailed analysis
+- **Failure categorization** and root cause analysis
+- **Historical trend tracking** for regression detection
+
+### JSON Result Processing
+Structured JSON output for:
+
+- **CI/CD integration** with detailed exit codes
+- **Custom analytics** and monitoring integration
+- **Performance baseline** establishment
+- **Automated alerting** based on test results
+
+## CI/CD Integration Enhancements
+
+### GitHub Actions Integration
+```yaml
+- name: Validate API Test Setup
+  run: npm run test:api:validate
+
+- name: Run Comprehensive API Tests
+  run: |
+    npm run test:api:all:staging
+    npm run test:api:regression
+  env:
+    API_BASE_URL: ${{ secrets.API_BASE_URL }}
+    API_KEY: ${{ secrets.API_KEY }}
+
+- name: Upload Enhanced Test Reports
+  uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: api-test-reports
+    path: |
+      reports/api-tests/
+      test-results/api/
+```
+
+### Performance Regression Detection
+- **Baseline performance** tracking across test runs
+- **Automated alerts** for performance degradation
+- **Trend analysis** for long-term performance monitoring
+- **Threshold-based** pass/fail criteria
+
+## Task 4.2 Completion Summary
+
+✅ **Newman CLI Integration**: Enhanced Newman runner with advanced command-line options
+✅ **NPM Scripts**: Comprehensive set of npm scripts for different testing scenarios
+✅ **Data-Driven Testing**: Full CSV integration with automatic iteration detection
+✅ **Multiple Environment Support**: Seamless testing across development, staging, and production
+✅ **Advanced Reporting**: Enhanced HTML and JSON reporting with consolidated results
+✅ **Setup Validation**: Comprehensive validation utility for test configuration
+✅ **CI/CD Integration**: Ready-to-use GitHub Actions integration
+✅ **Performance Tracking**: Built-in performance metrics and regression detection
+
+The API test automation with Newman is now fully implemented with advanced features that go beyond basic collection execution, providing a robust foundation for comprehensive API testing across all environments.

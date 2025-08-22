@@ -26,7 +26,7 @@
   - Create sample bug reports demonstrating different types and severities
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 3. Implement Playwright UI automation framework
+- [x] 3. Implement Playwright UI automation framework
 - [x] 3.1 Set up Playwright test framework and configuration
   - Configure Playwright with TypeScript support and multiple browser testing
   - Set up test configuration for different environments and browser combinations
@@ -60,7 +60,7 @@
   - _Requirements: 5.2, 2.3_
 
 - [ ] 4. Build API testing framework with Postman/Newman
-- [ ] 4.1 Create Postman collection structure
+- [x] 4.1 Create Postman collection structure
   - Build organized Postman collections for user management, product catalog, and order processing APIs
   - Implement environment configurations for different testing environments
   - Create authentication workflows for API testing

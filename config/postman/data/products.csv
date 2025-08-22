@@ -1,0 +1,11 @@
+name,description,price,category,sku,brand,inStock,weight,dimensions
+Wireless Headphones,Premium noise-canceling wireless headphones,199.99,Electronics,WH001,AudioTech,true,0.5,8x6x3
+Gaming Laptop,High-performance gaming laptop with RTX graphics,1299.99,Electronics,GL001,TechPro,true,2.5,15x10x1
+Smartphone,Latest 5G smartphone with advanced camera,699.99,Electronics,SP001,MobileTech,true,0.3,6x3x0.3
+Running Shoes,Lightweight running shoes for athletes,89.99,Sports,RS001,SportFit,true,0.8,12x8x4
+Coffee Maker,Automatic drip coffee maker with timer,79.99,Home,CM001,BrewMaster,true,3.2,12x8x10
+Yoga Mat,Non-slip yoga mat for home workouts,29.99,Sports,YM001,FitLife,true,1.5,72x24x0.25
+Desk Lamp,LED desk lamp with adjustable brightness,49.99,Home,DL001,LightPro,true,1.2,18x8x8
+Bluetooth Speaker,Portable waterproof Bluetooth speaker,59.99,Electronics,BS001,SoundWave,true,0.7,6x6x3
+Kitchen Knife Set,Professional chef knife set with block,149.99,Home,KS001,ChefPro,true,2.8,14x6x8
+Fitness Tracker,Smart fitness tracker with heart rate monitor,129.99,Electronics,FT001,HealthTech,true,0.1,1.5x1x0.4

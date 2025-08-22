@@ -12,15 +12,12 @@
     "maxFailures": 0,
     "metadata": {
       "environment": "development",
-      "baseURL": "http://localhost:3000",
+      "baseURL": "https://demo.playwright.dev/todomvc",
       "browsers": [
-        "chromium",
-        "firefox",
-        "webkit",
-        "brave"
+        "chromium"
       ],
-      "timestamp": "2025-08-22T18:30:46.376Z",
-      "actualWorkers": 3
+      "timestamp": "2025-08-22T20:23:12.711Z",
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -62,15 +59,12 @@
         "retries": 0,
         "metadata": {
           "environment": "development",
-          "baseURL": "http://localhost:3000",
+          "baseURL": "https://demo.playwright.dev/todomvc",
           "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
+            "chromium"
           ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
         },
         "id": "Desktop Chrome",
         "name": "Desktop Chrome",
@@ -87,15 +81,12 @@
         "retries": 0,
         "metadata": {
           "environment": "development",
-          "baseURL": "http://localhost:3000",
+          "baseURL": "https://demo.playwright.dev/todomvc",
           "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
+            "chromium"
           ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
         },
         "id": "Brave Browser",
         "name": "Brave Browser",
@@ -112,65 +103,12 @@
         "retries": 0,
         "metadata": {
           "environment": "development",
-          "baseURL": "http://localhost:3000",
+          "baseURL": "https://demo.playwright.dev/todomvc",
           "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
+            "chromium"
           ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
-        },
-        "id": "Desktop Firefox",
-        "name": "Desktop Firefox",
-        "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "environment": "development",
-          "baseURL": "http://localhost:3000",
-          "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
-          ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
-        },
-        "id": "Desktop Safari",
-        "name": "Desktop Safari",
-        "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "environment": "development",
-          "baseURL": "http://localhost:3000",
-          "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
-          ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -187,15 +125,12 @@
         "retries": 0,
         "metadata": {
           "environment": "development",
-          "baseURL": "http://localhost:3000",
+          "baseURL": "https://demo.playwright.dev/todomvc",
           "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
+            "chromium"
           ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -212,15 +147,56 @@
         "retries": 0,
         "metadata": {
           "environment": "development",
-          "baseURL": "http://localhost:3000",
+          "baseURL": "https://demo.playwright.dev/todomvc",
           "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
+            "chromium"
           ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
+        },
+        "id": "Mobile Chrome Small",
+        "name": "Mobile Chrome Small",
+        "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "environment": "development",
+          "baseURL": "https://demo.playwright.dev/todomvc",
+          "browsers": [
+            "chromium"
+          ],
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
+        },
+        "id": "Mobile Safari Small",
+        "name": "Mobile Safari Small",
+        "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "environment": "development",
+          "baseURL": "https://demo.playwright.dev/todomvc",
+          "browsers": [
+            "chromium"
+          ],
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
         },
         "id": "Tablet",
         "name": "Tablet",
@@ -237,15 +213,56 @@
         "retries": 0,
         "metadata": {
           "environment": "development",
-          "baseURL": "http://localhost:3000",
+          "baseURL": "https://demo.playwright.dev/todomvc",
           "browsers": [
-            "chromium",
-            "firefox",
-            "webkit",
-            "brave"
+            "chromium"
           ],
-          "timestamp": "2025-08-22T18:30:46.376Z",
-          "actualWorkers": 3
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
+        },
+        "id": "Tablet Landscape",
+        "name": "Tablet Landscape",
+        "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "environment": "development",
+          "baseURL": "https://demo.playwright.dev/todomvc",
+          "browsers": [
+            "chromium"
+          ],
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
+        },
+        "id": "Tablet Portrait",
+        "name": "Tablet Portrait",
+        "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "environment": "development",
+          "baseURL": "https://demo.playwright.dev/todomvc",
+          "browsers": [
+            "chromium"
+          ],
+          "timestamp": "2025-08-22T20:23:12.711Z",
+          "actualWorkers": 1
         },
         "id": "Microsoft Edge",
         "name": "Microsoft Edge",
@@ -261,26 +278,26 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.55.0",
-    "workers": 4,
+    "workers": 1,
     "webServer": null
   },
   "suites": [
     {
-      "title": "test-data-demo.spec.js",
-      "file": "test-data-demo.spec.js",
+      "title": "smoke.spec.js",
+      "file": "smoke.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Test Data Management System Demo",
-          "file": "test-data-demo.spec.js",
-          "line": 12,
+          "title": "Smoke Tests",
+          "file": "smoke.spec.js",
+          "line": 8,
           "column": 6,
           "specs": [
             {
-              "title": "should load and use fixture data for user registration",
-              "ok": true,
+              "title": "should load the demo page",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -293,41 +310,68 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 67,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Initializing test data for suite: TestDataDemo\n"
+                      "status": "failed",
+                      "duration": 13118,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/TodoMVC/\u001b[39m\nReceived string:  \u001b[31m\"Page not found · GitHub Pages\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 10000ms\u001b[22m\n\u001b[2m    13 × unexpected value \"Page not found · GitHub Pages\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/TodoMVC/\u001b[39m\nReceived string:  \u001b[31m\"Page not found · GitHub Pages\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 10000ms\u001b[22m\n\u001b[2m    13 × unexpected value \"Page not found · GitHub Pages\"\u001b[22m\n\n    at /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js:14:24",
+                        "location": {
+                          "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                          "column": 24,
+                          "line": 14
                         },
+                        "snippet": "\u001b[0m \u001b[90m 12 |\u001b[39m     \n \u001b[90m 13 |\u001b[39m     \u001b[90m// Verify the page loads\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 14 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/TodoMVC/\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 15 |\u001b[39m     \n \u001b[90m 16 |\u001b[39m     \u001b[90m// Take a screenshot for verification\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mscreenshot({ path\u001b[33m:\u001b[39m \u001b[32m'test-results/smoke-test.png'\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
                         {
-                          "text": "Test data initialized for environment: development\n"
-                        },
-                        {
-                          "text": "Valid User Data: {\n  \"id\": \"user001\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"phone\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"United States\"\n  },\n  \"preferences\": {\n    \"newsletter\": true,\n    \"notifications\": false\n  }\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should load and use fixture data for user registration\n"
+                          "location": {
+                            "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                            "column": 24,
+                            "line": 14
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/TodoMVC/\u001b[39m\nReceived string:  \u001b[31m\"Page not found · GitHub Pages\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 10000ms\u001b[22m\n\u001b[2m    13 × unexpected value \"Page not found · GitHub Pages\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 12 |\u001b[39m     \n \u001b[90m 13 |\u001b[39m     \u001b[90m// Verify the page loads\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 14 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/TodoMVC/\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 15 |\u001b[39m     \n \u001b[90m 16 |\u001b[39m     \u001b[90m// Take a screenshot for verification\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mscreenshot({ path\u001b[33m:\u001b[39m \u001b[32m'test-results/smoke-test.png'\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js:14:24\u001b[22m"
                         }
                       ],
+                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.432Z",
+                      "startTime": "2025-08-22T20:23:14.284Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-load-the-demo-page-Desktop-Chrome/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-load-the-demo-page-Desktop-Chrome/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-load-the-demo-page-Desktop-Chrome/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                        "column": 24,
+                        "line": 14
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "3a9daf41799567018655-e367054516a6a9996a90",
-              "file": "test-data-demo.spec.js",
-              "line": 26,
+              "id": "2c14808d47b386fba9eb-0be194605c43d93d33a4",
+              "file": "smoke.spec.js",
+              "line": 9,
               "column": 3
             },
             {
-              "title": "should generate unique user data dynamically",
-              "ok": true,
+              "title": "should have basic functionality",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -338,46 +382,70 @@
                   "projectName": "Desktop Chrome",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 62,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Generated Users:\n"
+                      "status": "failed",
+                      "duration": 18404,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.new-todo')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.new-todo')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.new-todo')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.new-todo')\u001b[22m\n\n    at /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js:25:29",
+                        "location": {
+                          "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                          "column": 29,
+                          "line": 25
                         },
+                        "snippet": "\u001b[0m \u001b[90m 23 |\u001b[39m     \u001b[90m// Check if the input field exists\u001b[39m\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m todoInput \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.new-todo'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 25 |\u001b[39m     \u001b[36mawait\u001b[39m expect(todoInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 26 |\u001b[39m     \n \u001b[90m 27 |\u001b[39m     \u001b[90m// Add a simple todo item\u001b[39m\n \u001b[90m 28 |\u001b[39m     \u001b[36mawait\u001b[39m todoInput\u001b[33m.\u001b[39mfill(\u001b[32m'Test todo item'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
                         {
-                          "text": "User 1: {\n  \"id\": \"user_1755887448734_360\",\n  \"firstName\": \"Amanda\",\n  \"lastName\": \"Garcia\",\n  \"email\": \"phrnadvc817@testdomain.com\",\n  \"password\": \"@:c;p5hS2wM)\",\n  \"phone\": \"+1-605-452-7760\",\n  \"dateOfBirth\": \"1971-10-29\",\n  \"address\": {\n    \"street\": \"6140 Lincoln Avenue\",\n    \"city\": \"Arlington\",\n    \"state\": \"MO\",\n    \"zipCode\": \"44097\",\n    \"country\": \"United States\"\n  },\n  \"preferences\": {\n    \"newsletter\": true,\n    \"notifications\": false\n  }\n}\n"
-                        },
-                        {
-                          "text": "User 2: {\n  \"id\": \"user_1755887448734_740\",\n  \"firstName\": \"Anthony\",\n  \"lastName\": \"Moore\",\n  \"email\": \"qnioomyt734@testdomain.com\",\n  \"password\": \"*&uc&<ZS4#Zp\",\n  \"phone\": \"+1-743-680-7559\",\n  \"dateOfBirth\": \"1985-04-11\",\n  \"address\": {\n    \"street\": \"679 First Street\",\n    \"city\": \"Madison\",\n    \"state\": \"MA\",\n    \"zipCode\": \"16454\",\n    \"country\": \"United States\"\n  },\n  \"preferences\": {\n    \"newsletter\": false,\n    \"notifications\": true\n  }\n}\n"
-                        },
-                        {
-                          "text": "User 3: {\n  \"id\": \"user_1755887448734_950\",\n  \"firstName\": \"CustomFirst\",\n  \"lastName\": \"Anderson\",\n  \"email\": \"uvtgfoxa748@testdomain.com\",\n  \"password\": \"8XF7&J8fy!d^\",\n  \"phone\": \"+1-706-236-8003\",\n  \"dateOfBirth\": \"1974-11-01\",\n  \"address\": {\n    \"street\": \"991 Lincoln Avenue\",\n    \"city\": \"Kingston\",\n    \"state\": \"GA\",\n    \"zipCode\": \"97812\",\n    \"country\": \"United States\"\n  },\n  \"preferences\": {\n    \"newsletter\": true,\n    \"notifications\": false\n  }\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should generate unique user data dynamically\n"
+                          "location": {
+                            "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                            "column": 29,
+                            "line": 25
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.new-todo')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.new-todo')\u001b[22m\n\n\n\u001b[0m \u001b[90m 23 |\u001b[39m     \u001b[90m// Check if the input field exists\u001b[39m\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m todoInput \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.new-todo'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 25 |\u001b[39m     \u001b[36mawait\u001b[39m expect(todoInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 26 |\u001b[39m     \n \u001b[90m 27 |\u001b[39m     \u001b[90m// Add a simple todo item\u001b[39m\n \u001b[90m 28 |\u001b[39m     \u001b[36mawait\u001b[39m todoInput\u001b[33m.\u001b[39mfill(\u001b[32m'Test todo item'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js:25:29\u001b[22m"
                         }
                       ],
+                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.684Z",
+                      "startTime": "2025-08-22T20:23:29.291Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-have-basic-functionality-Desktop-Chrome/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-have-basic-functionality-Desktop-Chrome/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-have-basic-functionality-Desktop-Chrome/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                        "column": 29,
+                        "line": 25
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "3a9daf41799567018655-2f8f4c8e0409ce5b0564",
-              "file": "test-data-demo.spec.js",
-              "line": 53,
+              "id": "2c14808d47b386fba9eb-cf09a0e633cd8748814a",
+              "file": "smoke.spec.js",
+              "line": 20,
               "column": 3
             },
             {
-              "title": "should handle product test data scenarios",
-              "ok": true,
+              "title": "should handle multiple browsers",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -388,323 +456,69 @@
                   "projectName": "Desktop Chrome",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 2,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 33,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 12540,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.new-todo')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.new-todo')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.new-todo')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.new-todo')\u001b[22m\n\n    at /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js:43:29",
+                        "location": {
+                          "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                          "column": 29,
+                          "line": 43
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 41 |\u001b[39m     \u001b[90m// Verify basic functionality works across browsers\u001b[39m\n \u001b[90m 42 |\u001b[39m     \u001b[36mconst\u001b[39m todoInput \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.new-todo'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 43 |\u001b[39m     \u001b[36mawait\u001b[39m expect(todoInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 44 |\u001b[39m     \n \u001b[90m 45 |\u001b[39m     \u001b[90m// Browser-specific screenshot\u001b[39m\n \u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mscreenshot({ \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                            "column": 29,
+                            "line": 43
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('.new-todo')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.new-todo')\u001b[22m\n\n\n\u001b[0m \u001b[90m 41 |\u001b[39m     \u001b[90m// Verify basic functionality works across browsers\u001b[39m\n \u001b[90m 42 |\u001b[39m     \u001b[36mconst\u001b[39m todoInput \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.new-todo'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 43 |\u001b[39m     \u001b[36mawait\u001b[39m expect(todoInput)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 44 |\u001b[39m     \n \u001b[90m 45 |\u001b[39m     \u001b[90m// Browser-specific screenshot\u001b[39m\n \u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mscreenshot({ \u001b[0m\n\u001b[2m    at /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js:43:29\u001b[22m"
+                        }
+                      ],
                       "stdout": [
                         {
-                          "text": "Featured Product: {\n  \"id\": \"prod002\",\n  \"name\": \"Smart Fitness Watch\",\n  \"category\": \"Wearables\",\n  \"price\": 199.99,\n  \"originalPrice\": 249.99,\n  \"discount\": 20,\n  \"rating\": 4.3,\n  \"reviewCount\": 892,\n  \"inStock\": true,\n  \"stockQuantity\": 75,\n  \"description\": \"Advanced fitness tracking with heart rate monitor, GPS, and 7-day battery life.\",\n  \"features\": [\n    \"Heart Rate Monitor\",\n    \"GPS Tracking\",\n    \"7-day Battery\",\n    \"Water Resistant\"\n  ],\n  \"images\": [\n    \"/images/watch-1.jpg\",\n    \"/images/watch-2.jpg\"\n  ],\n  \"brand\": \"FitTech\",\n  \"model\": \"FT-SW200\",\n  \"weight\": \"45g\",\n  \"dimensions\": \"4.2 x 3.6 x 1.2 cm\"\n}\n"
-                        },
-                        {
-                          "text": "Out of Stock Product: {\n  \"id\": \"prod004\",\n  \"name\": \"Gaming Mechanical Keyboard\",\n  \"category\": \"Gaming\",\n  \"price\": 129.99,\n  \"rating\": 4.6,\n  \"reviewCount\": 543,\n  \"inStock\": false,\n  \"stockQuantity\": 0,\n  \"description\": \"RGB mechanical gaming keyboard with custom switches.\",\n  \"expectedMessage\": \"Out of Stock\"\n}\n"
-                        },
-                        {
-                          "text": "Generated Product: {\n  \"id\": \"prod_1755887448865_427\",\n  \"name\": \"Test Product 925\",\n  \"category\": \"Test Category\",\n  \"price\": 99.99,\n  \"originalPrice\": 458,\n  \"discount\": 27,\n  \"rating\": 4.4,\n  \"reviewCount\": 1437,\n  \"inStock\": true,\n  \"stockQuantity\": 69,\n  \"description\": \"This is a test product description for testing purposes.\",\n  \"brand\": \"TechCorp\"\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should handle product test data scenarios\n"
-                        },
-                        {
-                          "text": "Cleaned up all test data for suite: TestDataDemo\n"
+                          "text": "Running test in chromium\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.839Z",
+                      "startTime": "2025-08-22T20:23:49.656Z",
                       "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a9daf41799567018655-765bcc914f7c47beeaad",
-              "file": "test-data-demo.spec.js",
-              "line": 84,
-              "column": 3
-            },
-            {
-              "title": "should create complete scenario data for shopping cart",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Desktop Chrome",
-                  "projectName": "Desktop Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 59,
-                      "errors": [],
-                      "stdout": [
+                      "attachments": [
                         {
-                          "text": "Initializing test data for suite: TestDataDemo\n"
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-handle-multiple-browsers-Desktop-Chrome/test-failed-1.png"
                         },
                         {
-                          "text": "Test data initialized for environment: development\n"
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-handle-multiple-browsers-Desktop-Chrome/video.webm"
                         },
                         {
-                          "text": "Cart Scenario Data: {\n  \"scenarios\": [\n    {\n      \"scenarioName\": \"singleItem\",\n      \"description\": \"Add single item to cart\",\n      \"items\": [\n        {\n          \"productId\": \"prod001\",\n          \"quantity\": 1,\n          \"expectedPrice\": 79.99,\n          \"expectedSubtotal\": 79.99\n        }\n      ],\n      \"expectedTotal\": 79.99,\n      \"expectedItemCount\": 1\n    },\n    {\n      \"scenarioName\": \"multipleItems\",\n      \"description\": \"Add multiple different items to cart\",\n      \"items\": [\n        {\n          \"productId\": \"prod001\",\n          \"quantity\": 2,\n          \"expectedPrice\": 79.99,\n          \"expectedSubtotal\": 159.98\n        },\n        {\n          \"productId\": \"prod002\",\n          \"quantity\": 1,\n          \"expectedPrice\": 199.99,\n          \"expectedSubtotal\": 199.99\n        },\n        {\n          \"productId\": \"prod003\",\n          \"quantity\": 3,\n          \"expectedPrice\": 34.99,\n          \"expectedSubtotal\": 104.97\n        }\n      ],\n      \"expectedTotal\": 464.94,\n      \"expectedItemCount\": 6\n    },\n    {\n      \"scenarioName\": \"quantityUpdates\",\n      \"description\": \"Update item quantities in cart\",\n      \"initialItems\": [\n        {\n          \"productId\": \"prod001\",\n          \"quantity\": 1\n        }\n      ],\n      \"updates\": [\n        {\n          \"productId\": \"prod001\",\n          \"newQuantity\": 5,\n          \"expectedSubtotal\": 399.95\n        }\n      ],\n      \"expectedTotal\": 399.95,\n      \"expectedItemCount\": 5\n    },\n    {\n      \"scenarioName\": \"removeItems\",\n      \"description\": \"Remove items from cart\",\n      \"initialItems\": [\n        {\n          \"productId\": \"prod001\",\n          \"quantity\": 2\n        },\n        {\n          \"productId\": \"prod002\",\n          \"quantity\": 1\n        }\n      ],\n      \"itemsToRemove\": [\n        \"prod001\"\n      ],\n      \"expectedRemainingItems\": [\n        {\n          \"productId\": \"prod002\",\n          \"quantity\": 1,\n          \"expectedSubtotal\": 199.99\n        }\n      ],\n      \"expectedTotal\": 199.99,\n      \"expectedItemCount\": 1\n    },\n    {\n      \"scenarioName\": \"emptyCart\",\n      \"description\": \"Clear all items from cart\",\n      \"initialItems\": [\n        {\n          \"productId\": \"prod001\",\n          \"quantity\": 1\n        },\n        {\n          \"productId\": \"prod002\",\n          \"quantity\": 1\n        }\n      ],\n      \"clearCart\": true,\n      \"expectedTotal\": 0,\n      \"expectedItemCount\": 0,\n      \"expectedMessage\": \"Your cart is empty\"\n    }\n  ],\n  \"products\": [\n    {\n      \"id\": \"prod001\",\n      \"name\": \"Wireless Bluetooth Headphones\",\n      \"category\": \"Electronics\",\n      \"price\": 79.99,\n      \"originalPrice\": 99.99,\n      \"discount\": 20,\n      \"rating\": 4.5,\n      \"reviewCount\": 1247,\n      \"inStock\": true,\n      \"stockQuantity\": 150,\n      \"description\": \"Premium wireless headphones with noise cancellation and 30-hour battery life.\",\n      \"features\": [\n        \"Noise Cancellation\",\n        \"30hr Battery\",\n        \"Bluetooth 5.0\",\n        \"Quick Charge\"\n      ],\n      \"images\": [\n        \"/images/headphones-1.jpg\",\n        \"/images/headphones-2.jpg\"\n      ],\n      \"brand\": \"AudioTech\",\n      \"model\": \"AT-WH300\",\n      \"weight\": \"250g\",\n      \"dimensions\": \"18 x 15 x 8 cm\"\n    },\n    {\n      \"id\": \"prod002\",\n      \"name\": \"Smart Fitness Watch\",\n      \"category\": \"Wearables\",\n      \"price\": 199.99,\n      \"originalPrice\": 249.99,\n      \"discount\": 20,\n      \"rating\": 4.3,\n      \"reviewCount\": 892,\n      \"inStock\": true,\n      \"stockQuantity\": 75,\n      \"description\": \"Advanced fitness tracking with heart rate monitor, GPS, and 7-day battery life.\",\n      \"features\": [\n        \"Heart Rate Monitor\",\n        \"GPS Tracking\",\n        \"7-day Battery\",\n        \"Water Resistant\"\n      ],\n      \"images\": [\n        \"/images/watch-1.jpg\",\n        \"/images/watch-2.jpg\"\n      ],\n      \"brand\": \"FitTech\",\n      \"model\": \"FT-SW200\",\n      \"weight\": \"45g\",\n      \"dimensions\": \"4.2 x 3.6 x 1.2 cm\"\n    },\n    {\n      \"id\": \"prod003\",\n      \"name\": \"Portable Laptop Stand\",\n      \"category\": \"Accessories\",\n      \"price\": 34.99,\n      \"originalPrice\": 44.99,\n      \"discount\": 22,\n      \"rating\": 4.7,\n      \"reviewCount\": 2156,\n      \"inStock\": true,\n      \"stockQuantity\": 200,\n      \"description\": \"Adjustable aluminum laptop stand for improved ergonomics and cooling.\",\n      \"features\": [\n        \"Adjustable Height\",\n        \"Aluminum Build\",\n        \"Foldable\",\n        \"Universal Fit\"\n      ],\n      \"images\": [\n        \"/images/stand-1.jpg\",\n        \"/images/stand-2.jpg\"\n      ],\n      \"brand\": \"ErgoDesk\",\n      \"model\": \"ED-LS100\",\n      \"weight\": \"800g\",\n      \"dimensions\": \"26 x 23 x 2 cm (folded)\"\n    }\n  ],\n  \"testUser\": {\n    \"id\": \"user_1755887448518_277\",\n    \"firstName\": \"Helen\",\n    \"lastName\": \"Lopez\",\n    \"email\": \"uctzzqiv314@testdomain.com\",\n    \"password\": \"]6pB>I:31UaD\",\n    \"phone\": \"+1-679-644-6857\",\n    \"dateOfBirth\": \"1950-10-05\",\n    \"address\": {\n      \"street\": \"418 Broadway\",\n      \"city\": \"Salem\",\n      \"state\": \"WI\",\n      \"zipCode\": \"39906\",\n      \"country\": \"United States\"\n    },\n    \"preferences\": {\n      \"newsletter\": true,\n      \"notifications\": false\n    }\n  }\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should create complete scenario data for shopping cart\n"
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development/smoke-Smoke-Tests-should-handle-multiple-browsers-Desktop-Chrome/error-context.md"
                         }
                       ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.354Z",
-                      "annotations": [],
-                      "attachments": []
+                      "errorLocation": {
+                        "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/smoke.spec.js",
+                        "column": 29,
+                        "line": 43
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "3a9daf41799567018655-beccaae540e55af5a573",
-              "file": "test-data-demo.spec.js",
-              "line": 115,
-              "column": 3
-            },
-            {
-              "title": "should handle checkout scenarios with payment methods",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Desktop Chrome",
-                  "projectName": "Desktop Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 64,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Checkout Scenario: {\n  \"scenarioName\": \"successfulCheckout\",\n  \"description\": \"Complete checkout process with valid data\",\n  \"user\": {\n    \"email\": \"john.doe@example.com\",\n    \"isLoggedIn\": true\n  },\n  \"shippingAddress\": {\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"street\": \"123 Main Street\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"United States\",\n    \"phone\": \"+1-555-0123\"\n  },\n  \"billingAddress\": {\n    \"sameAsShipping\": true\n  },\n  \"paymentMethod\": {\n    \"type\": \"credit_card\",\n    \"cardNumber\": \"4111111111111111\",\n    \"expiryMonth\": \"12\",\n    \"expiryYear\": \"2025\",\n    \"cvv\": \"123\",\n    \"cardholderName\": \"John Doe\"\n  },\n  \"items\": [\n    {\n      \"productId\": \"prod001\",\n      \"quantity\": 1,\n      \"price\": 79.99\n    }\n  ],\n  \"expectedOrderTotal\": 89.98,\n  \"expectedSuccessMessage\": \"Order placed successfully\"\n}\n"
-                        },
-                        {
-                          "text": "Payment Methods:\n"
-                        },
-                        {
-                          "text": "Visa: {\n  \"type\": \"credit_card\",\n  \"name\": \"Visa\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiryMonth\": \"12\",\n  \"expiryYear\": \"2025\",\n  \"cvv\": \"123\",\n  \"cardholderName\": \"Test User\",\n  \"expectedResult\": \"success\"\n}\n"
-                        },
-                        {
-                          "text": "Mastercard: {\n  \"type\": \"credit_card\",\n  \"name\": \"Mastercard\",\n  \"cardNumber\": \"5555555555554444\",\n  \"expiryMonth\": \"08\",\n  \"expiryYear\": \"2024\",\n  \"cvv\": \"789\",\n  \"cardholderName\": \"Test User\",\n  \"expectedResult\": \"success\"\n}\n"
-                        },
-                        {
-                          "text": "Generated Amex: {\n  \"type\": \"credit_card\",\n  \"cardNumber\": \"378282246310001\",\n  \"expiryMonth\": \"02\",\n  \"expiryYear\": \"2030\",\n  \"cvv\": \"4446\",\n  \"cardholderName\": \"Amanda Taylor\"\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should handle checkout scenarios with payment methods\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.598Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a9daf41799567018655-9c785c1f280f12166d04",
-              "file": "test-data-demo.spec.js",
-              "line": 146,
-              "column": 3
-            },
-            {
-              "title": "should generate bulk test data efficiently",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Desktop Chrome",
-                  "projectName": "Desktop Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 74,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Generated 5 users\n"
-                        },
-                        {
-                          "text": "Generated 3 products\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should generate bulk test data efficiently\n"
-                        },
-                        {
-                          "text": "Cleaned up all test data for suite: TestDataDemo\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.739Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a9daf41799567018655-280520631d5e295a2451",
-              "file": "test-data-demo.spec.js",
-              "line": 177,
-              "column": 3
-            },
-            {
-              "title": "should create custom test data requirements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Desktop Chrome",
-                  "projectName": "Desktop Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 55,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Initializing test data for suite: TestDataDemo\n"
-                        },
-                        {
-                          "text": "Test data initialized for environment: development\n"
-                        },
-                        {
-                          "text": "Custom Test Data: {\n  \"primaryUser\": {\n    \"id\": \"user_1755887448546_99\",\n    \"firstName\": \"TestPrimary\",\n    \"lastName\": \"Moore\",\n    \"email\": \"gwqyvbsr339@testdomain.com\",\n    \"password\": \"!h3X!2*#o=bN\",\n    \"phone\": \"+1-275-342-6901\",\n    \"dateOfBirth\": \"1988-11-10\",\n    \"address\": {\n      \"street\": \"6117 Madison Drive\",\n      \"city\": \"Fairview\",\n      \"state\": \"OH\",\n      \"zipCode\": \"45572\",\n      \"country\": \"United States\"\n    },\n    \"preferences\": {\n      \"newsletter\": false,\n      \"notifications\": false\n    }\n  },\n  \"secondaryUser\": [\n    {\n      \"id\": \"user001\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"password\": \"SecurePass123!\",\n      \"phone\": \"+1-555-0123\",\n      \"dateOfBirth\": \"1990-05-15\",\n      \"address\": {\n        \"street\": \"123 Main Street\",\n        \"city\": \"Anytown\",\n        \"state\": \"CA\",\n        \"zipCode\": \"12345\",\n        \"country\": \"United States\"\n      },\n      \"preferences\": {\n        \"newsletter\": true,\n        \"notifications\": false\n      }\n    },\n    {\n      \"id\": \"user002\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Smith\",\n      \"email\": \"jane.smith@example.com\",\n      \"password\": \"MyPassword456@\",\n      \"phone\": \"+1-555-0456\",\n      \"dateOfBirth\": \"1985-12-03\",\n      \"address\": {\n        \"street\": \"456 Oak Avenue\",\n        \"city\": \"Springfield\",\n        \"state\": \"NY\",\n        \"zipCode\": \"67890\",\n        \"country\": \"United States\"\n      },\n      \"preferences\": {\n        \"newsletter\": false,\n        \"notifications\": true\n      }\n    },\n    {\n      \"id\": \"user003\",\n      \"firstName\": \"Mike\",\n      \"lastName\": \"Johnson\",\n      \"email\": \"mike.johnson@example.com\",\n      \"password\": \"TestPass789#\",\n      \"phone\": \"+1-555-0789\",\n      \"dateOfBirth\": \"1992-08-22\",\n      \"address\": {\n        \"street\": \"789 Pine Road\",\n        \"city\": \"Riverside\",\n        \"state\": \"TX\",\n        \"zipCode\": \"54321\",\n        \"country\": \"United States\"\n      },\n      \"preferences\": {\n        \"newsletter\": true,\n        \"notifications\": true\n      }\n    }\n  ],\n  \"testProducts\": [\n    {\n      \"id\": \"prod_1755887448547_16\",\n      \"name\": \"Test Product 175\",\n      \"category\": \"Custom Test\",\n      \"price\": 457,\n      \"originalPrice\": 457,\n      \"discount\": 0,\n      \"rating\": 4.5,\n      \"reviewCount\": 1175,\n      \"inStock\": true,\n      \"stockQuantity\": 72,\n      \"description\": \"This is a test product description for testing purposes.\",\n      \"brand\": \"Premium Co\"\n    },\n    {\n      \"id\": \"prod_1755887448547_686\",\n      \"name\": \"Test Product 683\",\n      \"category\": \"Custom Test\",\n      \"price\": 123.51,\n      \"originalPrice\": 179,\n      \"discount\": 31,\n      \"rating\": 4.9,\n      \"reviewCount\": 1484,\n      \"inStock\": true,\n      \"stockQuantity\": 188,\n      \"description\": \"This is a test product description for testing purposes.\",\n      \"brand\": \"Premium Co\"\n    },\n    {\n      \"id\": \"prod_1755887448547_856\",\n      \"name\": \"Test Product 723\",\n      \"category\": \"Custom Test\",\n      \"price\": 249.49,\n      \"originalPrice\": 409,\n      \"discount\": 39,\n      \"rating\": 3.1,\n      \"reviewCount\": 2734,\n      \"inStock\": true,\n      \"stockQuantity\": 57,\n      \"description\": \"This is a test product description for testing purposes.\",\n      \"brand\": \"StyleBrand\"\n    }\n  ],\n  \"randomProduct\": {\n    \"id\": \"prod001\",\n    \"name\": \"Wireless Bluetooth Headphones\",\n    \"category\": \"Electronics\",\n    \"price\": 79.99,\n    \"originalPrice\": 99.99,\n    \"discount\": 20,\n    \"rating\": 4.5,\n    \"reviewCount\": 1247,\n    \"inStock\": true,\n    \"stockQuantity\": 150,\n    \"description\": \"Premium wireless headphones with noise cancellation and 30-hour battery life.\",\n    \"features\": [\n      \"Noise Cancellation\",\n      \"30hr Battery\",\n      \"Bluetooth 5.0\",\n      \"Quick Charge\"\n    ],\n    \"images\": [\n      \"/images/headphones-1.jpg\",\n      \"/images/headphones-2.jpg\"\n    ],\n    \"brand\": \"AudioTech\",\n    \"model\": \"AT-WH300\",\n    \"weight\": \"250g\",\n    \"dimensions\": \"18 x 15 x 8 cm\"\n  }\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should create custom test data requirements\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.403Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a9daf41799567018655-fa0f94028855f184219d",
-              "file": "test-data-demo.spec.js",
-              "line": 216,
-              "column": 3
-            },
-            {
-              "title": "should provide test data statistics and environment info",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Desktop Chrome",
-                  "projectName": "Desktop Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 121,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Test Data Statistics: {\n  \"fixtures\": {\n    \"users\": {\n      \"fixtureName\": \"users\",\n      \"totalKeys\": 3,\n      \"dataTypes\": {\n        \"validUsers\": \"array\",\n        \"invalidUsers\": \"array\",\n        \"existingUsers\": \"array\"\n      },\n      \"arraySizes\": {\n        \"validUsers\": 3,\n        \"invalidUsers\": 3,\n        \"existingUsers\": 1\n      }\n    },\n    \"products\": {\n      \"fixtureName\": \"products\",\n      \"totalKeys\": 4,\n      \"dataTypes\": {\n        \"featuredProducts\": \"array\",\n        \"searchTestData\": \"array\",\n        \"filterTestData\": \"array\",\n        \"outOfStockProducts\": \"array\"\n      },\n      \"arraySizes\": {\n        \"featuredProducts\": 3,\n        \"searchTestData\": 5,\n        \"filterTestData\": 4,\n        \"outOfStockProducts\": 1\n      }\n    },\n    \"cart\": {\n      \"fixtureName\": \"cart\",\n      \"totalKeys\": 3,\n      \"dataTypes\": {\n        \"cartScenarios\": \"array\",\n        \"cartValidation\": \"array\",\n        \"cartCalculations\": \"array\"\n      },\n      \"arraySizes\": {\n        \"cartScenarios\": 5,\n        \"cartValidation\": 3,\n        \"cartCalculations\": 3\n      }\n    },\n    \"checkout\": {\n      \"fixtureName\": \"checkout\",\n      \"totalKeys\": 4,\n      \"dataTypes\": {\n        \"checkoutScenarios\": \"array\",\n        \"paymentMethods\": \"array\",\n        \"validationErrors\": \"array\",\n        \"shippingOptions\": \"array\"\n      },\n      \"arraySizes\": {\n        \"checkoutScenarios\": 2,\n        \"paymentMethods\": 5,\n        \"validationErrors\": 4,\n        \"shippingOptions\": 4\n      }\n    }\n  },\n  \"currentTestData\": 1,\n  \"environment\": \"development\"\n}\n"
-                        },
-                        {
-                          "text": "Environment Config: {\n  \"baseUrl\": \"http://localhost:3000\",\n  \"apiUrl\": \"http://localhost:3001/api\",\n  \"database\": \"test_dev\",\n  \"cleanupAfterTest\": true\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should provide test data statistics and environment info\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.629Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a9daf41799567018655-f1fb4ba4e07bfcfa19b2",
-              "file": "test-data-demo.spec.js",
-              "line": 260,
-              "column": 3
-            },
-            {
-              "title": "should handle data validation and error scenarios",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Desktop Chrome",
-                  "projectName": "Desktop Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 33,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Validation Result: {\n  \"isValid\": false,\n  \"errors\": [\n    \"firstName is required\",\n    \"firstName should have minimum length of 1\",\n    \"email does not match required pattern\",\n    \"password should have minimum length of 8\",\n    \"password does not match required pattern\",\n    \"phone does not match required pattern\"\n  ],\n  \"warnings\": []\n}\n"
-                        },
-                        {
-                          "text": "Cleaned up test data for: should handle data validation and error scenarios\n"
-                        },
-                        {
-                          "text": "Cleaned up all test data for suite: TestDataDemo\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T18:30:48.862Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3a9daf41799567018655-a5594f54a5a374c4690f",
-              "file": "test-data-demo.spec.js",
-              "line": 286,
+              "id": "2c14808d47b386fba9eb-b7386c00568e12dabac6",
+              "file": "smoke.spec.js",
+              "line": 36,
               "column": 3
             }
           ]
@@ -714,11 +528,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-08-22T18:30:46.387Z",
-    "duration": 2679.863,
-    "expected": 9,
+    "startTime": "2025-08-22T20:23:12.723Z",
+    "duration": 49949.614,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 3,
     "flaky": 0
   }
 }

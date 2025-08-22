@@ -4,7 +4,7 @@
   "description": "A comprehensive QA testing suite demonstrating professional testing practices for e-commerce web applications",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node scripts/run-tests.js",
     "test:ui": "playwright test --config=config/playwright.config.js",
     "test:ui:headed": "playwright test --config=config/playwright.config.js --headed",
     "test:ui:debug": "playwright test --config=config/playwright.config.js --debug",
@@ -20,16 +20,24 @@
     "test:ui:safari": "playwright test --config=config/playwright.config.js --project='*Safari*'",
     "test:api": "newman run config/postman/collections/ecommerce-api.json",
     "test:performance": "echo \"JMeter tests - run manually or via CI/CD\"",
-    "test:all": "npm run test:ui && npm run test:api",
-    "test:all:dev": "TEST_ENV=development npm run test:ui",
-    "test:all:staging": "TEST_ENV=staging npm run test:ui",
+    "test:all": "node scripts/run-tests.js",
+    "test:all:dev": "node scripts/run-tests.js -e development",
+    "test:all:staging": "node scripts/run-tests.js -e staging",
+    "test:all:prod": "node scripts/run-tests.js -e production",
+    "test:cross-browser": "node scripts/run-tests.js -b chromium,firefox,webkit",
+    "test:parallel": "node scripts/run-tests.js -w 8",
+    "test:smoke": "node scripts/run-tests.js -p \"**/*smoke*\"",
+    "test:regression": "node scripts/run-tests.js -e staging,production -b chromium,firefox",
     "report:open": "playwright show-report",
     "report:open:dev": "playwright show-report reports/test-execution/development/playwright-report",
     "report:open:staging": "playwright show-report reports/test-execution/staging/playwright-report",
+    "report:comprehensive": "node scripts/reporting/generate-report.js",
+    "report:dashboard": "open reports/comprehensive/dashboard.html",
     "install:browsers": "playwright install",
-    "clean:reports": "rm -rf reports/test-execution/* test-results/*",
+    "clean:reports": "rm -rf reports/* test-results/*",
     "clean:screenshots": "rm -rf automated-tests/ui-tests/screenshots/*",
-    "setup:test-env": "node scripts/setup-test-environment.js"
+    "setup:test-env": "node scripts/setup-test-environment.js",
+    "ci:aggregate": "node scripts/ci/aggregate-results.js"
   },
   "keywords": [
     "qa",
@@ -56,7 +64,9 @@
     "axe-core": "^4.8.0",
     "@axe-core/playwright": "^4.8.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "nodemailer": "^6.9.0"
+  },
   "engines": {
     "node": ">=18.0.0"
   }

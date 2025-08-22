@@ -1,0 +1,335 @@
+{
+  "info": {
+    "name": "Authentication Workflow",
+    "description": "Pre-configured authentication workflow for API testing setup",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "{{base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "api_version",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Setup Authentication",
+      "description": "Complete authentication setup workflow",
+      "item": [
+        {
+          "name": "1. Register Test User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate unique test user data",
+                  "const timestamp = Date.now();",
+                  "const randomNum = Math.floor(Math.random() * 1000);",
+                  "",
+                  "pm.environment.set('test_user_email', `testuser${timestamp}${randomNum}@example.com`);",
+                  "pm.environment.set('test_user_password', 'TestPassword123!');",
+                  "pm.environment.set('test_user_first_name', 'Test');",
+                  "pm.environment.set('test_user_last_name', 'User');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User registration successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.environment.set('test_user_id', responseJson.user.id);",
+                  "    console.log('Test user registered successfully with ID:', responseJson.user.id);",
+                  "} else {",
+                  "    console.log('User registration failed:', pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"{{test_user_first_name}}\",\n  \"lastName\": \"{{test_user_last_name}}\",\n  \"email\": \"{{test_user_email}}\",\n  \"password\": \"{{test_user_password}}\",\n  \"phone\": \"+1-555-0123\",\n  \"address\": {\n    \"street\": \"123 Test Street\",\n    \"city\": \"Test City\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"United States\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "{{api_version}}", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "2. Login Test User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.environment.set('auth_token', responseJson.token);",
+                  "    pm.environment.set('current_user_id', responseJson.user.id);",
+                  "    console.log('User authenticated successfully');",
+                  "    console.log('Auth token set for subsequent requests');",
+                  "} else {",
+                  "    console.log('User login failed:', pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{test_user_email}}\",\n  \"password\": \"{{test_user_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "{{api_version}}", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "3. Setup Admin User (Optional)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Admin credentials - these should be configured per environment",
+                  "// In production, these should be real admin credentials",
+                  "// In development/staging, these can be test admin accounts",
+                  "",
+                  "const environment = pm.environment.name.toLowerCase();",
+                  "",
+                  "if (environment.includes('development')) {",
+                  "    pm.environment.set('admin_email', 'admin@localhost.com');",
+                  "    pm.environment.set('admin_password', 'AdminPassword123!');",
+                  "} else if (environment.includes('staging')) {",
+                  "    pm.environment.set('admin_email', 'admin@staging.example.com');",
+                  "    pm.environment.set('admin_password', 'StagingAdminPass456@');",
+                  "} else {",
+                  "    // Production - skip admin setup for security",
+                  "    pm.execution.skipRequest();",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Admin login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.environment.set('admin_token', responseJson.token);",
+                  "    pm.environment.set('admin_user_id', responseJson.user.id);",
+                  "    console.log('Admin authenticated successfully');",
+                  "} else {",
+                  "    console.log('Admin login failed - this is expected in production');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "{{api_version}}", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "4. Verify Authentication",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Authentication verification successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('User profile accessible', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('email');",
+                  "    pm.expect(responseJson.email).to.equal(pm.environment.get('test_user_email'));",
+                  "});",
+                  "",
+                  "console.log('Authentication workflow completed successfully!');",
+                  "console.log('Available tokens:');",
+                  "console.log('- auth_token:', pm.environment.get('auth_token') ? 'SET' : 'NOT SET');",
+                  "console.log('- admin_token:', pm.environment.get('admin_token') ? 'SET' : 'NOT SET');",
+                  "console.log('Ready to run API tests!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/users/{{current_user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "{{api_version}}", "users", "{{current_user_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cleanup Authentication",
+      "description": "Clean up test data and tokens",
+      "item": [
+        {
+          "name": "Logout User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Logout successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Clear authentication tokens",
+                  "pm.environment.unset('auth_token');",
+                  "pm.environment.unset('current_user_id');",
+                  "console.log('User logged out and tokens cleared');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "{{api_version}}", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Delete Test User (Optional)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Only delete test user in development environment",
+                  "const environment = pm.environment.name.toLowerCase();",
+                  "",
+                  "if (!environment.includes('development')) {",
+                  "    console.log('Skipping test user deletion in non-development environment');",
+                  "    pm.execution.skipRequest();",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Test user deletion successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});",
+                  "",
+                  "// Clear test user data",
+                  "pm.environment.unset('test_user_id');",
+                  "pm.environment.unset('test_user_email');",
+                  "pm.environment.unset('test_user_password');",
+                  "pm.environment.unset('admin_token');",
+                  "pm.environment.unset('admin_user_id');",
+                  "",
+                  "console.log('Test user deleted and environment cleaned up');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/{{api_version}}/users/{{test_user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "{{api_version}}", "users", "{{test_user_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

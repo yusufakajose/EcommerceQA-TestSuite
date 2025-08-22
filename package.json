@@ -1,0 +1,46 @@
+{
+  "name": "ecommerce-qa-testsuite",
+  "version": "1.0.0",
+  "description": "A comprehensive QA testing suite demonstrating professional testing practices for e-commerce web applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:ui": "playwright test",
+    "test:ui:headed": "playwright test --headed",
+    "test:ui:debug": "playwright test --debug",
+    "test:api": "newman run config/postman/collections/ecommerce-api.json",
+    "test:performance": "echo \"JMeter tests - run manually or via CI/CD\"",
+    "test:all": "npm run test:ui && npm run test:api",
+    "report:open": "playwright show-report",
+    "install:browsers": "playwright install"
+  },
+  "keywords": [
+    "qa",
+    "testing",
+    "automation",
+    "playwright",
+    "newman",
+    "postman",
+    "jmeter",
+    "e-commerce",
+    "test-suite"
+  ],
+  "author": "QA Testing Showcase",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "newman": "^6.0.0",
+    "newman-reporter-html": "^1.0.5",
+    "axe-core": "^4.8.0",
+    "@axe-core/playwright": "^4.8.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./automated-tests/*"],
+      "@ui/*": ["./automated-tests/ui-tests/*"],
+      "@api/*": ["./automated-tests/api-tests/*"],
+      "@data/*": ["./test-data/*"],
+      "@config/*": ["./config/*"]
+    },
+    "types": ["node", "@playwright/test"]
+  },
+  "include": [
+    "automated-tests/**/*",
+    "test-data/**/*",
+    "config/**/*",
+    "*.ts",
+    "*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "reports",
+    "test-results"
+  ]
+}

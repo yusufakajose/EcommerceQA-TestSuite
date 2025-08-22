@@ -1,0 +1,6 @@
+firstName,lastName,email,password,phone,street,city,state,zipCode,country
+John,Doe,john.doe.test@example.com,TestPassword123!,+1-555-0101,123 Main St,New York,NY,10001,United States
+Jane,Smith,jane.smith.test@example.com,TestPassword456@,+1-555-0102,456 Oak Ave,Los Angeles,CA,90210,United States
+Mike,Johnson,mike.johnson.test@example.com,TestPassword789#,+1-555-0103,789 Pine Rd,Chicago,IL,60601,United States
+Sarah,Williams,sarah.williams.test@example.com,TestPassword012$,+1-555-0104,321 Elm St,Houston,TX,77001,United States
+David,Brown,david.brown.test@example.com,TestPassword345%,+1-555-0105,654 Maple Dr,Phoenix,AZ,85001,United States

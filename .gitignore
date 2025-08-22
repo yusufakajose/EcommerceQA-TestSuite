@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test results and reports
+test-results/
+playwright-report/
+coverage/
+allure-results/
+allure-report/
+
+# JMeter results
+*.jtl
+jmeter.log
+
+# Newman/Postman results
+newman-results/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Screenshots and videos (unless specifically needed for documentation)
+screenshots/
+videos/
+test-artifacts/
+
+# Build outputs
+dist/
+build/

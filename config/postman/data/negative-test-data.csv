@@ -1,0 +1,7 @@
+testType,email,username,password,firstName,lastName,expectedError
+invalid_email,invalid-email,testuser,SecurePass123!,John,Doe,email
+weak_password,test@example.com,testuser,123,John,Doe,password
+missing_fields,test@example.com,,SecurePass123!,John,Doe,username
+sql_injection,"test'; DROP TABLE users; --@example.com",testuser,SecurePass123!,John,Doe,email
+xss_attempt,"<script>alert('xss')</script>@example.com",testuser,SecurePass123!,John,Doe,email
+long_input,test@example.com,verylongusernamethatexceedsthelimitverylongusernamethatexceedsthelimit,SecurePass123!,John,Doe,username

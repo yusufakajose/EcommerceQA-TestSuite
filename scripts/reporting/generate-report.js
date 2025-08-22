@@ -5,6 +5,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const DashboardGenerator = require('./dashboard-generator');
+const MetricsCollector = require('./metrics-collector');
 
 class ReportGenerator {
   constructor() {

@@ -135,8 +135,36 @@ module.exports = defineConfig({
         use: { ...devices['iPhone 12'] },
       },
       {
+        name: 'Mobile Chrome Small',
+        use: { 
+          ...devices['Galaxy S5'],
+          viewport: { width: 360, height: 640 }
+        },
+      },
+      {
+        name: 'Mobile Safari Small',
+        use: { 
+          ...devices['iPhone SE'],
+          viewport: { width: 375, height: 667 }
+        },
+      },
+      {
         name: 'Tablet',
         use: { ...devices['iPad Pro'] },
+      },
+      {
+        name: 'Tablet Landscape',
+        use: { 
+          ...devices['iPad Pro'],
+          viewport: { width: 1024, height: 768 }
+        },
+      },
+      {
+        name: 'Tablet Portrait',
+        use: { 
+          ...devices['iPad Pro'],
+          viewport: { width: 768, height: 1024 }
+        },
       }
     ] : []),
 

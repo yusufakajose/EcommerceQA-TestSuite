@@ -1,0 +1,9 @@
+scenarioName,users,rampUp,duration,thinkTimeMin,thinkTimeMax,description
+light_load,25,60,600,2000,5000,Light load testing for baseline performance
+normal_load,50,120,900,1500,4000,Normal load testing for typical usage
+peak_load,100,180,1200,1000,3000,Peak load testing for high traffic periods
+heavy_load,200,300,1800,800,2500,Heavy load testing for stress conditions
+stress_load,300,450,2400,500,2000,Stress testing to identify breaking points
+spike_load,150,30,300,200,1000,Spike testing for sudden traffic increases
+endurance_load,75,300,3600,2000,6000,Endurance testing for sustained load
+burst_load,250,60,600,100,500,Burst testing for maximum concurrent users

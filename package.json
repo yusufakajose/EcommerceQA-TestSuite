@@ -47,6 +47,11 @@
     "test:performance:cart": "node automated-tests/performance-tests/scripts/jmeter-runner.js --test shopping-cart",
     "test:performance:load": "node automated-tests/performance-tests/scripts/jmeter-runner.js --users 100 --ramp-up 120",
     "test:performance:stress": "node automated-tests/performance-tests/scripts/jmeter-runner.js --users 200 --ramp-up 180 --loops 10",
+    "test:performance:advanced": "node automated-tests/performance-tests/scripts/advanced-load-test-runner.js comprehensive",
+    "test:performance:user-journey": "node automated-tests/performance-tests/scripts/advanced-load-test-runner.js user-journey normal_load",
+    "test:performance:stress-advanced": "node automated-tests/performance-tests/scripts/advanced-load-test-runner.js stress-test",
+    "test:performance:concurrent": "node automated-tests/performance-tests/scripts/advanced-load-test-runner.js concurrent-users 50,100,200,400",
+    "test:performance:scenarios": "node automated-tests/performance-tests/scripts/advanced-load-test-runner.js list-scenarios",
     "test:all": "node scripts/run-tests.js",
     "test:all:dev": "node scripts/run-tests.js -e development",
     "test:all:staging": "node scripts/run-tests.js -e staging",
@@ -89,7 +94,8 @@
     "newman": "^6.0.0",
     "newman-reporter-htmlextra": "^1.23.0",
     "axe-core": "^4.8.0",
-    "@axe-core/playwright": "^4.8.0"
+    "@axe-core/playwright": "^4.8.0",
+    "csv-parser": "^3.0.0"
   },
   "dependencies": {
     "nodemailer": "^6.10.1"

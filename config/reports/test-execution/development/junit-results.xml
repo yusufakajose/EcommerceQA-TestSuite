@@ -1,0 +1,719 @@
+<testsuites id="" name="" tests="9" failures="0" skipped="0" errors="0" time="2.6798629999999997">
+<testsuite name="test-data-demo.spec.js" timestamp="2025-08-22T18:30:46.648Z" hostname="Desktop Chrome" tests="9" failures="0" skipped="0" time="0.568" errors="0">
+<testcase name="Test Data Management System Demo › should load and use fixture data for user registration" classname="test-data-demo.spec.js" time="0.067">
+<system-out>
+<![CDATA[Initializing test data for suite: TestDataDemo
+Test data initialized for environment: development
+Valid User Data: {
+  "id": "user001",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "SecurePass123!",
+  "phone": "+1-555-0123",
+  "dateOfBirth": "1990-05-15",
+  "address": {
+    "street": "123 Main Street",
+    "city": "Anytown",
+    "state": "CA",
+    "zipCode": "12345",
+    "country": "United States"
+  },
+  "preferences": {
+    "newsletter": true,
+    "notifications": false
+  }
+}
+Cleaned up test data for: should load and use fixture data for user registration
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should generate unique user data dynamically" classname="test-data-demo.spec.js" time="0.062">
+<system-out>
+<![CDATA[Generated Users:
+User 1: {
+  "id": "user_1755887448734_360",
+  "firstName": "Amanda",
+  "lastName": "Garcia",
+  "email": "phrnadvc817@testdomain.com",
+  "password": "@:c;p5hS2wM)",
+  "phone": "+1-605-452-7760",
+  "dateOfBirth": "1971-10-29",
+  "address": {
+    "street": "6140 Lincoln Avenue",
+    "city": "Arlington",
+    "state": "MO",
+    "zipCode": "44097",
+    "country": "United States"
+  },
+  "preferences": {
+    "newsletter": true,
+    "notifications": false
+  }
+}
+User 2: {
+  "id": "user_1755887448734_740",
+  "firstName": "Anthony",
+  "lastName": "Moore",
+  "email": "qnioomyt734@testdomain.com",
+  "password": "*&uc&<ZS4#Zp",
+  "phone": "+1-743-680-7559",
+  "dateOfBirth": "1985-04-11",
+  "address": {
+    "street": "679 First Street",
+    "city": "Madison",
+    "state": "MA",
+    "zipCode": "16454",
+    "country": "United States"
+  },
+  "preferences": {
+    "newsletter": false,
+    "notifications": true
+  }
+}
+User 3: {
+  "id": "user_1755887448734_950",
+  "firstName": "CustomFirst",
+  "lastName": "Anderson",
+  "email": "uvtgfoxa748@testdomain.com",
+  "password": "8XF7&J8fy!d^",
+  "phone": "+1-706-236-8003",
+  "dateOfBirth": "1974-11-01",
+  "address": {
+    "street": "991 Lincoln Avenue",
+    "city": "Kingston",
+    "state": "GA",
+    "zipCode": "97812",
+    "country": "United States"
+  },
+  "preferences": {
+    "newsletter": true,
+    "notifications": false
+  }
+}
+Cleaned up test data for: should generate unique user data dynamically
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should handle product test data scenarios" classname="test-data-demo.spec.js" time="0.033">
+<system-out>
+<![CDATA[Featured Product: {
+  "id": "prod002",
+  "name": "Smart Fitness Watch",
+  "category": "Wearables",
+  "price": 199.99,
+  "originalPrice": 249.99,
+  "discount": 20,
+  "rating": 4.3,
+  "reviewCount": 892,
+  "inStock": true,
+  "stockQuantity": 75,
+  "description": "Advanced fitness tracking with heart rate monitor, GPS, and 7-day battery life.",
+  "features": [
+    "Heart Rate Monitor",
+    "GPS Tracking",
+    "7-day Battery",
+    "Water Resistant"
+  ],
+  "images": [
+    "/images/watch-1.jpg",
+    "/images/watch-2.jpg"
+  ],
+  "brand": "FitTech",
+  "model": "FT-SW200",
+  "weight": "45g",
+  "dimensions": "4.2 x 3.6 x 1.2 cm"
+}
+Out of Stock Product: {
+  "id": "prod004",
+  "name": "Gaming Mechanical Keyboard",
+  "category": "Gaming",
+  "price": 129.99,
+  "rating": 4.6,
+  "reviewCount": 543,
+  "inStock": false,
+  "stockQuantity": 0,
+  "description": "RGB mechanical gaming keyboard with custom switches.",
+  "expectedMessage": "Out of Stock"
+}
+Generated Product: {
+  "id": "prod_1755887448865_427",
+  "name": "Test Product 925",
+  "category": "Test Category",
+  "price": 99.99,
+  "originalPrice": 458,
+  "discount": 27,
+  "rating": 4.4,
+  "reviewCount": 1437,
+  "inStock": true,
+  "stockQuantity": 69,
+  "description": "This is a test product description for testing purposes.",
+  "brand": "TechCorp"
+}
+Cleaned up test data for: should handle product test data scenarios
+Cleaned up all test data for suite: TestDataDemo
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should create complete scenario data for shopping cart" classname="test-data-demo.spec.js" time="0.059">
+<system-out>
+<![CDATA[Initializing test data for suite: TestDataDemo
+Test data initialized for environment: development
+Cart Scenario Data: {
+  "scenarios": [
+    {
+      "scenarioName": "singleItem",
+      "description": "Add single item to cart",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 1,
+          "expectedPrice": 79.99,
+          "expectedSubtotal": 79.99
+        }
+      ],
+      "expectedTotal": 79.99,
+      "expectedItemCount": 1
+    },
+    {
+      "scenarioName": "multipleItems",
+      "description": "Add multiple different items to cart",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 2,
+          "expectedPrice": 79.99,
+          "expectedSubtotal": 159.98
+        },
+        {
+          "productId": "prod002",
+          "quantity": 1,
+          "expectedPrice": 199.99,
+          "expectedSubtotal": 199.99
+        },
+        {
+          "productId": "prod003",
+          "quantity": 3,
+          "expectedPrice": 34.99,
+          "expectedSubtotal": 104.97
+        }
+      ],
+      "expectedTotal": 464.94,
+      "expectedItemCount": 6
+    },
+    {
+      "scenarioName": "quantityUpdates",
+      "description": "Update item quantities in cart",
+      "initialItems": [
+        {
+          "productId": "prod001",
+          "quantity": 1
+        }
+      ],
+      "updates": [
+        {
+          "productId": "prod001",
+          "newQuantity": 5,
+          "expectedSubtotal": 399.95
+        }
+      ],
+      "expectedTotal": 399.95,
+      "expectedItemCount": 5
+    },
+    {
+      "scenarioName": "removeItems",
+      "description": "Remove items from cart",
+      "initialItems": [
+        {
+          "productId": "prod001",
+          "quantity": 2
+        },
+        {
+          "productId": "prod002",
+          "quantity": 1
+        }
+      ],
+      "itemsToRemove": [
+        "prod001"
+      ],
+      "expectedRemainingItems": [
+        {
+          "productId": "prod002",
+          "quantity": 1,
+          "expectedSubtotal": 199.99
+        }
+      ],
+      "expectedTotal": 199.99,
+      "expectedItemCount": 1
+    },
+    {
+      "scenarioName": "emptyCart",
+      "description": "Clear all items from cart",
+      "initialItems": [
+        {
+          "productId": "prod001",
+          "quantity": 1
+        },
+        {
+          "productId": "prod002",
+          "quantity": 1
+        }
+      ],
+      "clearCart": true,
+      "expectedTotal": 0,
+      "expectedItemCount": 0,
+      "expectedMessage": "Your cart is empty"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod001",
+      "name": "Wireless Bluetooth Headphones",
+      "category": "Electronics",
+      "price": 79.99,
+      "originalPrice": 99.99,
+      "discount": 20,
+      "rating": 4.5,
+      "reviewCount": 1247,
+      "inStock": true,
+      "stockQuantity": 150,
+      "description": "Premium wireless headphones with noise cancellation and 30-hour battery life.",
+      "features": [
+        "Noise Cancellation",
+        "30hr Battery",
+        "Bluetooth 5.0",
+        "Quick Charge"
+      ],
+      "images": [
+        "/images/headphones-1.jpg",
+        "/images/headphones-2.jpg"
+      ],
+      "brand": "AudioTech",
+      "model": "AT-WH300",
+      "weight": "250g",
+      "dimensions": "18 x 15 x 8 cm"
+    },
+    {
+      "id": "prod002",
+      "name": "Smart Fitness Watch",
+      "category": "Wearables",
+      "price": 199.99,
+      "originalPrice": 249.99,
+      "discount": 20,
+      "rating": 4.3,
+      "reviewCount": 892,
+      "inStock": true,
+      "stockQuantity": 75,
+      "description": "Advanced fitness tracking with heart rate monitor, GPS, and 7-day battery life.",
+      "features": [
+        "Heart Rate Monitor",
+        "GPS Tracking",
+        "7-day Battery",
+        "Water Resistant"
+      ],
+      "images": [
+        "/images/watch-1.jpg",
+        "/images/watch-2.jpg"
+      ],
+      "brand": "FitTech",
+      "model": "FT-SW200",
+      "weight": "45g",
+      "dimensions": "4.2 x 3.6 x 1.2 cm"
+    },
+    {
+      "id": "prod003",
+      "name": "Portable Laptop Stand",
+      "category": "Accessories",
+      "price": 34.99,
+      "originalPrice": 44.99,
+      "discount": 22,
+      "rating": 4.7,
+      "reviewCount": 2156,
+      "inStock": true,
+      "stockQuantity": 200,
+      "description": "Adjustable aluminum laptop stand for improved ergonomics and cooling.",
+      "features": [
+        "Adjustable Height",
+        "Aluminum Build",
+        "Foldable",
+        "Universal Fit"
+      ],
+      "images": [
+        "/images/stand-1.jpg",
+        "/images/stand-2.jpg"
+      ],
+      "brand": "ErgoDesk",
+      "model": "ED-LS100",
+      "weight": "800g",
+      "dimensions": "26 x 23 x 2 cm (folded)"
+    }
+  ],
+  "testUser": {
+    "id": "user_1755887448518_277",
+    "firstName": "Helen",
+    "lastName": "Lopez",
+    "email": "uctzzqiv314@testdomain.com",
+    "password": "]6pB>I:31UaD",
+    "phone": "+1-679-644-6857",
+    "dateOfBirth": "1950-10-05",
+    "address": {
+      "street": "418 Broadway",
+      "city": "Salem",
+      "state": "WI",
+      "zipCode": "39906",
+      "country": "United States"
+    },
+    "preferences": {
+      "newsletter": true,
+      "notifications": false
+    }
+  }
+}
+Cleaned up test data for: should create complete scenario data for shopping cart
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should handle checkout scenarios with payment methods" classname="test-data-demo.spec.js" time="0.064">
+<system-out>
+<![CDATA[Checkout Scenario: {
+  "scenarioName": "successfulCheckout",
+  "description": "Complete checkout process with valid data",
+  "user": {
+    "email": "john.doe@example.com",
+    "isLoggedIn": true
+  },
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "street": "123 Main Street",
+    "city": "Anytown",
+    "state": "CA",
+    "zipCode": "12345",
+    "country": "United States",
+    "phone": "+1-555-0123"
+  },
+  "billingAddress": {
+    "sameAsShipping": true
+  },
+  "paymentMethod": {
+    "type": "credit_card",
+    "cardNumber": "4111111111111111",
+    "expiryMonth": "12",
+    "expiryYear": "2025",
+    "cvv": "123",
+    "cardholderName": "John Doe"
+  },
+  "items": [
+    {
+      "productId": "prod001",
+      "quantity": 1,
+      "price": 79.99
+    }
+  ],
+  "expectedOrderTotal": 89.98,
+  "expectedSuccessMessage": "Order placed successfully"
+}
+Payment Methods:
+Visa: {
+  "type": "credit_card",
+  "name": "Visa",
+  "cardNumber": "4111111111111111",
+  "expiryMonth": "12",
+  "expiryYear": "2025",
+  "cvv": "123",
+  "cardholderName": "Test User",
+  "expectedResult": "success"
+}
+Mastercard: {
+  "type": "credit_card",
+  "name": "Mastercard",
+  "cardNumber": "5555555555554444",
+  "expiryMonth": "08",
+  "expiryYear": "2024",
+  "cvv": "789",
+  "cardholderName": "Test User",
+  "expectedResult": "success"
+}
+Generated Amex: {
+  "type": "credit_card",
+  "cardNumber": "378282246310001",
+  "expiryMonth": "02",
+  "expiryYear": "2030",
+  "cvv": "4446",
+  "cardholderName": "Amanda Taylor"
+}
+Cleaned up test data for: should handle checkout scenarios with payment methods
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should generate bulk test data efficiently" classname="test-data-demo.spec.js" time="0.074">
+<system-out>
+<![CDATA[Generated 5 users
+Generated 3 products
+Cleaned up test data for: should generate bulk test data efficiently
+Cleaned up all test data for suite: TestDataDemo
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should create custom test data requirements" classname="test-data-demo.spec.js" time="0.055">
+<system-out>
+<![CDATA[Initializing test data for suite: TestDataDemo
+Test data initialized for environment: development
+Custom Test Data: {
+  "primaryUser": {
+    "id": "user_1755887448546_99",
+    "firstName": "TestPrimary",
+    "lastName": "Moore",
+    "email": "gwqyvbsr339@testdomain.com",
+    "password": "!h3X!2*#o=bN",
+    "phone": "+1-275-342-6901",
+    "dateOfBirth": "1988-11-10",
+    "address": {
+      "street": "6117 Madison Drive",
+      "city": "Fairview",
+      "state": "OH",
+      "zipCode": "45572",
+      "country": "United States"
+    },
+    "preferences": {
+      "newsletter": false,
+      "notifications": false
+    }
+  },
+  "secondaryUser": [
+    {
+      "id": "user001",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "password": "SecurePass123!",
+      "phone": "+1-555-0123",
+      "dateOfBirth": "1990-05-15",
+      "address": {
+        "street": "123 Main Street",
+        "city": "Anytown",
+        "state": "CA",
+        "zipCode": "12345",
+        "country": "United States"
+      },
+      "preferences": {
+        "newsletter": true,
+        "notifications": false
+      }
+    },
+    {
+      "id": "user002",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "password": "MyPassword456@",
+      "phone": "+1-555-0456",
+      "dateOfBirth": "1985-12-03",
+      "address": {
+        "street": "456 Oak Avenue",
+        "city": "Springfield",
+        "state": "NY",
+        "zipCode": "67890",
+        "country": "United States"
+      },
+      "preferences": {
+        "newsletter": false,
+        "notifications": true
+      }
+    },
+    {
+      "id": "user003",
+      "firstName": "Mike",
+      "lastName": "Johnson",
+      "email": "mike.johnson@example.com",
+      "password": "TestPass789#",
+      "phone": "+1-555-0789",
+      "dateOfBirth": "1992-08-22",
+      "address": {
+        "street": "789 Pine Road",
+        "city": "Riverside",
+        "state": "TX",
+        "zipCode": "54321",
+        "country": "United States"
+      },
+      "preferences": {
+        "newsletter": true,
+        "notifications": true
+      }
+    }
+  ],
+  "testProducts": [
+    {
+      "id": "prod_1755887448547_16",
+      "name": "Test Product 175",
+      "category": "Custom Test",
+      "price": 457,
+      "originalPrice": 457,
+      "discount": 0,
+      "rating": 4.5,
+      "reviewCount": 1175,
+      "inStock": true,
+      "stockQuantity": 72,
+      "description": "This is a test product description for testing purposes.",
+      "brand": "Premium Co"
+    },
+    {
+      "id": "prod_1755887448547_686",
+      "name": "Test Product 683",
+      "category": "Custom Test",
+      "price": 123.51,
+      "originalPrice": 179,
+      "discount": 31,
+      "rating": 4.9,
+      "reviewCount": 1484,
+      "inStock": true,
+      "stockQuantity": 188,
+      "description": "This is a test product description for testing purposes.",
+      "brand": "Premium Co"
+    },
+    {
+      "id": "prod_1755887448547_856",
+      "name": "Test Product 723",
+      "category": "Custom Test",
+      "price": 249.49,
+      "originalPrice": 409,
+      "discount": 39,
+      "rating": 3.1,
+      "reviewCount": 2734,
+      "inStock": true,
+      "stockQuantity": 57,
+      "description": "This is a test product description for testing purposes.",
+      "brand": "StyleBrand"
+    }
+  ],
+  "randomProduct": {
+    "id": "prod001",
+    "name": "Wireless Bluetooth Headphones",
+    "category": "Electronics",
+    "price": 79.99,
+    "originalPrice": 99.99,
+    "discount": 20,
+    "rating": 4.5,
+    "reviewCount": 1247,
+    "inStock": true,
+    "stockQuantity": 150,
+    "description": "Premium wireless headphones with noise cancellation and 30-hour battery life.",
+    "features": [
+      "Noise Cancellation",
+      "30hr Battery",
+      "Bluetooth 5.0",
+      "Quick Charge"
+    ],
+    "images": [
+      "/images/headphones-1.jpg",
+      "/images/headphones-2.jpg"
+    ],
+    "brand": "AudioTech",
+    "model": "AT-WH300",
+    "weight": "250g",
+    "dimensions": "18 x 15 x 8 cm"
+  }
+}
+Cleaned up test data for: should create custom test data requirements
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should provide test data statistics and environment info" classname="test-data-demo.spec.js" time="0.121">
+<system-out>
+<![CDATA[Test Data Statistics: {
+  "fixtures": {
+    "users": {
+      "fixtureName": "users",
+      "totalKeys": 3,
+      "dataTypes": {
+        "validUsers": "array",
+        "invalidUsers": "array",
+        "existingUsers": "array"
+      },
+      "arraySizes": {
+        "validUsers": 3,
+        "invalidUsers": 3,
+        "existingUsers": 1
+      }
+    },
+    "products": {
+      "fixtureName": "products",
+      "totalKeys": 4,
+      "dataTypes": {
+        "featuredProducts": "array",
+        "searchTestData": "array",
+        "filterTestData": "array",
+        "outOfStockProducts": "array"
+      },
+      "arraySizes": {
+        "featuredProducts": 3,
+        "searchTestData": 5,
+        "filterTestData": 4,
+        "outOfStockProducts": 1
+      }
+    },
+    "cart": {
+      "fixtureName": "cart",
+      "totalKeys": 3,
+      "dataTypes": {
+        "cartScenarios": "array",
+        "cartValidation": "array",
+        "cartCalculations": "array"
+      },
+      "arraySizes": {
+        "cartScenarios": 5,
+        "cartValidation": 3,
+        "cartCalculations": 3
+      }
+    },
+    "checkout": {
+      "fixtureName": "checkout",
+      "totalKeys": 4,
+      "dataTypes": {
+        "checkoutScenarios": "array",
+        "paymentMethods": "array",
+        "validationErrors": "array",
+        "shippingOptions": "array"
+      },
+      "arraySizes": {
+        "checkoutScenarios": 2,
+        "paymentMethods": 5,
+        "validationErrors": 4,
+        "shippingOptions": 4
+      }
+    }
+  },
+  "currentTestData": 1,
+  "environment": "development"
+}
+Environment Config: {
+  "baseUrl": "http://localhost:3000",
+  "apiUrl": "http://localhost:3001/api",
+  "database": "test_dev",
+  "cleanupAfterTest": true
+}
+Cleaned up test data for: should provide test data statistics and environment info
+]]>
+</system-out>
+</testcase>
+<testcase name="Test Data Management System Demo › should handle data validation and error scenarios" classname="test-data-demo.spec.js" time="0.033">
+<system-out>
+<![CDATA[Validation Result: {
+  "isValid": false,
+  "errors": [
+    "firstName is required",
+    "firstName should have minimum length of 1",
+    "email does not match required pattern",
+    "password should have minimum length of 8",
+    "password does not match required pattern",
+    "phone does not match required pattern"
+  ],
+  "warnings": []
+}
+Cleaned up test data for: should handle data validation and error scenarios
+Cleaned up all test data for suite: TestDataDemo
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

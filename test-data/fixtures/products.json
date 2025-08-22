@@ -1,0 +1,133 @@
+{
+  "featuredProducts": [
+    {
+      "id": "prod001",
+      "name": "Wireless Bluetooth Headphones",
+      "category": "Electronics",
+      "price": 79.99,
+      "originalPrice": 99.99,
+      "discount": 20,
+      "rating": 4.5,
+      "reviewCount": 1247,
+      "inStock": true,
+      "stockQuantity": 150,
+      "description": "Premium wireless headphones with noise cancellation and 30-hour battery life.",
+      "features": ["Noise Cancellation", "30hr Battery", "Bluetooth 5.0", "Quick Charge"],
+      "images": ["/images/headphones-1.jpg", "/images/headphones-2.jpg"],
+      "brand": "AudioTech",
+      "model": "AT-WH300",
+      "weight": "250g",
+      "dimensions": "18 x 15 x 8 cm"
+    },
+    {
+      "id": "prod002",
+      "name": "Smart Fitness Watch",
+      "category": "Wearables",
+      "price": 199.99,
+      "originalPrice": 249.99,
+      "discount": 20,
+      "rating": 4.3,
+      "reviewCount": 892,
+      "inStock": true,
+      "stockQuantity": 75,
+      "description": "Advanced fitness tracking with heart rate monitor, GPS, and 7-day battery life.",
+      "features": ["Heart Rate Monitor", "GPS Tracking", "7-day Battery", "Water Resistant"],
+      "images": ["/images/watch-1.jpg", "/images/watch-2.jpg"],
+      "brand": "FitTech",
+      "model": "FT-SW200",
+      "weight": "45g",
+      "dimensions": "4.2 x 3.6 x 1.2 cm"
+    },
+    {
+      "id": "prod003",
+      "name": "Portable Laptop Stand",
+      "category": "Accessories",
+      "price": 34.99,
+      "originalPrice": 44.99,
+      "discount": 22,
+      "rating": 4.7,
+      "reviewCount": 2156,
+      "inStock": true,
+      "stockQuantity": 200,
+      "description": "Adjustable aluminum laptop stand for improved ergonomics and cooling.",
+      "features": ["Adjustable Height", "Aluminum Build", "Foldable", "Universal Fit"],
+      "images": ["/images/stand-1.jpg", "/images/stand-2.jpg"],
+      "brand": "ErgoDesk",
+      "model": "ED-LS100",
+      "weight": "800g",
+      "dimensions": "26 x 23 x 2 cm (folded)"
+    }
+  ],
+  "searchTestData": [
+    {
+      "searchTerm": "headphones",
+      "expectedResults": ["prod001"],
+      "expectedCount": 1,
+      "category": "Electronics"
+    },
+    {
+      "searchTerm": "fitness",
+      "expectedResults": ["prod002"],
+      "expectedCount": 1,
+      "category": "Wearables"
+    },
+    {
+      "searchTerm": "laptop",
+      "expectedResults": ["prod003"],
+      "expectedCount": 1,
+      "category": "Accessories"
+    },
+    {
+      "searchTerm": "bluetooth",
+      "expectedResults": ["prod001"],
+      "expectedCount": 1,
+      "category": "Electronics"
+    },
+    {
+      "searchTerm": "nonexistent",
+      "expectedResults": [],
+      "expectedCount": 0,
+      "category": null
+    }
+  ],
+  "filterTestData": [
+    {
+      "filterType": "category",
+      "filterValue": "Electronics",
+      "expectedResults": ["prod001"],
+      "expectedCount": 1
+    },
+    {
+      "filterType": "priceRange",
+      "filterValue": { "min": 50, "max": 100 },
+      "expectedResults": ["prod001"],
+      "expectedCount": 1
+    },
+    {
+      "filterType": "rating",
+      "filterValue": 4.5,
+      "expectedResults": ["prod001", "prod003"],
+      "expectedCount": 2
+    },
+    {
+      "filterType": "inStock",
+      "filterValue": true,
+      "expectedResults": ["prod001", "prod002", "prod003"],
+      "expectedCount": 3
+    }
+  ],
+  "outOfStockProducts": [
+    {
+      "id": "prod004",
+      "name": "Gaming Mechanical Keyboard",
+      "category": "Gaming",
+      "price": 129.99,
+      "rating": 4.6,
+      "reviewCount": 543,
+      "inStock": false,
+      "stockQuantity": 0,
+      "description": "RGB mechanical gaming keyboard with custom switches.",
+      "expectedMessage": "Out of Stock"
+    }
+  ]
+}

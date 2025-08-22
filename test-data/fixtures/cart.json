@@ -1,0 +1,173 @@
+{
+  "cartScenarios": [
+    {
+      "scenarioName": "singleItem",
+      "description": "Add single item to cart",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 1,
+          "expectedPrice": 79.99,
+          "expectedSubtotal": 79.99
+        }
+      ],
+      "expectedTotal": 79.99,
+      "expectedItemCount": 1
+    },
+    {
+      "scenarioName": "multipleItems",
+      "description": "Add multiple different items to cart",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 2,
+          "expectedPrice": 79.99,
+          "expectedSubtotal": 159.98
+        },
+        {
+          "productId": "prod002",
+          "quantity": 1,
+          "expectedPrice": 199.99,
+          "expectedSubtotal": 199.99
+        },
+        {
+          "productId": "prod003",
+          "quantity": 3,
+          "expectedPrice": 34.99,
+          "expectedSubtotal": 104.97
+        }
+      ],
+      "expectedTotal": 464.94,
+      "expectedItemCount": 6
+    },
+    {
+      "scenarioName": "quantityUpdates",
+      "description": "Update item quantities in cart",
+      "initialItems": [
+        {
+          "productId": "prod001",
+          "quantity": 1
+        }
+      ],
+      "updates": [
+        {
+          "productId": "prod001",
+          "newQuantity": 5,
+          "expectedSubtotal": 399.95
+        }
+      ],
+      "expectedTotal": 399.95,
+      "expectedItemCount": 5
+    },
+    {
+      "scenarioName": "removeItems",
+      "description": "Remove items from cart",
+      "initialItems": [
+        {
+          "productId": "prod001",
+          "quantity": 2
+        },
+        {
+          "productId": "prod002",
+          "quantity": 1
+        }
+      ],
+      "itemsToRemove": ["prod001"],
+      "expectedRemainingItems": [
+        {
+          "productId": "prod002",
+          "quantity": 1,
+          "expectedSubtotal": 199.99
+        }
+      ],
+      "expectedTotal": 199.99,
+      "expectedItemCount": 1
+    },
+    {
+      "scenarioName": "emptyCart",
+      "description": "Clear all items from cart",
+      "initialItems": [
+        {
+          "productId": "prod001",
+          "quantity": 1
+        },
+        {
+          "productId": "prod002",
+          "quantity": 1
+        }
+      ],
+      "clearCart": true,
+      "expectedTotal": 0,
+      "expectedItemCount": 0,
+      "expectedMessage": "Your cart is empty"
+    }
+  ],
+  "cartValidation": [
+    {
+      "scenarioName": "maxQuantityLimit",
+      "productId": "prod001",
+      "attemptedQuantity": 999,
+      "maxAllowed": 10,
+      "expectedError": "Maximum quantity allowed is 10"
+    },
+    {
+      "scenarioName": "outOfStockItem",
+      "productId": "prod004",
+      "attemptedQuantity": 1,
+      "expectedError": "This item is currently out of stock"
+    },
+    {
+      "scenarioName": "insufficientStock",
+      "productId": "prod002",
+      "attemptedQuantity": 100,
+      "availableStock": 75,
+      "expectedError": "Only 75 items available in stock"
+    }
+  ],
+  "cartCalculations": [
+    {
+      "scenarioName": "taxCalculation",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 1,
+          "price": 79.99
+        }
+      ],
+      "subtotal": 79.99,
+      "taxRate": 0.08,
+      "expectedTax": 6.40,
+      "expectedTotal": 86.39
+    },
+    {
+      "scenarioName": "shippingCalculation",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 1,
+          "price": 79.99
+        }
+      ],
+      "subtotal": 79.99,
+      "shippingCost": 9.99,
+      "freeShippingThreshold": 100,
+      "expectedShipping": 9.99,
+      "expectedTotal": 89.98
+    },
+    {
+      "scenarioName": "freeShipping",
+      "items": [
+        {
+          "productId": "prod001",
+          "quantity": 2,
+          "price": 79.99
+        }
+      ],
+      "subtotal": 159.98,
+      "shippingCost": 9.99,
+      "freeShippingThreshold": 100,
+      "expectedShipping": 0,
+      "expectedTotal": 159.98
+    }
+  ]
+}

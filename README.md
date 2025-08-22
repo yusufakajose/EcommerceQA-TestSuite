@@ -30,7 +30,7 @@ EcommerceQA-TestSuite/
 ├── reports/              # Test execution reports
 ├── docs/                 # Setup guides and documentation
 ├── config/               # Tool configurations
-└── .kiro/specs/          # Project specifications and planning
+└── specs/                # Project specifications and planning
 ```
 
 ## Getting Started
@@ -39,7 +39,7 @@ Detailed setup and execution instructions will be provided as the project is imp
 
 ## Implementation Status
 
-This project is currently in the planning phase. See `.kiro/specs/qa-testing-showcase/` for:
+This project is currently in the planning phase. See `specs/qa-testing-showcase/` for:
 - Requirements documentation
 - Technical design
 - Implementation task list

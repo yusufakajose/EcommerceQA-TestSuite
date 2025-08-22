@@ -66,13 +66,13 @@
   - Create authentication workflows for API testing
   - _Requirements: 2.4, 4.4_
 
-- [-] 4.2 Implement API test automation with Newman
+- [x] 4.2 Implement API test automation with Newman
   - Set up Newman CLI integration for automated API test execution
   - Create npm scripts for running API tests with different environments
   - Implement data-driven API testing using CSV datasets
   - _Requirements: 2.1, 2.4, 2.5_
 
-- [ ] 4.3 Develop comprehensive API test scenarios
+- [x] 4.3 Develop comprehensive API test scenarios
   - Write API tests for user registration, authentication, and profile management endpoints
   - Create product catalog API tests including search, filtering, and pagination
   - Implement shopping cart and order processing API test automation

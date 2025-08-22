@@ -1,0 +1,11 @@
+userId,productId,quantity,category,priceRange,searchTerm
+1,1,1,electronics,100-500,laptop
+2,2,2,clothing,50-200,shirt
+3,3,1,books,10-50,programming
+4,4,3,electronics,200-1000,smartphone
+5,5,1,home,100-300,furniture
+6,6,2,sports,50-150,running
+7,7,1,electronics,500-2000,camera
+8,8,4,books,20-100,science
+9,9,1,clothing,100-400,jacket
+10,10,2,home,200-800,kitchen

@@ -642,4 +642,284 @@ Structured JSON output for:
 ✅ **CI/CD Integration**: Ready-to-use GitHub Actions integration
 ✅ **Performance Tracking**: Built-in performance metrics and regression detection
 
-The API test automation with Newman is now fully implemented with advanced features that go beyond basic collection execution, providing a robust foundation for comprehensive API testing across all environments.
+The API test automation with Newman is now fully implemented with advanced features that go beyond basic collection execution, providing a robust foundation for comprehensive API testing across all environments.##
+ Task 4.3 Implementation: Comprehensive API Test Scenarios
+
+### Enhanced Test Collections
+
+#### 1. Enhanced User Management API Tests
+**File**: `config/postman/collections/enhanced-user-management.postman_collection.json`
+
+**Comprehensive Test Scenarios**:
+- **Authentication Tests**:
+  - User registration with valid data (positive)
+  - User registration with invalid email (negative)
+  - User registration with weak password (negative)
+  - User registration with password mismatch (negative)
+  - User login with valid credentials (positive)
+  - User login with invalid credentials (negative)
+  - User login with missing fields (negative)
+
+- **Profile Management Tests**:
+  - Get user profile (authenticated vs unauthenticated)
+  - Update user profile with valid/invalid data
+  - Profile data validation and security checks
+
+- **Password Management Tests**:
+  - Change password with valid/invalid current password
+  - Forgot password request handling
+  - Password security validation
+
+- **Security Tests**:
+  - SQL injection prevention in registration
+  - XSS payload rejection in profile updates
+  - Rate limiting enforcement
+  - Authentication bypass prevention
+
+#### 2. Enhanced Product Catalog API Tests
+**File**: `config/postman/collections/enhanced-product-catalog.postman_collection.json`
+
+**Comprehensive Test Scenarios**:
+- **Product Listing Tests**:
+  - Get all products with default pagination
+  - Custom pagination parameter validation
+  - Invalid pagination parameter handling
+  - Single product retrieval (valid/invalid IDs)
+
+- **Product Search Tests**:
+  - Search by product name with results
+  - Empty query validation
+  - No results handling
+  - Search result relevance validation
+
+- **Product Filtering Tests**:
+  - Filter by category, price range
+  - Sort by price (ascending/descending)
+  - Invalid filter parameter handling
+  - Multiple filter combinations
+
+- **Product Management Tests** (Admin only):
+  - Create product with valid data
+  - Unauthorized product creation attempts
+  - Update product information
+  - Product data validation
+
+- **Security Tests**:
+  - SQL injection prevention in search
+  - XSS payload rejection in product creation
+  - Authorization checks for admin operations
+
+#### 3. Enhanced Order Processing API Tests
+**File**: `config/postman/collections/enhanced-order-processing.postman_collection.json`
+
+**Comprehensive Test Scenarios**:
+- **Shopping Cart Tests**:
+  - Create cart for authenticated user
+  - Add items to cart (valid/invalid products)
+  - Update item quantities
+  - Remove items from cart
+  - Cart calculation validation
+
+- **Order Creation Tests**:
+  - Create order from valid cart
+  - Empty cart order prevention
+  - Invalid payment method handling
+  - Address validation
+
+- **Order Management Tests**:
+  - Get order details (valid/invalid IDs)
+  - Get user order history with pagination
+  - Update order status (admin operations)
+  - Cancel order (customer operations)
+
+- **Security Tests**:
+  - Unauthorized access to other users' carts/orders
+  - SQL injection prevention in order search
+  - Authorization checks for order operations
+
+### Advanced Testing Features
+
+#### 1. Comprehensive Test Runner
+**File**: `scripts/api-tests/comprehensive-test-runner.js`
+
+**Features**:
+- **Multi-phase Testing**: Basic → Enhanced → Security → Performance
+- **Security Analysis**: Vulnerability detection and scoring
+- **Performance Analysis**: Response time and throughput metrics
+- **Test Coverage**: Endpoint and method coverage reporting
+- **Consolidated Reporting**: Cross-suite result aggregation
+
+**Usage Examples**:
+```bash
+# Run complete comprehensive test suite
+npm run test:api:comprehensive
+
+# Run security-focused tests only
+npm run test:api:security
+
+# Run performance tests
+npm run test:api:performance
+
+# Run negative test scenarios
+npm run test:api:negative
+
+# Generate test coverage report
+npm run test:api:coverage
+```
+
+#### 2. Negative Testing Data
+**File**: `config/postman/data/negative-test-data.csv`
+
+**Test Cases**:
+- Invalid email formats
+- Weak password validation
+- Missing required fields
+- SQL injection attempts
+- XSS payload testing
+- Input length validation
+
+#### 3. Performance Testing Data
+**File**: `config/postman/data/performance-test-data.csv`
+
+**Scenarios**:
+- High-volume user operations
+- Product search and filtering
+- Cart and order processing
+- Concurrent user simulation
+
+### Test Execution Strategies
+
+#### 1. Positive Testing
+- **Valid data scenarios**: Successful API operations
+- **Happy path validation**: Complete user journeys
+- **Data integrity checks**: Response structure validation
+- **Business logic verification**: Calculation accuracy
+
+#### 2. Negative Testing
+- **Invalid input handling**: Malformed requests
+- **Boundary value testing**: Edge cases and limits
+- **Error response validation**: Proper error messages
+- **Data validation**: Input sanitization checks
+
+#### 3. Security Testing
+- **Injection attacks**: SQL injection, XSS prevention
+- **Authentication bypass**: Unauthorized access attempts
+- **Authorization checks**: Role-based access control
+- **Rate limiting**: Abuse prevention mechanisms
+- **Data exposure**: Sensitive information protection
+
+#### 4. Performance Testing
+- **Response time validation**: Acceptable performance thresholds
+- **Load testing**: Multiple concurrent requests
+- **Throughput measurement**: Requests per second
+- **Resource utilization**: Server performance impact
+
+### Enhanced NPM Scripts
+
+```bash
+# Comprehensive testing
+npm run test:api:comprehensive              # Full test suite (development)
+npm run test:api:comprehensive:staging      # Full test suite (staging)
+npm run test:api:comprehensive:prod         # Full test suite (production)
+
+# Specialized testing
+npm run test:api:security                   # Security vulnerability tests
+npm run test:api:negative                   # Negative test scenarios
+npm run test:api:performance                # Performance validation
+npm run test:api:coverage                   # Test coverage analysis
+
+# Enhanced collections
+npm run test:api:all                        # All enhanced collections
+npm run test:api:data-driven                # CSV data-driven tests
+npm run test:api:multiple                   # Multiple collection execution
+```
+
+### Test Result Analysis
+
+#### 1. Security Analysis
+- **Vulnerability Detection**: Automatic identification of security issues
+- **Security Scoring**: 0-100 security score based on test results
+- **Risk Assessment**: Severity classification (Critical/High/Medium/Low)
+- **Recommendations**: Actionable security improvements
+
+#### 2. Performance Analysis
+- **Response Time Metrics**: Average, min, max response times
+- **Throughput Calculation**: Requests per second measurement
+- **Performance Scoring**: 0-100 performance score
+- **Optimization Recommendations**: Performance improvement suggestions
+
+#### 3. Coverage Analysis
+- **Endpoint Coverage**: Number of API endpoints tested
+- **HTTP Method Coverage**: GET, POST, PUT, DELETE operations
+- **Status Code Coverage**: Success and error response codes
+- **Test Type Distribution**: Positive, negative, security, performance
+
+### Integration with CI/CD
+
+#### Enhanced GitHub Actions Integration
+```yaml
+- name: Validate API Test Setup
+  run: npm run test:api:validate
+
+- name: Run Comprehensive API Tests
+  run: |
+    npm run test:api:comprehensive:staging
+    npm run test:api:security
+    npm run test:api:performance
+  env:
+    API_BASE_URL: ${{ secrets.API_BASE_URL }}
+    API_KEY: ${{ secrets.API_KEY }}
+
+- name: Generate Test Coverage Report
+  run: npm run test:api:coverage
+
+- name: Upload Comprehensive Test Reports
+  uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: comprehensive-api-test-reports
+    path: |
+      reports/api-tests/
+      test-results/api/
+```
+
+### Best Practices for Comprehensive Testing
+
+#### 1. Test Data Management
+- **Isolated Test Data**: Separate data for each test scenario
+- **Dynamic Data Generation**: Timestamp-based unique identifiers
+- **Data Cleanup**: Proper cleanup after test execution
+- **Realistic Test Data**: Production-like data scenarios
+
+#### 2. Test Organization
+- **Logical Grouping**: Tests organized by functionality
+- **Clear Naming**: Descriptive test and request names
+- **Comprehensive Coverage**: Positive, negative, edge cases
+- **Maintainable Structure**: Easy to update and extend
+
+#### 3. Error Handling
+- **Graceful Failures**: Continue testing on individual failures
+- **Detailed Logging**: Comprehensive error information
+- **Retry Mechanisms**: Automatic retry for transient failures
+- **Timeout Management**: Appropriate timeout values
+
+#### 4. Security Considerations
+- **No Sensitive Data**: Avoid real credentials in tests
+- **Environment Isolation**: Separate test environments
+- **Access Control**: Proper authentication for test execution
+- **Data Privacy**: Anonymized test data
+
+### Task 4.3 Completion Summary
+
+✅ **User Registration & Authentication Tests**: Comprehensive positive and negative scenarios
+✅ **Profile Management Tests**: Complete CRUD operations with validation
+✅ **Product Catalog Tests**: Search, filtering, pagination with edge cases
+✅ **Shopping Cart Tests**: Full cart lifecycle with error handling
+✅ **Order Processing Tests**: End-to-end order management scenarios
+✅ **Security Testing**: SQL injection, XSS, authorization bypass prevention
+✅ **Negative Testing**: Invalid input, boundary conditions, error scenarios
+✅ **Performance Testing**: Response time and throughput validation
+✅ **Comprehensive Test Runner**: Multi-phase automated test execution
+✅ **Advanced Reporting**: Security analysis, performance metrics, coverage reports
+
+The comprehensive API test scenarios now provide thorough validation of all e-commerce API functionality with extensive positive, negative, and security test coverage, ensuring robust API quality and reliability.

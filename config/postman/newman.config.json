@@ -9,7 +9,10 @@
     "product-catalog": "config/postman/collections/product-catalog.postman_collection.json",
     "order-processing": "config/postman/collections/order-processing.postman_collection.json",
     "complete-suite": "config/postman/collections/ecommerce-api-complete.postman_collection.json",
-    "auth-workflow": "config/postman/workflows/authentication-workflow.postman_collection.json"
+    "auth-workflow": "config/postman/workflows/authentication-workflow.postman_collection.json",
+    "enhanced-user-management": "config/postman/collections/enhanced-user-management.postman_collection.json",
+    "enhanced-product-catalog": "config/postman/collections/enhanced-product-catalog.postman_collection.json",
+    "enhanced-order-processing": "config/postman/collections/enhanced-order-processing.postman_collection.json"
   },
   "data": {
     "users": "config/postman/data/users.csv",

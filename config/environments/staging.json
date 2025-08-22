@@ -1,0 +1,28 @@
+{
+  "name": "staging",
+  "baseURL": "https://staging.ecommerce-app.com",
+  "apiBaseURL": "https://staging-api.ecommerce-app.com/api",
+  "timeout": {
+    "action": 45000,
+    "navigation": 45000,
+    "test": 90000
+  },
+  "retries": 2,
+  "workers": 2,
+  "browsers": ["chromium", "firefox", "webkit"],
+  "headless": true,
+  "slowMo": 0,
+  "video": "retain-on-failure",
+  "screenshot": "only-on-failure",
+  "trace": "retain-on-failure",
+  "debug": {
+    "requests": false,
+    "responses": true,
+    "console": false
+  },
+  "testData": {
+    "users": "users-staging.json",
+    "products": "products-staging.json",
+    "orders": "orders-staging.json"
+  }
+}

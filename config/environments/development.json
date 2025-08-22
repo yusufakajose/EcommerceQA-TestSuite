@@ -1,0 +1,28 @@
+{
+  "name": "development",
+  "baseURL": "http://localhost:3000",
+  "apiBaseURL": "http://localhost:3001/api",
+  "timeout": {
+    "action": 30000,
+    "navigation": 30000,
+    "test": 60000
+  },
+  "retries": 0,
+  "workers": 4,
+  "browsers": ["chromium", "firefox", "webkit", "brave"],
+  "headless": false,
+  "slowMo": 100,
+  "video": "retain-on-failure",
+  "screenshot": "only-on-failure",
+  "trace": "on-first-retry",
+  "debug": {
+    "requests": false,
+    "responses": false,
+    "console": true
+  },
+  "testData": {
+    "users": "users.json",
+    "products": "products.json",
+    "orders": "orders.json"
+  }
+}

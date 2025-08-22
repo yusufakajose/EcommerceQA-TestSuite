@@ -1,0 +1,33 @@
+{
+  "name": "production",
+  "baseURL": "https://ecommerce-app.com",
+  "apiBaseURL": "https://api.ecommerce-app.com/api",
+  "timeout": {
+    "action": 60000,
+    "navigation": 60000,
+    "test": 120000
+  },
+  "retries": 3,
+  "workers": 1,
+  "browsers": ["chromium"],
+  "headless": true,
+  "slowMo": 0,
+  "video": "retain-on-failure",
+  "screenshot": "only-on-failure",
+  "trace": "retain-on-failure",
+  "debug": {
+    "requests": false,
+    "responses": false,
+    "console": false
+  },
+  "testData": {
+    "users": "users-production.json",
+    "products": "products-production.json",
+    "orders": "orders-production.json"
+  },
+  "restrictions": {
+    "readOnly": true,
+    "noDataModification": true,
+    "limitedTestSuite": true
+  }
+}

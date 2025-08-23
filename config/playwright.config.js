@@ -70,13 +70,25 @@ module.exports = defineConfig({
     navigationTimeout: envConfig.timeout.navigation,
     
     /* Environment-specific media settings */
-    trace: envConfig.trace === 'on-first-retry' ? 'on-first-retry' : 
-           envConfig.trace === 'retain-on-failure' ? 'retain-on-failure' : 
-           envConfig.trace === 'on' ? 'on' : 'off',
-    screenshot: envConfig.screenshot === 'only-on-failure' ? 'only-on-failure' : 
-                envConfig.screenshot === 'on' ? 'on' : 'off',
-    video: envConfig.video === 'retain-on-failure' ? 'retain-on-failure' : 
-           envConfig.video === 'on' ? 'on' : 'off',
+    trace: (() => {
+      const trace = envConfig.trace;
+      if (trace === 'on-first-retry') return 'on-first-retry';
+      if (trace === 'retain-on-failure') return 'retain-on-failure';
+      if (trace === 'on') return 'on';
+      return 'off';
+    })(),
+    screenshot: (() => {
+      const screenshot = envConfig.screenshot;
+      if (screenshot === 'only-on-failure') return 'only-on-failure';
+      if (screenshot === 'on') return 'on';
+      return 'off';
+    })(),
+    video: (() => {
+      const video = envConfig.video;
+      if (video === 'retain-on-failure') return 'retain-on-failure';
+      if (video === 'on') return 'on';
+      return 'off';
+    })(),
     
     /* Browser settings */
     headless: envConfig.headless,

@@ -1,0 +1,187 @@
+{
+  "timestamp": "2025-08-23T22:43:55.106Z",
+  "summary": {
+    "total": 33,
+    "passed": 31,
+    "warnings": 2,
+    "errors": 0
+  },
+  "checks": [
+    {
+      "name": "Node.js Version",
+      "status": "passed",
+      "details": "v20.19.4 (>= 18)"
+    },
+    {
+      "name": "npm Version",
+      "status": "passed",
+      "details": "10.8.2"
+    },
+    {
+      "name": "CI Environment",
+      "status": "warning",
+      "details": "Not detected (running locally?)"
+    },
+    {
+      "name": "Directory: automated-tests",
+      "status": "passed",
+      "details": "exists"
+    },
+    {
+      "name": "Directory: scripts",
+      "status": "passed",
+      "details": "exists"
+    },
+    {
+      "name": "Directory: config",
+      "status": "passed",
+      "details": "exists"
+    },
+    {
+      "name": "Directory: test-data",
+      "status": "passed",
+      "details": "exists"
+    },
+    {
+      "name": "File: package.json",
+      "status": "passed",
+      "details": "exists"
+    },
+    {
+      "name": "File: package-lock.json",
+      "status": "passed",
+      "details": "exists"
+    },
+    {
+      "name": "ESLint Config",
+      "status": "passed",
+      "details": "configured"
+    },
+    {
+      "name": "TypeScript Config",
+      "status": "passed",
+      "details": "configured"
+    },
+    {
+      "name": "Playwright Config",
+      "status": "passed",
+      "details": "configured"
+    },
+    {
+      "name": "Git Ignore",
+      "status": "passed",
+      "details": "configured"
+    },
+    {
+      "name": "Dependency: @playwright/test",
+      "status": "passed",
+      "details": "^1.40.0"
+    },
+    {
+      "name": "Dependency: newman",
+      "status": "passed",
+      "details": "^6.0.0"
+    },
+    {
+      "name": "Dependency: typescript",
+      "status": "passed",
+      "details": "^5.0.0"
+    },
+    {
+      "name": "Dependency: eslint",
+      "status": "passed",
+      "details": "^8.0.0"
+    },
+    {
+      "name": "Dependencies Installed",
+      "status": "passed",
+      "details": "node_modules exists"
+    },
+    {
+      "name": "Playwright Installation",
+      "status": "passed",
+      "details": "installed"
+    },
+    {
+      "name": "Playwright CLI",
+      "status": "passed",
+      "details": "available"
+    },
+    {
+      "name": "Newman Installation",
+      "status": "passed",
+      "details": "installed"
+    },
+    {
+      "name": "Newman CLI",
+      "status": "passed",
+      "details": "available"
+    },
+    {
+      "name": "JMeter",
+      "status": "warning",
+      "details": "not available (will be downloaded if needed)"
+    },
+    {
+      "name": "Script: test:ui",
+      "status": "passed",
+      "details": "defined"
+    },
+    {
+      "name": "Script: test:api",
+      "status": "passed",
+      "details": "defined"
+    },
+    {
+      "name": "Script: test:ci:smoke",
+      "status": "passed",
+      "details": "defined"
+    },
+    {
+      "name": "Script: lint",
+      "status": "passed",
+      "details": "defined"
+    },
+    {
+      "name": "Script: build",
+      "status": "passed",
+      "details": "defined"
+    },
+    {
+      "name": "Test Directory: automated-tests/ui-tests",
+      "status": "passed",
+      "details": "13 test files"
+    },
+    {
+      "name": "Test Directory: automated-tests/api-tests",
+      "status": "passed",
+      "details": "0 test files"
+    },
+    {
+      "name": "Test Directory: automated-tests/performance-tests",
+      "status": "passed",
+      "details": "0 test files"
+    },
+    {
+      "name": "Test Directory: automated-tests/accessibility-tests",
+      "status": "passed",
+      "details": "2 test files"
+    },
+    {
+      "name": "Test Directory: automated-tests/security-tests",
+      "status": "passed",
+      "details": "2 test files"
+    }
+  ],
+  "warnings": [
+    {
+      "name": "CI Environment",
+      "message": "Not detected (running locally?)"
+    },
+    {
+      "name": "JMeter",
+      "message": "not available (will be downloaded if needed)"
+    }
+  ],
+  "errors": []
+}

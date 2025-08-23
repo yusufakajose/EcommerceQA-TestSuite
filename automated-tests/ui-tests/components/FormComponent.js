@@ -4,6 +4,7 @@
  */
 
 const { BasePage } = require('../pages/BasePage');
+const { expect } = require('@playwright/test');
 
 class FormComponent extends BasePage {
   constructor(page) {

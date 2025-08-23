@@ -351,7 +351,7 @@ Examples:
   const command = args[0];
   
   switch (command) {
-    case 'calculate':
+    case 'calculate': {
       const action = args[1];
       const userType = args[2] || 'normal';
       const device = args[3] || 'desktop';
@@ -370,8 +370,9 @@ Examples:
       console.log(`  Description: ${thinkTime.description}`);
       console.log(`  Modifiers:`, thinkTime.modifiers);
       break;
+    }
       
-    case 'journey':
+    case 'journey': {
       const behavior = args[1] || 'shopper';
       const sessionLength = args[2] || 'medium';
       
@@ -387,8 +388,9 @@ Examples:
         console.log(`    ${index + 1}. ${detail.action}: ${detail.thinkTime.min}-${detail.thinkTime.max}ms`);
       });
       break;
+    }
       
-    case 'recommend':
+    case 'recommend': {
       const throughput = parseFloat(args[1]);
       const duration = parseInt(args[2]);
       const peak = args[3] === 'true';
@@ -408,8 +410,9 @@ Examples:
         console.log(`    - ${rec}`);
       });
       break;
+    }
       
-    case 'report':
+    case 'report': {
       const userBehaviors = ['browser', 'researcher', 'shopper', 'returner'];
       const userTypes = ['fast', 'normal', 'slow'];
       const devices = ['desktop', 'tablet', 'mobile'];
@@ -427,6 +430,7 @@ Examples:
         console.log(`    Avg Think Time: ${scenario.averageThinkTime}ms per action`);
       });
       break;
+    }
       
     case 'list-actions':
       console.log('Available Actions:');

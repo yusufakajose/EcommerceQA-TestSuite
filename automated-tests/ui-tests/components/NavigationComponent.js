@@ -4,6 +4,7 @@
  */
 
 const { BasePage } = require('../pages/BasePage');
+const { expect } = require('@playwright/test');
 
 class NavigationComponent extends BasePage {
   constructor(page) {

@@ -262,7 +262,7 @@ async function main() {
 
   try {
     switch (command) {
-      case 'run':
+      case 'run': {
         const collection = args[1];
         const environment = args[2] || process.env.NEWMAN_ENVIRONMENT || 'development';
         
@@ -321,8 +321,9 @@ async function main() {
         const result = await runner.runCollection(collection, environment, options);
         process.exit(result.success ? 0 : 1);
         break;
+      }
 
-      case 'script':
+      case 'script': {
         const scriptName = args[1];
         
         if (!scriptName) {
@@ -334,6 +335,7 @@ async function main() {
         const scriptResult = await runner.runScript(scriptName);
         process.exit(scriptResult.success ? 0 : 1);
         break;
+      }
 
       case 'list':
         runner.listOptions();

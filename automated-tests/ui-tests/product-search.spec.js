@@ -19,7 +19,7 @@ test.describe('Product Search and Filtering Tests', () => {
     testDataHelper.cleanupTestSuite();
   });
 
-  test.afterEach(async ({ }, testInfo) => {
+  test.afterEach(async ({ page }, testInfo) => {
     testDataHelper.cleanupTestData(testInfo.title);
   });
 

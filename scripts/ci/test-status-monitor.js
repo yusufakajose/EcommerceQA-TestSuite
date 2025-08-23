@@ -168,7 +168,7 @@ if (require.main === module) {
       console.log('🚀 Test monitoring initialized');
       break;
       
-    case 'update':
+    case 'update': {
       if (!suiteName || !status) {
         console.error('Usage: node test-status-monitor.js update <suite> <status> [details]');
         process.exit(1);
@@ -185,18 +185,21 @@ if (require.main === module) {
       
       monitor.updateSuiteStatus(suiteName, status, details);
       break;
+    }
       
-    case 'error':
+    case 'error': {
       const errorMsg = process.argv[3] || 'Unknown error';
       monitor.addError(new Error(errorMsg), suiteName);
       break;
+    }
       
-    case 'warning':
+    case 'warning': {
       const warningMsg = process.argv[3] || 'Unknown warning';
       monitor.addWarning(warningMsg, suiteName);
       break;
+    }
       
-    case 'finish':
+    case 'finish': {
       const finalStatus = process.argv[3] || 'completed';
       monitor.setOverallStatus(finalStatus);
       const summary = monitor.generateSummary();
@@ -206,6 +209,7 @@ if (require.main === module) {
         process.exit(1);
       }
       break;
+    }
       
     case 'summary':
       monitor.loadStatus();

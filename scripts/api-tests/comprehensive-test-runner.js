@@ -507,7 +507,7 @@ Examples:
           process.exit(result.success ? 0 : 1);
           break;
 
-        case 'coverage':
+        case 'coverage': {
           const comprehensiveResult = await runner.runComprehensiveTests(environment, options);
           const coverage = runner.generateCoverageReport(comprehensiveResult);
           console.log('\\n📊 Test Coverage Report:');
@@ -516,6 +516,7 @@ Examples:
           console.log(`   Status Codes: ${coverage.statusCodesCovered}`);
           process.exit(0);
           break;
+        }
 
         default:
           console.error(`Unknown command: ${command}`);

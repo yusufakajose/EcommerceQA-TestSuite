@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-08-23T21:55:20.579Z",
+  "ciMetadata": {
+    "ci": true,
+    "provider": "Unknown",
+    "branch": "unknown",
+    "commit": "unknown",
+    "pullRequest": false,
+    "buildNumber": "unknown",
+    "buildUrl": "unknown"
+  },
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "passRate": 0
+  },
+  "artifacts": {
+    "reports": [
+      "reports/dashboard/data/dashboard-data.json",
+      "reports/dashboard/index.html",
+      "reports/health-check.json",
+      "reports/metrics/historical-data.json",
+      "reports/metrics/latest-metrics.json",
+      "reports/metrics/metrics-2025-08-23T21-55-20-427Z.json",
+      "reports/test-execution/execution-2025-08-23T21-55-18-733Z.json",
+      "reports/test-execution/latest-execution.json",
+      "test-results/test-config.json"
+    ],
+    "screenshots": [],
+    "videos": [],
+    "logs": []
+  },
+  "notifications": []
+}

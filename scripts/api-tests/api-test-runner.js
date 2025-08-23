@@ -498,21 +498,23 @@ Examples:
   (async () => {
     try {
       switch (command) {
-        case 'single':
+        case 'single': {
           const collection = args[1];
           const environment = args[2] || 'development';
           const result = await runner.runCollection(collection, environment);
           process.exit(result.success ? 0 : 1);
           break;
+        }
 
-        case 'multiple':
+        case 'multiple': {
           const collections = args[1].split(',');
           const env = args[2] || 'development';
           const multiResult = await runner.runMultipleCollections(collections, env);
           process.exit(multiResult.summary.overallSuccess ? 0 : 1);
           break;
+        }
 
-        case 'data-driven':
+        case 'data-driven': {
           const ddCollection = args[1];
           const ddEnvironment = args[2];
           const dataFile = args[3];
@@ -520,14 +522,16 @@ Examples:
           const ddResult = await runner.runDataDrivenTest(ddCollection, ddEnvironment, dataFile, iterations);
           process.exit(ddResult.success ? 0 : 1);
           break;
+        }
 
-        case 'all':
+        case 'all': {
           const allEnv = args[1] || 'development';
           const allCollections = Object.keys(runner.config.collections);
           const allResult = await runner.runMultipleCollections(allCollections, allEnv);
           runner.generateExecutionReport(allResult);
           process.exit(allResult.summary.overallSuccess ? 0 : 1);
           break;
+        }
 
         default:
           console.error(`Unknown command: ${command}`);

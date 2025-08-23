@@ -21,7 +21,7 @@ test.describe('Checkout Process Tests', () => {
     testDataHelper.cleanupTestSuite();
   });
 
-  test.afterEach(async ({ }, testInfo) => {
+  test.afterEach(async ({ page }, testInfo) => {
     testDataHelper.cleanupTestData(testInfo.title);
   });
 

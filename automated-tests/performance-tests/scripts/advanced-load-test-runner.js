@@ -646,22 +646,24 @@ Examples:
           process.exit(result.every(r => r.success) ? 0 : 1);
           break;
           
-        case 'user-journey':
+        case 'user-journey': {
           const scenario = args[1] || 'normal_load';
           result = await runner.runUserJourneyTest(scenario, config);
           process.exit(result.success ? 0 : 1);
           break;
+        }
           
         case 'stress-test':
           result = await runner.runStressTest(config);
           process.exit(result.success ? 0 : 1);
           break;
           
-        case 'concurrent-users':
+        case 'concurrent-users': {
           const userCounts = args[1] ? args[1].split(',').map(n => parseInt(n.trim())) : [50, 100, 200];
           result = await runner.runConcurrentUserTest(userCounts, config);
           process.exit(result.every(r => r.success) ? 0 : 1);
           break;
+        }
           
         case 'list-scenarios':
           runner.listScenarios();

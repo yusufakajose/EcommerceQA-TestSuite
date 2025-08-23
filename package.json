@@ -86,7 +86,14 @@
     "clean:reports": "rm -rf reports/* test-results/*",
     "clean:screenshots": "rm -rf automated-tests/ui-tests/screenshots/*",
     "setup:test-env": "node scripts/setup-test-environment.js",
-    "ci:aggregate": "node scripts/ci/aggregate-results.js"
+    "ci:aggregate": "node scripts/ci/aggregate-results.js",
+    "test:master": "node scripts/test-execution/master-test-runner.js",
+    "test:ci": "node scripts/test-execution/ci-test-runner.js",
+    "test:ci:smoke": "node scripts/test-execution/ci-test-runner.js smoke",
+    "test:ci:regression": "node scripts/test-execution/ci-test-runner.js regression",
+    "test:ci:full": "node scripts/test-execution/ci-test-runner.js full",
+    "test:aggregate": "node scripts/test-execution/result-aggregator.js",
+    "test:all:comprehensive": "node scripts/test-execution/master-test-runner.js --environment all --suites ui,api,performance,accessibility,security"
   },
   "keywords": [
     "qa",

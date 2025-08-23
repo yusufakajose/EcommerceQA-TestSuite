@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 async function globalSetup() {
-  console.log('🚀 Starting global setup...');
+  console.log('Starting global setup...');
   
   // Ensure test directories exist
   const directories = [
@@ -21,7 +21,7 @@ async function globalSetup() {
   directories.forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
-      console.log(`📁 Created directory: ${dir}`);
+      console.log(`Created directory: ${dir}`);
     }
   });
   
@@ -35,7 +35,7 @@ async function globalSetup() {
     if (fs.existsSync(dir)) {
       fs.rmSync(dir, { recursive: true, force: true });
       fs.mkdirSync(dir, { recursive: true });
-      console.log(`🧹 Cleaned up directory: ${dir}`);
+      console.log(`Cleaned up directory: ${dir}`);
     }
   });
   
@@ -53,8 +53,8 @@ async function globalSetup() {
     JSON.stringify(testConfig, null, 2)
   );
   
-  console.log('✅ Global setup completed');
-  console.log(`📊 Test configuration saved to test-results/test-config.json`);
+  console.log('Global setup completed');
+  console.log(`Test configuration saved to test-results/test-config.json`);
   
   return testConfig;
 }

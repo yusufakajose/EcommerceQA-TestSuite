@@ -50,8 +50,8 @@ This traceability matrix ensures that all requirements are covered by test cases
 
 | Requirement ID | Requirement Description | Implementation Plan | Status |
 |----------------|------------------------|-------------------|--------|
-| REQ-2.1 | System SHALL include at least 20 automated test scripts | Playwright UI tests, Newman API tests | 🔄 Planned |
-| REQ-2.2 | Tests SHALL cover UI automation, API testing, and basic performance testing | Playwright + Newman + JMeter | 🔄 Planned |
+| REQ-2.1 | System SHALL include at least 20 automated test scripts | Playwright UI tests, Newman API tests | Planned |
+| REQ-2.2 | Tests SHALL cover UI automation, API testing, and basic performance testing | Playwright + Newman + JMeter | Planned |
 | REQ-2.3 | Project SHALL use Playwright for UI automation, Postman/Newman for API testing, and JMeter for performance testing | Tool configuration completed | ✅ |
 | REQ-2.4 | Project SHALL use JavaScript/TypeScript with Playwright Test framework | TypeScript configuration completed | ✅ |
 | REQ-2.5 | Tests SHALL use JSON fixtures and CSV files for data-driven testing scenarios | Test data structure created | ✅ |

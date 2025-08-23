@@ -101,8 +101,8 @@ test.describe('E-commerce Application - Framework Demo', () => {
     await testSetup.navigateToApp('/');
     
     // Log test data for demonstration
-    console.log('📊 User test data loaded:', Object.keys(userData));
-    console.log('📊 Product test data loaded:', Object.keys(productData));
+    console.log('User test data loaded:', Object.keys(userData));
+    console.log('Product test data loaded:', Object.keys(productData));
     
     // Take screenshot showing data-driven testing setup
     await testSetup.takeScreenshot('test-data-demo');
@@ -116,7 +116,7 @@ test.describe('E-commerce Application - Framework Demo', () => {
     // This test will be skipped since we don't have a real login system
     // but demonstrates how the authenticated user fixture would work
     
-    console.log(`👤 Authenticated as: ${user.email}`);
+    console.log(`Authenticated as: ${user.email}`);
     await testSetup.takeScreenshot('authenticated-user-demo');
     
     console.log('✅ Authenticated user test completed');
@@ -128,7 +128,7 @@ test.describe('E-commerce Application - Framework Demo', () => {
     // This test will be skipped since we don't have a real shopping system
     // but demonstrates how the cart fixture would work
     
-    console.log(`🛒 Cart contains ${cartItems.length} items`);
+    console.log(`Cart contains ${cartItems.length} items`);
     await testSetup.takeScreenshot('cart-with-items-demo');
     
     console.log('✅ Shopping cart test completed');

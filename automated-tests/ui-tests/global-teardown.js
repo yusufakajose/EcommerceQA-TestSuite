@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 async function globalTeardown() {
-  console.log('🏁 Starting global teardown...');
+  console.log('Starting global teardown...');
   
   try {
     // Generate test execution summary
@@ -62,9 +62,9 @@ async function globalTeardown() {
         JSON.stringify(summary, null, 2)
       );
       
-      console.log('📊 Test Execution Summary:');
+      console.log('Test Execution Summary:');
       console.log(`   Total Tests: ${summary.totalTests}`);
-      console.log(`   ✅ Passed: ${summary.passed}`);
+      console.log(`   Passed: ${summary.passed}`);
       console.log(`   ❌ Failed: ${summary.failed}`);
       console.log(`   ⏭️  Skipped: ${summary.skipped}`);
       console.log(`   ⏱️  Duration: ${Math.round(summary.duration / 1000)}s`);
@@ -83,7 +83,7 @@ async function globalTeardown() {
       // Move current results to archive
       if (fs.existsSync('reports/test-execution')) {
         fs.renameSync('reports/test-execution', archiveDir);
-        console.log(`📦 Test results archived to: ${archiveDir}`);
+        console.log(`Test results archived to: ${archiveDir}`);
       }
     }
     

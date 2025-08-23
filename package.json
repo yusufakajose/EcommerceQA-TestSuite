@@ -93,7 +93,17 @@
     "test:ci:regression": "node scripts/test-execution/ci-test-runner.js regression",
     "test:ci:full": "node scripts/test-execution/ci-test-runner.js full",
     "test:aggregate": "node scripts/test-execution/result-aggregator.js",
-    "test:all:comprehensive": "node scripts/test-execution/master-test-runner.js --environment all --suites ui,api,performance,accessibility,security"
+    "test:all:comprehensive": "node scripts/test-execution/master-test-runner.js --environment all --suites ui,api,performance,accessibility,security",
+    "lint": "eslint . --ext .js,.ts --fix",
+    "lint:check": "eslint . --ext .js,.ts",
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "test:ui:comprehensive": "playwright test --config=config/playwright.config.js --project=chromium,firefox,webkit",
+    "test:performance:nightly": "node automated-tests/performance-tests/scripts/advanced-load-test-runner.js nightly",
+    "test:security:comprehensive": "playwright test automated-tests/security-tests/ --project=chromium,firefox,webkit",
+    "report:nightly": "node scripts/reporting/nightly-reporter.js",
+    "ci:health-check": "node scripts/ci/health-check.js",
+    "ci:monitor": "node scripts/ci/test-status-monitor.js"
   },
   "keywords": [
     "qa",

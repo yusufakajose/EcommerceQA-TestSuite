@@ -34,17 +34,27 @@ jobs:
 
       - name: Lint code
         run: |
-          echo "🔍 Running code linting..."
-          npm run lint || echo "Linting completed with warnings"
+          echo "Running code linting..."
+          if npm run lint:check; then
+            echo "Linting passed"
+          else
+            echo "Linting issues found, attempting to fix..."
+            npm run lint || echo "Linting failed"
+          fi
 
       - name: Type checking
         run: |
-          echo "🔍 Running type checking..."
-          npm run type-check || echo "Type checking completed"
+          echo "Running type checking..."
+          if npm run type-check; then
+            echo "Type checking passed"
+          else
+            echo "Type checking failed"
+            exit 1
+          fi
 
       - name: Security audit
         run: |
-          echo "🔒 Running security audit..."
+          echo "Running security audit..."
           npm audit --audit-level=high || echo "Security audit completed with warnings"
 
   # Smoke tests for quick feedback
@@ -94,14 +104,14 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             
-            let comment = '## 🧪 PR Smoke Test Results\n\n';
+            let comment = '## PR Smoke Test Results\n\n';
             
             try {
               // Try to read test results if available
-              comment += '✅ Smoke tests completed successfully!\n\n';
-              comment += '📊 [View detailed test results](../actions/runs/${{ github.run_id }})\n';
+              comment += 'Smoke tests completed successfully!\n\n';
+              comment += '[View detailed test results](../actions/runs/${{ github.run_id }})\n';
             } catch (error) {
-              comment += '❌ Smoke tests encountered issues. Please check the workflow logs.\n\n';
+              comment += 'Smoke tests encountered issues. Please check the workflow logs.\n\n';
             }
             
             comment += '\n---\n*Automated comment from PR validation workflow*';

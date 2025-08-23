@@ -29,9 +29,9 @@ class BasePage {
     
     try {
       await this.page.goto(fullURL, defaultOptions);
-      console.log(`✅ Navigated to: ${fullURL}`);
+      console.log(`Navigated to: ${fullURL}`);
     } catch (error) {
-      console.log(`⚠️  Navigation failed to ${fullURL}: ${error.message}`);
+      console.log(`Navigation failed to ${fullURL}: ${error.message}`);
       // For demo purposes, continue without failing
     }
   }
@@ -59,7 +59,7 @@ class BasePage {
     try {
       await this.page.waitForSelector(selector, defaultOptions);
     } catch (error) {
-      console.log(`⚠️  Element not found: ${selector} (this is expected in demo)`);
+      console.log(`Element not found: ${selector} (this is expected in demo)`);
       // For demo purposes, don't throw error
     }
   }
@@ -380,7 +380,7 @@ class BasePage {
   async validateElementVisible(selector) {
     const isVisible = await this.isElementVisible(selector);
     if (!isVisible) {
-      console.log(`⚠️  Element not visible: ${selector} (expected in demo)`);
+      console.log(`Element not visible: ${selector} (expected in demo)`);
     }
     // For demo purposes, don't fail the test
   }

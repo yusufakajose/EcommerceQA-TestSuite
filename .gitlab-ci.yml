@@ -38,13 +38,26 @@ validate:
   <<: *base_job
   stage: validate
   script:
-    - echo "🔍 Validating project structure..."
+    - echo "Validating project structure..."
     - test -f package.json || exit 1
     - test -d automated-tests || exit 1
     - test -d scripts || exit 1
-    - echo "✅ Project structure validated"
-    - npm run lint || echo "Linting completed with warnings"
-    - npm audit --audit-level=high || echo "Security audit completed"
+    - echo "Project structure validated"
+    
+    # Code quality checks
+    - echo "Running code quality checks..."
+    - npm run lint:check || (echo "Linting issues found" && npm run lint)
+    - npm run type-check || echo "Type checking failed"
+    - npm run build || echo "Build failed"
+    
+    # Security audit
+    - echo "Running security audit..."
+    - npm audit --audit-level=moderate || echo "Security vulnerabilities found"
+  artifacts:
+    when: always
+    paths:
+      - dist/
+    expire_in: 1 hour
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
@@ -167,7 +180,7 @@ aggregate-results:
     - performance-tests
     - security-tests
   script:
-    - echo "📊 Aggregating test results..."
+    - echo "Aggregating test results..."
     - npm run test:aggregate
     - npm run report:consolidated
   artifacts:

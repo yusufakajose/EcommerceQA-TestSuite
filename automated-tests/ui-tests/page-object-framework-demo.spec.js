@@ -16,7 +16,7 @@ const { NavigationComponent, FormComponent } = require('./components');
 test.describe('Page Object Framework Demo', () => {
   
   test('should demonstrate page object instantiation and basic methods', async ({ testSetup }) => {
-    console.log('🎭 Testing Page Object Framework instantiation...');
+    console.log('Testing Page Object Framework instantiation...');
     
     // Test page object instantiation
     const loginPage = new LoginPage(testSetup.page);
@@ -47,7 +47,7 @@ test.describe('Page Object Framework Demo', () => {
     expect(form.selectors).toBeDefined();
     expect(form.selectors.form).toBeDefined();
     
-    console.log('✅ Page objects and components instantiated successfully');
+    console.log('Page objects and components instantiated successfully');
     
     // Test basic navigation (will fail gracefully)
     await loginPage.navigateTo('/demo-page');
@@ -61,16 +61,16 @@ test.describe('Page Object Framework Demo', () => {
     expect(productData).toBeDefined();
     expect(orderData).toBeDefined();
     
-    console.log('✅ Test data loaded successfully');
-    console.log('📊 User data keys:', Object.keys(userData));
-    console.log('📊 Product data keys:', Object.keys(productData));
-    console.log('📊 Order data keys:', Object.keys(orderData));
+    console.log('Test data loaded successfully');
+    console.log('User data keys:', Object.keys(userData));
+    console.log('Product data keys:', Object.keys(productData));
+    console.log('Order data keys:', Object.keys(orderData));
     
     await testSetup.takeScreenshot('framework-demo-basic');
   });
 
   test('should demonstrate page object methods and selectors', async ({ testSetup }) => {
-    console.log('🔧 Testing Page Object methods and selectors...');
+    console.log('Testing Page Object methods and selectors...');
     
     const loginPage = new LoginPage(testSetup.page);
     
@@ -84,7 +84,7 @@ test.describe('Page Object Framework Demo', () => {
     expect(typeof loginPage.navigateToLoginPage).toBe('function');
     expect(typeof loginPage.validateLoginPageLoaded).toBe('function');
     
-    console.log('✅ Login page selectors and methods verified');
+    console.log('Login page selectors and methods verified');
     
     const catalogPage = new ProductCatalogPage(testSetup.page);
     
@@ -94,7 +94,7 @@ test.describe('Page Object Framework Demo', () => {
     expect(typeof catalogPage.addProductToCart).toBe('function');
     expect(typeof catalogPage.getProductCount).toBe('function');
     
-    console.log('✅ Catalog page methods verified');
+    console.log('Catalog page methods verified');
     
     const cartPage = new ShoppingCartPage(testSetup.page);
     
@@ -104,13 +104,13 @@ test.describe('Page Object Framework Demo', () => {
     expect(typeof cartPage.applyPromoCode).toBe('function');
     expect(typeof cartPage.getCartSummary).toBe('function');
     
-    console.log('✅ Cart page methods verified');
+    console.log('Cart page methods verified');
     
     await testSetup.takeScreenshot('framework-demo-methods');
   });
 
   test('should demonstrate component functionality', async ({ testSetup }) => {
-    console.log('🧩 Testing Component functionality...');
+    console.log('Testing Component functionality...');
     
     const navigation = new NavigationComponent(testSetup.page);
     const form = new FormComponent(testSetup.page);
@@ -126,7 +126,7 @@ test.describe('Page Object Framework Demo', () => {
     expect(navigation.selectors.searchBox).toBe('[data-testid="search-box"]');
     expect(navigation.selectors.cartIcon).toBe('[data-testid="cart-icon"]');
     
-    console.log('✅ Navigation component verified');
+    console.log('Navigation component verified');
     
     // Test form component methods
     expect(typeof form.fillForm).toBe('function');
@@ -138,13 +138,13 @@ test.describe('Page Object Framework Demo', () => {
     expect(form.selectors.submitButton).toBe('[data-testid="submit-button"]');
     expect(form.selectors.errorMessage).toBe('[data-testid="error-message"]');
     
-    console.log('✅ Form component verified');
+    console.log('Form component verified');
     
     await testSetup.takeScreenshot('framework-demo-components');
   });
 
   test('should demonstrate data-driven testing capabilities', async ({ testSetup }) => {
-    console.log('📊 Testing data-driven capabilities...');
+    console.log('Testing data-driven capabilities...');
     
     // Load test data
     const userData = await testSetup.loadTestData('users');
@@ -162,8 +162,8 @@ test.describe('Page Object Framework Demo', () => {
     expect(firstUser.firstName).toBeDefined();
     expect(firstUser.lastName).toBeDefined();
     
-    console.log('✅ User data structure validated');
-    console.log('👤 Sample user:', firstUser.email);
+    console.log('User data structure validated');
+    console.log('Sample user:', firstUser.email);
     
     // Test product data structure
     expect(productData.sampleProducts).toBeDefined();
@@ -175,8 +175,8 @@ test.describe('Page Object Framework Demo', () => {
     expect(firstProduct.price).toBeDefined();
     expect(firstProduct.category).toBeDefined();
     
-    console.log('✅ Product data structure validated');
-    console.log('🛍️ Sample product:', firstProduct.name, '-', firstProduct.price);
+    console.log('Product data structure validated');
+    console.log('Sample product:', firstProduct.name, '-', firstProduct.price);
     
     // Test search scenarios
     expect(productData.searchScenarios).toBeDefined();
@@ -199,7 +199,7 @@ test.describe('Page Object Framework Demo', () => {
   });
 
   test('should demonstrate error handling and graceful degradation', async ({ testSetup }) => {
-    console.log('🛡️ Testing error handling and graceful degradation...');
+    console.log('Testing error handling and graceful degradation...');
     
     const loginPage = new LoginPage(testSetup.page);
     
@@ -232,7 +232,7 @@ test.describe('Page Object Framework Demo', () => {
   });
 
   test('should demonstrate complete framework integration', async ({ testSetup }) => {
-    console.log('🎯 Testing complete framework integration...');
+    console.log('Testing complete framework integration...');
     
     // Initialize all page objects
     const pages = {
@@ -267,7 +267,7 @@ test.describe('Page Object Framework Demo', () => {
     // Test method chaining and integration
     const userData = testData.users.validUsers?.[0];
     if (userData) {
-      console.log('👤 Testing with user:', userData.email);
+      console.log('Testing with user:', userData.email);
       
       // Simulate login flow (methods exist and can be called)
       await pages.login.navigateToLoginPage();
@@ -287,12 +287,12 @@ test.describe('Page Object Framework Demo', () => {
     // Test product data integration
     const productData = testData.products.sampleProducts?.[0];
     if (productData) {
-      console.log('🛍️ Testing with product:', productData.name);
+      console.log('Testing with product:', productData.name);
       
       // Test search scenarios
       const searchScenario = testData.products.searchScenarios?.validSearches?.[0];
       if (searchScenario) {
-        console.log('🔍 Search scenario:', searchScenario.query);
+        console.log('Search scenario:', searchScenario.query);
         expect(searchScenario.query).toBeDefined();
         expect(searchScenario.expectedResults).toBeDefined();
       }
@@ -301,7 +301,7 @@ test.describe('Page Object Framework Demo', () => {
     // Test checkout data integration
     const checkoutData = testData.orders.checkoutScenarios?.validCheckout;
     if (checkoutData) {
-      console.log('💳 Testing checkout data integration');
+      console.log('Testing checkout data integration');
       expect(checkoutData.shippingAddress).toBeDefined();
       expect(checkoutData.paymentInfo).toBeDefined();
       expect(checkoutData.shippingAddress.firstName).toBeDefined();
@@ -313,8 +313,8 @@ test.describe('Page Object Framework Demo', () => {
     await testSetup.takeScreenshot('framework-demo-complete');
     
     // Final validation
-    console.log('🎉 Page Object Model Framework Demo Complete!');
-    console.log('📋 Summary:');
+    console.log('Page Object Model Framework Demo Complete!');
+    console.log('Summary:');
     console.log('   - 5 Page Objects created and tested');
     console.log('   - 2 Reusable Components created and tested');
     console.log('   - 3 Test Data fixtures loaded and validated');

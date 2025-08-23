@@ -22,9 +22,9 @@ let envConfig = {
 
 if (fs.existsSync(envConfigPath)) {
   envConfig = { ...envConfig, ...JSON.parse(fs.readFileSync(envConfigPath, 'utf8')) };
-  console.log(`🔧 Loaded configuration for environment: ${environment}`);
+  console.log(`Loaded configuration for environment: ${environment}`);
 } else {
-  console.warn(`⚠️  Environment config not found: ${envConfigPath}, using defaults`);
+  console.warn(`Environment config not found: ${envConfigPath}, using defaults`);
 }
 
 /**
@@ -180,7 +180,7 @@ module.exports = defineConfig({
 
   /* Environment-specific web server configuration */
   // webServer: environment === 'development' ? {
-  //   command: 'echo "🚀 Note: Start your e-commerce application on ' + envConfig.baseURL + '"',
+  //   command: 'echo "Note: Start your e-commerce application on ' + envConfig.baseURL + '"',
   //   url: envConfig.baseURL,
   //   reuseExistingServer: !process.env.CI,
   //   timeout: 120 * 1000,

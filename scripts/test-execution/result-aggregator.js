@@ -32,7 +32,7 @@ class ResultAggregator {
    * Aggregate all test results
    */
   async aggregateResults() {
-    console.log('🔄 Aggregating test results...');
+    console.log('Aggregating test results...');
     
     const aggregation = {
       timestamp: new Date().toISOString(),
@@ -190,7 +190,7 @@ class ResultAggregator {
     const latestPath = path.join(this.aggregatedDir, 'latest-results.json');
     fs.writeFileSync(latestPath, JSON.stringify(aggregation, null, 2));
     
-    console.log(`📊 Aggregated results saved: ${filepath}`);
+    console.log(`Aggregated results saved: ${filepath}`);
   }
 }
 

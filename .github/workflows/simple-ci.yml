@@ -76,6 +76,6 @@ jobs:
       - name: Test summary
         if: always()
         run: |
-          echo "✅ CI pipeline completed successfully"
-          echo "📊 Test artifacts uploaded"
-          echo "🔗 Check the Actions tab for detailed results"
+          echo "CI pipeline completed successfully"
+          echo "Test artifacts uploaded"
+          echo "Check the Actions tab for detailed results"

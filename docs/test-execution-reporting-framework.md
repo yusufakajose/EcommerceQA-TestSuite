@@ -16,13 +16,13 @@ The Test Execution and Reporting Framework provides a comprehensive solution for
 
 ### Key Features
 
-- ✅ **Parallel Execution** - Run tests across multiple environments and browsers simultaneously
-- ✅ **Comprehensive Reporting** - HTML reports with screenshots, videos, and traces
-- ✅ **Email Notifications** - Automated notifications for failures and summaries
-- ✅ **Trend Analysis** - Historical test performance tracking
-- ✅ **CI/CD Integration** - GitHub Actions workflow with artifact management
-- ✅ **Media Management** - Automatic collection and organization of test artifacts
-- ✅ **Dashboard Views** - Interactive charts and visualizations
+- **Parallel Execution** - Run tests across multiple environments and browsers simultaneously
+- **Comprehensive Reporting** - HTML reports with screenshots, videos, and traces
+- **Email Notifications** - Automated notifications for failures and summaries
+- **Trend Analysis** - Historical test performance tracking
+- **CI/CD Integration** - GitHub Actions workflow with artifact management
+- **Media Management** - Automatic collection and organization of test artifacts
+- **Dashboard Views** - Interactive charts and visualizations
 
 ## Quick Start
 

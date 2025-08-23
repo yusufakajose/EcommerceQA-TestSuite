@@ -50,16 +50,56 @@ stages:
     
     - script: |
         echo "🔍 Validating project structure..."
-        test -f package.json || exit 1
-        test -d automated-tests || exit 1
-        test -d scripts || exit 1
+        
+        # Check required files and directories
+        if [ ! -f package.json ]; then
+          echo "❌ package.json not found"
+          exit 1
+        fi
+        
+        if [ ! -d automated-tests ]; then
+          echo "❌ automated-tests directory not found"
+          exit 1
+        fi
+        
+        if [ ! -d scripts ]; then
+          echo "❌ scripts directory not found"
+          exit 1
+        fi
+        
         echo "✅ Project structure validated"
       displayName: 'Validate project structure'
     
     - script: |
-        npm run lint || echo "Linting completed with warnings"
-        npm audit --audit-level=high || echo "Security audit completed"
-      displayName: 'Code quality checks'
+        echo "🔍 Running comprehensive code quality checks..."
+        
+        # Linting
+        if npm run lint:check; then
+          echo "✅ Linting passed"
+        else
+          echo "⚠️ Linting issues found, attempting to fix..."
+          npm run lint || echo "❌ Auto-fix failed"
+        fi
+        
+        # Type checking
+        if npm run type-check; then
+          echo "✅ Type checking passed"
+        else
+          echo "❌ Type checking failed"
+        fi
+        
+        # Build
+        if npm run build; then
+          echo "✅ Build successful"
+        else
+          echo "❌ Build failed"
+          exit 1
+        fi
+        
+        # Security audit
+        echo "🔒 Running security audit..."
+        npm audit --audit-level=moderate || echo "⚠️ Security vulnerabilities found"
+      displayName: 'Code quality and build checks'
 
 - stage: SmokeTests
   displayName: 'Smoke Tests'

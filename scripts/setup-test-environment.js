@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Setting up test environment...\n');
+console.log('Setting up test environment...\n');
 
 // Required directories
 const requiredDirectories = [
@@ -24,7 +24,7 @@ const requiredDirectories = [
 ];
 
 // Create required directories
-console.log('📁 Creating required directories...');
+console.log('Creating required directories...');
 requiredDirectories.forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -35,7 +35,7 @@ requiredDirectories.forEach(dir => {
 });
 
 // Validate configuration files
-console.log('\n🔧 Validating configuration files...');
+console.log('\nValidating configuration files...');
 const configFiles = [
   'config/playwright.config.js',
   'config/environments/development.json',
@@ -52,7 +52,7 @@ configFiles.forEach(file => {
 });
 
 // Validate test data fixtures
-console.log('\n📊 Validating test data fixtures...');
+console.log('\nValidating test data fixtures...');
 const fixtureFiles = [
   'test-data/fixtures/users.json',
   'test-data/fixtures/products.json',
@@ -73,7 +73,7 @@ fixtureFiles.forEach(file => {
 });
 
 // Check for Playwright installation
-console.log('\n🎭 Checking Playwright installation...');
+console.log('\nChecking Playwright installation...');
 try {
   const { execSync } = require('child_process');
   execSync('npx playwright --version', { stdio: 'pipe' });
@@ -84,16 +84,16 @@ try {
     execSync('npx playwright install --dry-run', { stdio: 'pipe' });
     console.log('   ✅ Playwright browsers are installed');
   } catch (error) {
-    console.log('   ⚠️  Playwright browsers may need installation');
-    console.log('   💡 Run: npm run install:browsers');
+    console.log('   Playwright browsers may need installation');
+    console.log('   Run: npm run install:browsers');
   }
 } catch (error) {
-  console.log('   ❌ Playwright not found');
-  console.log('   💡 Run: npm install');
+  console.log('   Playwright not found');
+  console.log('   Run: npm install');
 }
 
 // Generate environment info
-console.log('\n📋 Environment Information:');
+console.log('\nEnvironment Information:');
 console.log(`   Node.js: ${process.version}`);
 console.log(`   Platform: ${process.platform}`);
 console.log(`   Architecture: ${process.arch}`);
@@ -131,7 +131,7 @@ CI=false
 
 if (!fs.existsSync('.env.example')) {
   fs.writeFileSync('.env.example', envExample);
-  console.log('\n📄 Created .env.example file');
+  console.log('\nCreated .env.example file');
 }
 
 // Create README for test setup
@@ -190,12 +190,12 @@ const testReadme = `# Test Environment Setup
 
 if (!fs.existsSync('automated-tests/README.md')) {
   fs.writeFileSync('automated-tests/README.md', testReadme);
-  console.log('📄 Created automated-tests/README.md');
+  console.log('Created automated-tests/README.md');
 }
 
-console.log('\n✅ Test environment setup completed!');
-console.log('\n🎯 Next steps:');
+console.log('\nTest environment setup completed!');
+console.log('\nNext steps:');
 console.log('   1. Run: npm run install:browsers');
 console.log('   2. Run: npm run test:ui:dev');
 console.log('   3. Run: npm run report:open');
-console.log('\n💡 For more information, see automated-tests/README.md');
+console.log('\nFor more information, see automated-tests/README.md');

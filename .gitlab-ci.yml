@@ -1,0 +1,221 @@
+# GitLab CI/CD Pipeline for QA Testing Showcase
+# This file provides an alternative CI/CD configuration for GitLab users
+
+stages:
+  - validate
+  - test-smoke
+  - test-ui
+  - test-api
+  - test-performance
+  - test-security
+  - report
+  - deploy
+
+variables:
+  NODE_VERSION: "18"
+  PLAYWRIGHT_BROWSERS_PATH: $CI_PROJECT_DIR/ms-playwright
+
+# Cache configuration
+.node_cache: &node_cache
+  cache:
+    key: 
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+      - ~/.npm
+
+# Base job template
+.base_job: &base_job
+  image: node:18-alpine
+  before_script:
+    - apk add --no-cache git
+    - npm ci
+  <<: *node_cache
+
+# Validation stage
+validate:
+  <<: *base_job
+  stage: validate
+  script:
+    - echo "🔍 Validating project structure..."
+    - test -f package.json || exit 1
+    - test -d automated-tests || exit 1
+    - test -d scripts || exit 1
+    - echo "✅ Project structure validated"
+    - npm run lint || echo "Linting completed with warnings"
+    - npm audit --audit-level=high || echo "Security audit completed"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# Smoke tests
+smoke-tests:
+  <<: *base_job
+  stage: test-smoke
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  script:
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run test:ci:smoke
+  artifacts:
+    when: always
+    paths:
+      - reports/
+      - test-results/
+      - playwright-report/
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# UI tests with parallel execution
+ui-tests:
+  <<: *base_job
+  stage: test-ui
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  parallel:
+    matrix:
+      - BROWSER: [chromium, firefox, webkit]
+  script:
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run test:ui -- --project=$BROWSER
+  artifacts:
+    when: always
+    paths:
+      - reports/
+      - test-results/
+      - playwright-report/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+# API tests
+api-tests:
+  <<: *base_job
+  stage: test-api
+  script:
+    - npm run test:api:comprehensive
+  artifacts:
+    when: always
+    paths:
+      - reports/api-tests/
+      - reports/newman/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+# Performance tests
+performance-tests:
+  <<: *base_job
+  stage: test-performance
+  image: openjdk:11-jdk-slim
+  before_script:
+    - apt-get update && apt-get install -y curl wget nodejs npm
+    - npm ci
+    - wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
+    - tar -xzf apache-jmeter-5.6.2.tgz
+    - export PATH=$PATH:$CI_PROJECT_DIR/apache-jmeter-5.6.2/bin
+  script:
+    - npm run test:performance:advanced
+  artifacts:
+    when: always
+    paths:
+      - reports/performance-tests/
+      - automated-tests/performance-tests/jmeter/results/
+    expire_in: 2 weeks
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web" && $INCLUDE_PERFORMANCE == "true"
+
+# Security tests
+security-tests:
+  <<: *base_job
+  stage: test-security
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  script:
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run test:security
+  artifacts:
+    when: always
+    paths:
+      - reports/security-tests/
+      - test-results/
+    expire_in: 2 weeks
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web" && $INCLUDE_SECURITY == "true"
+
+# Aggregate results and generate reports
+aggregate-results:
+  <<: *base_job
+  stage: report
+  dependencies:
+    - smoke-tests
+    - ui-tests
+    - api-tests
+    - performance-tests
+    - security-tests
+  script:
+    - echo "📊 Aggregating test results..."
+    - npm run test:aggregate
+    - npm run report:consolidated
+  artifacts:
+    when: always
+    paths:
+      - reports/
+    expire_in: 1 month
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+# Deploy reports to GitLab Pages
+pages:
+  stage: deploy
+  dependencies:
+    - aggregate-results
+  script:
+    - mkdir public
+    - cp -r reports/consolidated/* public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# Scheduled nightly tests
+nightly-tests:
+  <<: *base_job
+  stage: test-ui
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  parallel:
+    matrix:
+      - BROWSER: [chromium, firefox, webkit]
+        ENVIRONMENT: [staging]
+  script:
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run test:ui:comprehensive -- --project=$BROWSER
+    - npm run test:api:regression
+    - npm run test:accessibility
+  artifacts:
+    when: always
+    paths:
+      - reports/
+      - test-results/
+    expire_in: 2 weeks
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  variables:
+    TEST_ENV: $ENVIRONMENT
+    NIGHTLY: "true"

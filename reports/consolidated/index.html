@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Testing Reports - Consolidated View</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem 0; text-align: center; }
+        .header h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .reports-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .report-card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .report-card:hover { transform: translateY(-4px); }
+        .report-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .report-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #495057; }
+        .report-description { color: #6c757d; margin-bottom: 1.5rem; line-height: 1.6; }
+        .report-link { display: inline-block; background: #007bff; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background 0.3s; }
+        .report-link:hover { background: #0056b3; }
+        .stats { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 2.5rem; font-weight: bold; color: #007bff; margin-bottom: 0.5rem; }
+        .stat-label { color: #6c757d; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .footer { text-align: center; padding: 2rem; color: #6c757d; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>QA Testing Reports</h1>
+        <p>Comprehensive Quality Assurance Dashboard and Reports</p>
+        <p>Generated on 8/24/2025, 2:03:41 AM</p>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #495057;">Quality Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">Quality Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Total Tests</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">Pass Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Recommendations</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reports-grid">
+            <div class="report-card">
+                <div class="report-icon">📊</div>
+                <div class="report-title">Interactive Dashboard</div>
+                <div class="report-description">
+                    Real-time quality metrics with interactive charts and visualizations. 
+                    Monitor test results, performance metrics, and quality trends.
+                </div>
+                <a href="../dashboard/index.html" class="report-link">View Dashboard</a>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon">📋</div>
+                <div class="report-title">Executive Summary</div>
+                <div class="report-description">
+                    High-level overview of quality metrics, key findings, risk assessment, 
+                    and strategic recommendations for stakeholders.
+                </div>
+                <a href="executive-summary.html" class="report-link">View Summary</a>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon">📈</div>
+                <div class="report-title">Detailed Test Reports</div>
+                <div class="report-description">
+                    Comprehensive test execution reports with screenshots, videos, 
+                    and detailed analysis of test results across environments.
+                </div>
+                <a href="../comprehensive/index.html" class="report-link">View Reports</a>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon">📊</div>
+                <div class="report-title">Metrics & Analytics</div>
+                <div class="report-description">
+                    Deep dive into test metrics, code quality analysis, coverage reports, 
+                    and performance analytics with historical trends.
+                </div>
+                <a href="../metrics/latest-metrics.json" class="report-link">View Metrics</a>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon">🔍</div>
+                <div class="report-title">Trend Analysis</div>
+                <div class="report-description">
+                    Historical analysis of quality trends, performance patterns, 
+                    and predictive insights for continuous improvement.
+                </div>
+                <a href="trend-analysis.json" class="report-link">View Trends</a>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon">⚡</div>
+                <div class="report-title">Performance Reports</div>
+                <div class="report-description">
+                    Load testing results, performance benchmarks, and system 
+                    performance analysis across different scenarios.
+                </div>
+                <a href="../performance-tests/index.html" class="report-link">View Performance</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Generated by QA Testing Framework • 2025-08-23T23:03:41.206Z</p>
+        <p>For questions or support, contact the QA Team</p>
+    </div>
+</body>
+</html>

@@ -71,7 +71,18 @@ class ReportGenerator {
     const resultsPath = path.join(this.reportDir, 'test-results.json');
     
     if (!fs.existsSync(resultsPath)) {
-      throw new Error('Test results file not found');
+      console.warn('Test results file not found, using empty results');
+      return {
+        stats: { tests: 0, passes: 0, failures: 0, pending: 0, skipped: 0 },
+        tests: [],
+        suites: [],
+        environments: {},
+        browsers: {},
+        duration: 0,
+        timestamp: new Date().toISOString(),
+        config: {},
+        metadata: {}
+      };
     }
     
     return JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
@@ -435,7 +446,7 @@ class ReportGenerator {
    * @returns {string} - HTML table
    */
   generateEnvironmentTable(results) {
-    if (Object.keys(results.environments).length === 0) {
+    if (!results.environments || Object.keys(results.environments).length === 0) {
       return '<p>No environment data available.</p>';
     }
     
@@ -467,7 +478,7 @@ class ReportGenerator {
    * @returns {string} - HTML table
    */
   generateBrowserTable(results) {
-    if (Object.keys(results.browsers).length === 0) {
+    if (!results.browsers || Object.keys(results.browsers).length === 0) {
       return '<p>No browser data available.</p>';
     }
     
@@ -499,7 +510,7 @@ class ReportGenerator {
    * @returns {string} - HTML table
    */
   generateSuiteTable(results) {
-    if (Object.keys(results.suites).length === 0) {
+    if (!results.suites || Object.keys(results.suites).length === 0) {
       return '<p>No test suite data available.</p>';
     }
     
@@ -1071,7 +1082,7 @@ class ReportGenerator {
                         <div class="label">Pass Rate</div>
                     </div>
                     <div class="metric">
-                        <div class="value">${Object.keys(results.environments).length}</div>
+                        <div class="value">${results.environments ? Object.keys(results.environments).length : 0}</div>
                         <div class="label">Environments</div>
                     </div>
                 </div>
@@ -1107,7 +1118,7 @@ class ReportGenerator {
         new Chart(environmentCtx, {
             type: 'bar',
             data: {
-                labels: ${JSON.stringify(Object.keys(results.environments))},
+                labels: ${JSON.stringify(results.environments ? Object.keys(results.environments) : [])},
                 datasets: [
                     {
                         label: 'Passed',
@@ -1140,7 +1151,7 @@ class ReportGenerator {
         new Chart(browserCtx, {
             type: 'bar',
             data: {
-                labels: ${JSON.stringify(Object.keys(results.browsers))},
+                labels: ${JSON.stringify(results.browsers ? Object.keys(results.browsers) : [])},
                 datasets: [
                     {
                         label: 'Passed',

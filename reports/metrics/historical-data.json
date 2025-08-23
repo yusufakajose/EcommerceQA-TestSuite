@@ -180,5 +180,551 @@
       "ci": true,
       "environment": "development"
     }
+  },
+  {
+    "timestamp": "2025-08-23T23:01:41.370Z",
+    "testExecution": {
+      "ui": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "duration": 0,
+        "passRate": 0,
+        "avgDuration": 0,
+        "browsers": {},
+        "environments": {}
+      },
+      "api": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "duration": 0,
+        "passRate": 0,
+        "collections": {},
+        "environments": {}
+      },
+      "performance": {
+        "scenarios": 0,
+        "totalRequests": 0,
+        "successfulRequests": 0,
+        "avgResponseTime": 0,
+        "p95ResponseTime": 0,
+        "throughput": 0,
+        "errorRate": 0
+      },
+      "accessibility": {
+        "total": 0,
+        "passed": 0,
+        "violations": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        },
+        "wcagCompliance": 0
+      },
+      "security": {
+        "total": 0,
+        "passed": 0,
+        "vulnerabilities": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        },
+        "securityScore": 0
+      }
+    },
+    "codeQuality": {
+      "linting": {
+        "errors": 0,
+        "warnings": 0,
+        "files": 63
+      },
+      "complexity": {
+        "average": 0,
+        "max": 0,
+        "files": 0
+      },
+      "duplication": {
+        "percentage": 0,
+        "lines": 0
+      },
+      "maintainability": {
+        "score": 0,
+        "grade": "A"
+      }
+    },
+    "coverage": {
+      "statements": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "branches": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "functions": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "lines": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "files": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      }
+    },
+    "performance": {
+      "loadTesting": {
+        "scenarios": 0,
+        "totalRequests": 0,
+        "avgResponseTime": 0,
+        "p95ResponseTime": 0,
+        "errorRate": 0,
+        "throughput": 0
+      },
+      "monitoring": {
+        "uptime": 100,
+        "availability": 100,
+        "meanTimeToRecover": 0
+      },
+      "resources": {
+        "cpuUsage": 0,
+        "memoryUsage": 0,
+        "diskUsage": 0
+      }
+    },
+    "defects": {
+      "total": 0,
+      "open": 0,
+      "closed": 0,
+      "severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "type": {
+        "functional": 0,
+        "ui": 0,
+        "performance": 0,
+        "security": 0,
+        "accessibility": 0
+      },
+      "resolution": {
+        "fixed": 0,
+        "wontFix": 0,
+        "duplicate": 0,
+        "invalid": 0
+      },
+      "averageResolutionTime": 0,
+      "defectDensity": 0,
+      "escapeRate": 0
+    },
+    "trends": {
+      "testExecution": {
+        "passRateTrend": "stable",
+        "passRateChange": 0,
+        "executionTimeTrend": "stable",
+        "executionTimeChange": 0
+      },
+      "quality": {
+        "qualityScoreTrend": "stable",
+        "qualityScoreChange": 0,
+        "defectTrend": "stable",
+        "defectChange": 0
+      },
+      "coverage": {
+        "coverageTrend": "stable",
+        "coverageChange": 0
+      },
+      "performance": {
+        "responseTimeTrend": "stable",
+        "responseTimeChange": 0,
+        "throughputTrend": "stable",
+        "throughputChange": 0
+      }
+    },
+    "environment": {
+      "nodeVersion": "v20.19.4",
+      "platform": "linux",
+      "arch": "x64",
+      "timestamp": "2025-08-23T23:01:44.977Z",
+      "ci": false,
+      "environment": "development"
+    }
+  },
+  {
+    "timestamp": "2025-08-23T23:02:21.752Z",
+    "testExecution": {
+      "ui": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "duration": 0,
+        "passRate": 0,
+        "avgDuration": 0,
+        "browsers": {},
+        "environments": {}
+      },
+      "api": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "duration": 0,
+        "passRate": 0,
+        "collections": {},
+        "environments": {}
+      },
+      "performance": {
+        "scenarios": 0,
+        "totalRequests": 0,
+        "successfulRequests": 0,
+        "avgResponseTime": 0,
+        "p95ResponseTime": 0,
+        "throughput": 0,
+        "errorRate": 0
+      },
+      "accessibility": {
+        "total": 0,
+        "passed": 0,
+        "violations": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        },
+        "wcagCompliance": 0
+      },
+      "security": {
+        "total": 0,
+        "passed": 0,
+        "vulnerabilities": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        },
+        "securityScore": 0
+      }
+    },
+    "codeQuality": {
+      "linting": {
+        "errors": 0,
+        "warnings": 0,
+        "files": 63
+      },
+      "complexity": {
+        "average": 0,
+        "max": 0,
+        "files": 0
+      },
+      "duplication": {
+        "percentage": 0,
+        "lines": 0
+      },
+      "maintainability": {
+        "score": 0,
+        "grade": "A"
+      }
+    },
+    "coverage": {
+      "statements": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "branches": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "functions": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "lines": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "files": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      }
+    },
+    "performance": {
+      "loadTesting": {
+        "scenarios": 0,
+        "totalRequests": 0,
+        "avgResponseTime": 0,
+        "p95ResponseTime": 0,
+        "errorRate": 0,
+        "throughput": 0
+      },
+      "monitoring": {
+        "uptime": 100,
+        "availability": 100,
+        "meanTimeToRecover": 0
+      },
+      "resources": {
+        "cpuUsage": 0,
+        "memoryUsage": 0,
+        "diskUsage": 0
+      }
+    },
+    "defects": {
+      "total": 0,
+      "open": 0,
+      "closed": 0,
+      "severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "type": {
+        "functional": 0,
+        "ui": 0,
+        "performance": 0,
+        "security": 0,
+        "accessibility": 0
+      },
+      "resolution": {
+        "fixed": 0,
+        "wontFix": 0,
+        "duplicate": 0,
+        "invalid": 0
+      },
+      "averageResolutionTime": 0,
+      "defectDensity": 0,
+      "escapeRate": 0
+    },
+    "trends": {
+      "testExecution": {
+        "passRateTrend": "stable",
+        "passRateChange": 0,
+        "executionTimeTrend": "stable",
+        "executionTimeChange": 0
+      },
+      "quality": {
+        "qualityScoreTrend": "stable",
+        "qualityScoreChange": 0,
+        "defectTrend": "stable",
+        "defectChange": 0
+      },
+      "coverage": {
+        "coverageTrend": "stable",
+        "coverageChange": 0
+      },
+      "performance": {
+        "responseTimeTrend": "stable",
+        "responseTimeChange": 0,
+        "throughputTrend": "stable",
+        "throughputChange": 0
+      }
+    },
+    "environment": {
+      "nodeVersion": "v20.19.4",
+      "platform": "linux",
+      "arch": "x64",
+      "timestamp": "2025-08-23T23:02:26.627Z",
+      "ci": false,
+      "environment": "development"
+    }
+  },
+  {
+    "timestamp": "2025-08-23T23:03:36.776Z",
+    "testExecution": {
+      "ui": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "duration": 0,
+        "passRate": 0,
+        "avgDuration": 0,
+        "browsers": {},
+        "environments": {}
+      },
+      "api": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "duration": 0,
+        "passRate": 0,
+        "collections": {},
+        "environments": {}
+      },
+      "performance": {
+        "scenarios": 0,
+        "totalRequests": 0,
+        "successfulRequests": 0,
+        "avgResponseTime": 0,
+        "p95ResponseTime": 0,
+        "throughput": 0,
+        "errorRate": 0
+      },
+      "accessibility": {
+        "total": 0,
+        "passed": 0,
+        "violations": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        },
+        "wcagCompliance": 0
+      },
+      "security": {
+        "total": 0,
+        "passed": 0,
+        "vulnerabilities": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        },
+        "securityScore": 0
+      }
+    },
+    "codeQuality": {
+      "linting": {
+        "errors": 0,
+        "warnings": 0,
+        "files": 63
+      },
+      "complexity": {
+        "average": 0,
+        "max": 0,
+        "files": 0
+      },
+      "duplication": {
+        "percentage": 0,
+        "lines": 0
+      },
+      "maintainability": {
+        "score": 0,
+        "grade": "A"
+      }
+    },
+    "coverage": {
+      "statements": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "branches": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "functions": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "lines": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      },
+      "files": {
+        "total": 0,
+        "covered": 0,
+        "percentage": 0
+      }
+    },
+    "performance": {
+      "loadTesting": {
+        "scenarios": 0,
+        "totalRequests": 0,
+        "avgResponseTime": 0,
+        "p95ResponseTime": 0,
+        "errorRate": 0,
+        "throughput": 0
+      },
+      "monitoring": {
+        "uptime": 100,
+        "availability": 100,
+        "meanTimeToRecover": 0
+      },
+      "resources": {
+        "cpuUsage": 0,
+        "memoryUsage": 0,
+        "diskUsage": 0
+      }
+    },
+    "defects": {
+      "total": 0,
+      "open": 0,
+      "closed": 0,
+      "severity": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "type": {
+        "functional": 0,
+        "ui": 0,
+        "performance": 0,
+        "security": 0,
+        "accessibility": 0
+      },
+      "resolution": {
+        "fixed": 0,
+        "wontFix": 0,
+        "duplicate": 0,
+        "invalid": 0
+      },
+      "averageResolutionTime": 0,
+      "defectDensity": 0,
+      "escapeRate": 0
+    },
+    "trends": {
+      "testExecution": {
+        "passRateTrend": "stable",
+        "passRateChange": 0,
+        "executionTimeTrend": "stable",
+        "executionTimeChange": 0
+      },
+      "quality": {
+        "qualityScoreTrend": "stable",
+        "qualityScoreChange": 0,
+        "defectTrend": "stable",
+        "defectChange": 0
+      },
+      "coverage": {
+        "coverageTrend": "stable",
+        "coverageChange": 0
+      },
+      "performance": {
+        "responseTimeTrend": "stable",
+        "responseTimeChange": 0,
+        "throughputTrend": "stable",
+        "throughputChange": 0
+      }
+    },
+    "environment": {
+      "nodeVersion": "v20.19.4",
+      "platform": "linux",
+      "arch": "x64",
+      "timestamp": "2025-08-23T23:03:41.139Z",
+      "ci": false,
+      "environment": "development"
+    }
   }
 ]

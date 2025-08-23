@@ -70,9 +70,13 @@ module.exports = defineConfig({
     navigationTimeout: envConfig.timeout.navigation,
     
     /* Environment-specific media settings */
-    trace: envConfig.trace,
-    screenshot: envConfig.screenshot,
-    video: envConfig.video,
+    trace: envConfig.trace === 'on-first-retry' ? 'on-first-retry' : 
+           envConfig.trace === 'retain-on-failure' ? 'retain-on-failure' : 
+           envConfig.trace === 'on' ? 'on' : 'off',
+    screenshot: envConfig.screenshot === 'only-on-failure' ? 'only-on-failure' : 
+                envConfig.screenshot === 'on' ? 'on' : 'off',
+    video: envConfig.video === 'retain-on-failure' ? 'retain-on-failure' : 
+           envConfig.video === 'on' ? 'on' : 'off',
     
     /* Browser settings */
     headless: envConfig.headless,
@@ -201,8 +205,7 @@ module.exports = defineConfig({
   expect: {
     timeout: 10 * 1000,
     toHaveScreenshot: { 
-      threshold: 0.2, 
-      mode: 'pixel' 
+      threshold: 0.2
     },
     toMatchSnapshot: { 
       threshold: 0.2 

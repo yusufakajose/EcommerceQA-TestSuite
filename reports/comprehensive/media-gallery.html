@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Media Gallery</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fa; }
+        .header { background: #343a40; color: white; padding: 2rem; text-align: center; }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        .section { margin-bottom: 3rem; }
+        .section h2 { color: #495057; border-bottom: 3px solid #007bff; padding-bottom: 1rem; margin-bottom: 2rem; }
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .media-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .media-item:hover { transform: translateY(-4px); }
+        .media-item img, .media-item video { width: 100%; height: 200px; object-fit: cover; }
+        .media-info { padding: 1rem; }
+        .media-info h4 { margin: 0 0 0.5rem 0; color: #495057; }
+        .media-info p { margin: 0; color: #6c757d; font-size: 0.9rem; }
+        .filter-bar { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .filter-bar select, .filter-bar input { margin: 0 0.5rem; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Test Media Gallery</h1>
+        <p>Screenshots, videos, and traces from test execution</p>
+    </div>
+    
+    <div class="container">
+        <div class="filter-bar">
+            <label>Filter by Environment:</label>
+            <select id="envFilter">
+                <option value="">All Environments</option>
+                
+            </select>
+            
+            <label>Filter by Browser:</label>
+            <select id="browserFilter">
+                <option value="">All Browsers</option>
+                
+            </select>
+            
+            <label>Search:</label>
+            <input type="text" id="searchFilter" placeholder="Search by test name...">
+        </div>
+        
+        <div class="section">
+            <h2>Screenshots (0)</h2>
+            <div class="media-grid" id="screenshotGrid">
+                
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Videos (0)</h2>
+            <div class="media-grid" id="videoGrid">
+                
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Filter functionality
+        const envFilter = document.getElementById('envFilter');
+        const browserFilter = document.getElementById('browserFilter');
+        const searchFilter = document.getElementById('searchFilter');
+        
+        function applyFilters() {
+            const envValue = envFilter.value;
+            const browserValue = browserFilter.value;
+            const searchValue = searchFilter.value.toLowerCase();
+            
+            document.querySelectorAll('.media-item').forEach(item => {
+                const env = item.dataset.env;
+                const browser = item.dataset.browser;
+                const test = item.dataset.test.toLowerCase();
+                
+                const envMatch = !envValue || env === envValue;
+                const browserMatch = !browserValue || browser === browserValue;
+                const searchMatch = !searchValue || test.includes(searchValue);
+                
+                item.style.display = envMatch && browserMatch && searchMatch ? 'block' : 'none';
+            });
+        }
+        
+        envFilter.addEventListener('change', applyFilters);
+        browserFilter.addEventListener('change', applyFilters);
+        searchFilter.addEventListener('input', applyFilters);
+    </script>
+</body>
+</html>

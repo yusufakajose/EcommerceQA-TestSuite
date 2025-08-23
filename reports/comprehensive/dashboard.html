@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f8f9fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; text-align: center; }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0 0 1rem 0; color: #495057; }
+        .chart-container { position: relative; height: 300px; }
+        .metric { text-align: center; padding: 1rem; }
+        .metric .value { font-size: 3rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .metric .label { color: #6c757d; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+        .passed { color: #28a745; }
+        .failed { color: #dc3545; }
+        .skipped { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Test Execution Dashboard</h1>
+        <p>Real-time insights into test performance</p>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h3>Overall Results</h3>
+                <div class="chart-container">
+                    <canvas id="overallChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Environment Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="environmentChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Browser Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="browserChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Key Metrics</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="metric">
+                        <div class="value passed">undefined</div>
+                        <div class="label">Passed</div>
+                    </div>
+                    <div class="metric">
+                        <div class="value failed">undefined</div>
+                        <div class="label">Failed</div>
+                    </div>
+                    <div class="metric">
+                        <div class="value">0%</div>
+                        <div class="label">Pass Rate</div>
+                    </div>
+                    <div class="metric">
+                        <div class="value">0</div>
+                        <div class="label">Environments</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Overall results pie chart
+        const overallCtx = document.getElementById('overallChart').getContext('2d');
+        new Chart(overallCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Passed', 'Failed', 'Skipped'],
+                datasets: [{
+                    data: [undefined, undefined, undefined],
+                    backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Environment comparison chart
+        const environmentCtx = document.getElementById('environmentChart').getContext('2d');
+        new Chart(environmentCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Passed',
+                        data: [],
+                        backgroundColor: '#28a745'
+                    },
+                    {
+                        label: 'Failed',
+                        data: [],
+                        backgroundColor: '#dc3545'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+        
+        // Browser comparison chart
+        const browserCtx = document.getElementById('browserChart').getContext('2d');
+        new Chart(browserCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Passed',
+                        data: [],
+                        backgroundColor: '#28a745'
+                    },
+                    {
+                        label: 'Failed',
+                        data: [],
+                        backgroundColor: '#dc3545'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

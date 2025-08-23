@@ -61,9 +61,14 @@ class ConsolidatedReporter {
 
             // Step 3: Generate detailed reports
             console.log('\n3. Generating detailed test reports...');
-            const reportGenerator = new ReportGenerator();
-            await reportGenerator.generateReport();
-            results.detailedReport = 'Generated';
+            try {
+                const reportGenerator = new ReportGenerator();
+                await reportGenerator.generateReport();
+                results.detailedReport = 'Generated';
+            } catch (error) {
+                console.warn('Failed to generate detailed report:', error.message);
+                results.detailedReport = 'Skipped - No test results available';
+            }
 
             // Step 4: Generate executive summary
             console.log('\n4. Generating executive summary...');

@@ -1,0 +1,97 @@
+{
+    "environments": {
+        "development": "config/postman/environments/development.postman_environment.json",
+        "staging": "config/postman/environments/staging.postman_environment.json",
+        "production": "config/postman/environments/production.postman_environment.json"
+    },
+    "collections": {
+        "user-management": "config/postman/collections/user-management.postman_collection.json",
+        "product-catalog": "config/postman/collections/product-catalog.postman_collection.json",
+        "order-processing": "config/postman/collections/order-processing.postman_collection.json",
+        "complete-suite": "config/postman/collections/ecommerce-api-complete.postman_collection.json",
+        "auth-workflow": "config/postman/workflows/authentication-workflow.postman_collection.json",
+        "enhanced-user-management": "config/postman/collections/enhanced-user-management.postman_collection.json",
+        "enhanced-product-catalog": "config/postman/collections/enhanced-product-catalog.postman_collection.json",
+        "enhanced-order-processing": "config/postman/collections/enhanced-order-processing.postman_collection.json"
+    },
+    "data": {
+        "users": "config/postman/data/users.csv",
+        "products": "config/postman/data/products.csv",
+        "orders": "config/postman/data/orders.csv"
+    },
+    "defaultOptions": {
+        "reporters": ["cli", "htmlextra"],
+        "timeout": 10000,
+        "delayRequest": 100,
+        "iterationCount": 1,
+        "bail": false,
+        "suppressExitCode": false
+    },
+    "reportOptions": {
+        "htmlextra": {
+            "export": "reports/api-test-report.html",
+            "template": "dashboard",
+            "logs": true,
+            "omitHeaders": false,
+            "omitRequestBodies": false,
+            "omitResponseBodies": false,
+            "hideRequestBody": [],
+            "hideResponseBody": [],
+            "showOnlyFails": false,
+            "testPaging": false,
+            "browserTitle": "E-commerce API Test Report",
+            "title": "E-commerce API Test Results",
+            "titleSize": 2,
+            "omitRequestHeaders": false,
+            "omitResponseHeaders": false,
+            "displayProgressBar": true
+        }
+    },
+    "scripts": {
+        "test:api:all": {
+            "collection": "complete-suite",
+            "environment": "development",
+            "options": {
+                "reporters": ["cli", "htmlextra", "json"],
+                "reporter-htmlextra-export": "reports/complete-api-report.html",
+                "reporter-json-export": "reports/api-results.json"
+            }
+        },
+        "test:api:users": {
+            "collection": "user-management",
+            "environment": "development",
+            "data": "users",
+            "options": {
+                "iterationCount": 3,
+                "reporter-htmlextra-export": "reports/user-management-report.html"
+            }
+        },
+        "test:api:products": {
+            "collection": "product-catalog",
+            "environment": "development",
+            "data": "products",
+            "options": {
+                "iterationCount": 5,
+                "reporter-htmlextra-export": "reports/product-catalog-report.html"
+            }
+        },
+        "test:api:orders": {
+            "collection": "order-processing",
+            "environment": "development",
+            "data": "orders",
+            "options": {
+                "iterationCount": 3,
+                "reporter-htmlextra-export": "reports/order-processing-report.html"
+            }
+        },
+        "test:api:staging": {
+            "collection": "complete-suite",
+            "environment": "staging",
+            "options": {
+                "timeout": 15000,
+                "delayRequest": 200,
+                "reporter-htmlextra-export": "reports/staging-api-report.html"
+            }
+        }
+    }
+}

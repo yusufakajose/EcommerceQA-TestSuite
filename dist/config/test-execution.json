@@ -1,0 +1,27 @@
+{
+    "execution": {
+        "maxParallelWorkers": 4,
+        "timeout": 300000,
+        "retries": 2,
+        "environments": ["development", "staging"],
+        "browsers": ["chromium", "firefox", "webkit"],
+        "outputDir": "./test-results",
+        "reportDir": "./reports",
+        "cleanPreviousResults": true
+    },
+    "notifications": {
+        "enabled": true,
+        "thresholds": {
+            "criticalFailureRate": 50,
+            "warningFailureRate": 20,
+            "maxDurationIncrease": 100
+        }
+    },
+    "reporting": {
+        "generateComprehensive": true,
+        "includeScreenshots": true,
+        "includeVideos": true,
+        "includeTraces": true,
+        "generateTrends": true
+    }
+}

@@ -1,0 +1,294 @@
+{
+    "config": {
+        "configFile": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/playwright.config.js",
+        "rootDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+        "forbidOnly": true,
+        "fullyParallel": true,
+        "globalSetup": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/global-setup.js",
+        "globalTeardown": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/global-teardown.js",
+        "globalTimeout": 0,
+        "grep": {},
+        "grepInvert": null,
+        "maxFailures": 0,
+        "metadata": {
+            "environment": "development",
+            "baseURL": "https://demo.playwright.dev/todomvc",
+            "browsers": [
+                "chromium"
+            ],
+            "timestamp": "2025-08-23T21:55:17.163Z"
+        },
+        "preserveOutput": "always",
+        "reporter": [
+            [
+                "html",
+                {
+                    "outputFolder": "reports/test-execution/development/playwright-report",
+                    "open": "on-failure"
+                }
+            ],
+            [
+                "json",
+                {
+                    "outputFile": "reports/test-execution/development/test-results.json"
+                }
+            ],
+            [
+                "junit",
+                {
+                    "outputFile": "reports/test-execution/development/junit-results.xml"
+                }
+            ],
+            [
+                "list",
+                {
+                    "printSteps": true
+                }
+            ]
+        ],
+        "reportSlowTests": {
+            "max": 5,
+            "threshold": 300000
+        },
+        "quiet": false,
+        "projects": [
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Desktop Chrome",
+                "name": "Desktop Chrome",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Brave Browser",
+                "name": "Brave Browser",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Mobile Chrome",
+                "name": "Mobile Chrome",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Mobile Safari",
+                "name": "Mobile Safari",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Mobile Chrome Small",
+                "name": "Mobile Chrome Small",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Mobile Safari Small",
+                "name": "Mobile Safari Small",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Tablet",
+                "name": "Tablet",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Tablet Landscape",
+                "name": "Tablet Landscape",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Tablet Portrait",
+                "name": "Tablet Portrait",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            },
+            {
+                "outputDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/config/test-results/development",
+                "repeatEach": 1,
+                "retries": 2,
+                "metadata": {
+                    "environment": "development",
+                    "baseURL": "https://demo.playwright.dev/todomvc",
+                    "browsers": [
+                        "chromium"
+                    ],
+                    "timestamp": "2025-08-23T21:55:17.163Z"
+                },
+                "id": "Microsoft Edge",
+                "name": "Microsoft Edge",
+                "testDir": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests",
+                "testIgnore": [],
+                "testMatch": [
+                    "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+                ],
+                "timeout": 60000
+            }
+        ],
+        "shard": null,
+        "updateSnapshots": "missing",
+        "updateSourceMethod": "patch",
+        "version": "1.55.0",
+        "workers": 1,
+        "webServer": null
+    },
+    "suites": [],
+    "errors": [
+        {
+            "message": "SyntaxError: /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/cross-browser.spec.js: Unexpected token (544:0)\n\n\u001b[0m \u001b[90m 542 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 543 |\u001b[39m   })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 544 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m",
+            "stack": "SyntaxError: /home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/cross-browser.spec.js: Unexpected token (544:0)\n\n\u001b[0m \u001b[90m 542 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 543 |\u001b[39m   })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 544 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m",
+            "location": {
+                "file": "/home/joseph34/Downloads/EcommerceQA-TestSuite/automated-tests/ui-tests/cross-browser.spec.js",
+                "line": 544,
+                "column": 0
+            },
+            "snippet": "   at cross-browser.spec.js:544\n\n\u001b[0m \u001b[90m 542 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 543 |\u001b[39m   })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 544 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+        }
+    ],
+    "stats": {
+        "startTime": "2025-08-23T21:55:17.175Z",
+        "duration": 1461.172,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+    }
+}

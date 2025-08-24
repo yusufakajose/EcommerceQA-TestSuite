@@ -1,0 +1,231 @@
+{
+    "checkoutScenarios": [
+        {
+            "scenarioName": "successfulCheckout",
+            "description": "Complete checkout process with valid data",
+            "user": {
+                "email": "john.doe@example.com",
+                "isLoggedIn": true
+            },
+            "shippingAddress": {
+                "firstName": "John",
+                "lastName": "Doe",
+                "street": "123 Main Street",
+                "city": "Anytown",
+                "state": "CA",
+                "zipCode": "12345",
+                "country": "United States",
+                "phone": "+1-555-0123"
+            },
+            "billingAddress": {
+                "sameAsShipping": true
+            },
+            "paymentMethod": {
+                "type": "credit_card",
+                "cardNumber": "4111111111111111",
+                "expiryMonth": "12",
+                "expiryYear": "2025",
+                "cvv": "123",
+                "cardholderName": "John Doe"
+            },
+            "items": [
+                {
+                    "productId": "prod001",
+                    "quantity": 1,
+                    "price": 79.99
+                }
+            ],
+            "expectedOrderTotal": 89.98,
+            "expectedSuccessMessage": "Order placed successfully"
+        },
+        {
+            "scenarioName": "guestCheckout",
+            "description": "Checkout as guest user",
+            "user": {
+                "email": "guest@example.com",
+                "isLoggedIn": false
+            },
+            "shippingAddress": {
+                "firstName": "Guest",
+                "lastName": "User",
+                "street": "456 Guest Street",
+                "city": "Guestville",
+                "state": "NY",
+                "zipCode": "67890",
+                "country": "United States",
+                "phone": "+1-555-0456"
+            },
+            "billingAddress": {
+                "sameAsShipping": false,
+                "firstName": "Guest",
+                "lastName": "User",
+                "street": "789 Billing Avenue",
+                "city": "Billtown",
+                "state": "TX",
+                "zipCode": "54321",
+                "country": "United States"
+            },
+            "paymentMethod": {
+                "type": "credit_card",
+                "cardNumber": "4000000000000002",
+                "expiryMonth": "06",
+                "expiryYear": "2026",
+                "cvv": "456",
+                "cardholderName": "Guest User"
+            },
+            "items": [
+                {
+                    "productId": "prod002",
+                    "quantity": 1,
+                    "price": 199.99
+                }
+            ],
+            "expectedOrderTotal": 209.98,
+            "expectedSuccessMessage": "Order placed successfully"
+        }
+    ],
+    "paymentMethods": [
+        {
+            "type": "credit_card",
+            "name": "Visa",
+            "cardNumber": "4111111111111111",
+            "expiryMonth": "12",
+            "expiryYear": "2025",
+            "cvv": "123",
+            "cardholderName": "Test User",
+            "expectedResult": "success"
+        },
+        {
+            "type": "credit_card",
+            "name": "Mastercard",
+            "cardNumber": "5555555555554444",
+            "expiryMonth": "08",
+            "expiryYear": "2024",
+            "cvv": "789",
+            "cardholderName": "Test User",
+            "expectedResult": "success"
+        },
+        {
+            "type": "credit_card",
+            "name": "American Express",
+            "cardNumber": "378282246310005",
+            "expiryMonth": "04",
+            "expiryYear": "2027",
+            "cvv": "1234",
+            "cardholderName": "Test User",
+            "expectedResult": "success"
+        },
+        {
+            "type": "credit_card",
+            "name": "Declined Card",
+            "cardNumber": "4000000000000002",
+            "expiryMonth": "12",
+            "expiryYear": "2025",
+            "cvv": "123",
+            "cardholderName": "Test User",
+            "expectedResult": "declined",
+            "expectedError": "Your card was declined"
+        },
+        {
+            "type": "credit_card",
+            "name": "Insufficient Funds",
+            "cardNumber": "4000000000009995",
+            "expiryMonth": "12",
+            "expiryYear": "2025",
+            "cvv": "123",
+            "cardholderName": "Test User",
+            "expectedResult": "insufficient_funds",
+            "expectedError": "Insufficient funds"
+        }
+    ],
+    "validationErrors": [
+        {
+            "scenarioName": "missingShippingInfo",
+            "shippingAddress": {
+                "firstName": "",
+                "lastName": "",
+                "street": "",
+                "city": "",
+                "state": "",
+                "zipCode": "",
+                "phone": ""
+            },
+            "expectedErrors": [
+                "First name is required",
+                "Last name is required",
+                "Street address is required",
+                "City is required",
+                "State is required",
+                "ZIP code is required",
+                "Phone number is required"
+            ]
+        },
+        {
+            "scenarioName": "invalidPaymentInfo",
+            "paymentMethod": {
+                "type": "credit_card",
+                "cardNumber": "1234",
+                "expiryMonth": "13",
+                "expiryYear": "2020",
+                "cvv": "12",
+                "cardholderName": ""
+            },
+            "expectedErrors": [
+                "Invalid card number",
+                "Invalid expiry month",
+                "Card has expired",
+                "Invalid CVV",
+                "Cardholder name is required"
+            ]
+        },
+        {
+            "scenarioName": "invalidZipCode",
+            "shippingAddress": {
+                "zipCode": "invalid"
+            },
+            "expectedErrors": [
+                "Invalid ZIP code format"
+            ]
+        },
+        {
+            "scenarioName": "invalidPhoneNumber",
+            "shippingAddress": {
+                "phone": "123"
+            },
+            "expectedErrors": [
+                "Invalid phone number format"
+            ]
+        }
+    ],
+    "shippingOptions": [
+        {
+            "id": "standard",
+            "name": "Standard Shipping",
+            "cost": 9.99,
+            "estimatedDays": "5-7 business days",
+            "description": "Standard ground shipping"
+        },
+        {
+            "id": "express",
+            "name": "Express Shipping",
+            "cost": 19.99,
+            "estimatedDays": "2-3 business days",
+            "description": "Expedited shipping"
+        },
+        {
+            "id": "overnight",
+            "name": "Overnight Shipping",
+            "cost": 39.99,
+            "estimatedDays": "1 business day",
+            "description": "Next day delivery"
+        },
+        {
+            "id": "free",
+            "name": "Free Shipping",
+            "cost": 0,
+            "estimatedDays": "7-10 business days",
+            "description": "Free standard shipping (orders over $100)",
+            "minimumOrder": 100
+        }
+    ]
+}

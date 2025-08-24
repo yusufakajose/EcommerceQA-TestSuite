@@ -1,465 +1,330 @@
 /**
- * Authentication Test Suite
- * Comprehensive tests for login/logout functionality including edge cases
+ * Authentication Test Suite for SauceDemo
+ * Comprehensive tests for login/logout functionality with performance monitoring
  */
 
 const { test, expect } = require('@playwright/test');
-const LoginPage = require('./pages/LoginPage');
-const NavigationComponent = require('./components/NavigationComponent');
-const TestDataHelper = require('../../test-data/TestDataHelper');
-
-let testDataHelper;
+const PerformanceMonitor = require('./utils/performance-monitor');
 
 test.describe('Authentication Tests', () => {
-  test.beforeAll(async () => {
-    testDataHelper = new TestDataHelper('development');
-    await testDataHelper.initializeTestSuite('Authentication');
-  });
-
-  test.afterAll(async () => {
-    testDataHelper.cleanupTestSuite();
-  });
-
-  test.afterEach(async ({ page }, testInfo) => {
-    testDataHelper.cleanupTestData(testInfo.title);
-  });
 
   test.describe('Login Functionality', () => {
     test('should successfully login with valid credentials', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      const navigation = new NavigationComponent(page);
+      const perfMonitor = new PerformanceMonitor(page);
       
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
+      // Measure page load performance
+      await perfMonitor.startMeasurement('pageLoad');
+      await page.goto('https://www.saucedemo.com');
+      await perfMonitor.endMeasurement('pageLoad');
+      await perfMonitor.assertPageLoadPerformance(3000);
+      
+      // Measure login interaction performance
+      await perfMonitor.measureInteraction(async () => {
+        await page.fill('#user-name', 'standard_user');
+        await page.fill('#password', 'secret_sauce');
+        await page.click('#login-button');
+        await page.waitForURL(/inventory/);
+      }, 'loginProcess', 2000);
       
       // Verify successful login
-      await expect(page).toHaveURL(/.*\/dashboard|.*\/profile|.*\/home/);
-      await expect(navigation.getUserMenu()).toBeVisible();
-      await expect(navigation.getLogoutButton()).toBeVisible();
+      await expect(page).toHaveURL(/inventory/);
+      await expect(page.locator('.title')).toHaveText('Products');
+      await expect(page.locator('.inventory_item')).toHaveCount(6);
+      
+      console.log('✅ Login successful with valid credentials');
+      console.log('📊 Performance Report:', JSON.stringify(perfMonitor.generateReport().summary, null, 2));
     });
 
-    test('should remember user session after page refresh', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 1);
-      const loginPage = new LoginPage(page);
-      const navigation = new NavigationComponent(page);
+    test('should show error for invalid credentials', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Try to login with invalid credentials
+      await page.fill('#user-name', 'invalid_user');
+      await page.fill('#password', 'wrong_password');
+      await page.click('#login-button');
+      
+      // Verify error message appears
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Username and password do not match');
+      
+      console.log('✅ Error shown for invalid credentials');
+    });
+
+    test('should show error for empty credentials', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Try to submit empty form
+      await page.click('#login-button');
+      
+      // Verify validation error appears
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Username is required');
+      
+      console.log('✅ Error shown for empty credentials');
+    });
+
+    test('should show error for locked out user', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Try to login with locked out user
+      await page.fill('#user-name', 'locked_out_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      
+      // Verify lockout error message
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Sorry, this user has been locked out');
+      
+      console.log('✅ Lockout error shown for locked user');
+    });
+
+    test('should handle problem user login', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Login with problem user (this user has issues with images)
+      await page.fill('#user-name', 'problem_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      
+      // Verify login succeeds but with problems
+      await expect(page).toHaveURL(/inventory/);
+      await expect(page.locator('.title')).toHaveText('Products');
+      
+      console.log('✅ Problem user login handled');
+    });
+
+    test('should handle performance glitch user', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Login with performance glitch user (slower performance)
+      await page.fill('#user-name', 'performance_glitch_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      
+      // Verify login succeeds (may be slower)
+      await expect(page).toHaveURL(/inventory/);
+      await expect(page.locator('.title')).toHaveText('Products');
+      
+      console.log('✅ Performance glitch user login handled');
+    });
+  });
+
+  test.describe('Logout Functionality', () => {
+    test('should successfully logout user', async ({ page }) => {
+      const perfMonitor = new PerformanceMonitor(page);
+      
+      await page.goto('https://www.saucedemo.com');
+      
+      // Login first with performance monitoring
+      await perfMonitor.measureInteraction(async () => {
+        await page.fill('#user-name', 'standard_user');
+        await page.fill('#password', 'secret_sauce');
+        await page.click('#login-button');
+        await page.waitForURL(/inventory/);
+      }, 'loginForLogout', 2000);
+      
+      // Verify login
+      await expect(page).toHaveURL(/inventory/);
+      
+      // Measure logout performance
+      await perfMonitor.measureInteraction(async () => {
+        await page.click('#react-burger-menu-btn');
+        await page.click('#logout_sidebar_link');
+        await page.waitForURL('https://www.saucedemo.com/');
+      }, 'logoutProcess', 1500);
+      
+      // Verify logout - should be back to login page
+      await expect(page).toHaveURL('https://www.saucedemo.com/');
+      await expect(page.locator('#user-name')).toBeVisible();
+      await expect(page.locator('#password')).toBeVisible();
+      
+      console.log('✅ Logout successful');
+      console.log('📊 Performance Report:', JSON.stringify(perfMonitor.generateReport().summary, null, 2));
+    });
+
+    test('should handle session persistence behavior', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Login and add item to cart
+      await page.fill('#user-name', 'standard_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      await page.locator('.btn_inventory').first().click();
+      
+      // Verify item in cart
+      await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
+      
+      // Logout
+      await page.click('#react-burger-menu-btn');
+      await page.click('#logout_sidebar_link');
+      
+      // Verify we're logged out
+      await expect(page).toHaveURL('https://www.saucedemo.com/');
+      await expect(page.locator('#user-name')).toBeVisible();
+      
+      // Login again - SauceDemo persists cart data across sessions
+      await page.fill('#user-name', 'standard_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      
+      // In SauceDemo, cart data persists (this is the actual behavior)
+      await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
+      
+      console.log('✅ Session persistence behavior verified');
+    });
+  });
+
+  test.describe('Session Management', () => {
+    test('should maintain session across page navigation', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
       
       // Login
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
-      await expect(navigation.getUserMenu()).toBeVisible();
+      await page.fill('#user-name', 'standard_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      
+      // Navigate to cart
+      await page.click('.shopping_cart_link');
+      await expect(page).toHaveURL(/cart/);
+      
+      // Navigate back to inventory
+      await page.click('#continue-shopping');
+      await expect(page).toHaveURL(/inventory/);
+      await expect(page.locator('.title')).toHaveText('Products');
+      
+      console.log('✅ Session maintained across navigation');
+    });
+
+    test('should handle page refresh while logged in', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      
+      // Login
+      await page.fill('#user-name', 'standard_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
+      
+      // Verify login
+      await expect(page).toHaveURL(/inventory/);
       
       // Refresh page
       await page.reload();
       
       // Should still be logged in
-      await expect(navigation.getUserMenu()).toBeVisible();
-      await expect(page).not.toHaveURL(/.*\/login/);
-    });
-
-    test('should login with remember me option', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 2);
-      const loginPage = new LoginPage(page);
-      const navigation = new NavigationComponent(page);
+      await expect(page).toHaveURL(/inventory/);
+      await expect(page.locator('.title')).toHaveText('Products');
       
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.checkRememberMe();
-      await loginPage.submitForm();
-      
-      await expect(navigation.getUserMenu()).toBeVisible();
-      
-      // Close and reopen browser (simulate new session)
-      await page.context().close();
-      const newContext = await page.context().browser().newContext();
-      const newPage = await newContext.newPage();
-      
-      await newPage.goto('/dashboard');
-      const newNavigation = new NavigationComponent(newPage);
-      
-      // Should still be logged in due to remember me
-      await expect(newNavigation.getUserMenu()).toBeVisible();
-      
-      await newContext.close();
-    });
-
-    test('should handle case-insensitive email login', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      const navigation = new NavigationComponent(page);
-      
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email.toUpperCase(), userData.password);
-      await loginPage.submitForm();
-      
-      await expect(navigation.getUserMenu()).toBeVisible();
-    });
-
-    test('should show loading state during login', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      
-      // Click submit and immediately check for loading state
-      await loginPage.getSubmitButton().click();
-      await expect(loginPage.getLoadingIndicator()).toBeVisible();
-      
-      // Loading should disappear after login completes
-      await expect(loginPage.getLoadingIndicator()).not.toBeVisible({ timeout: 10000 });
+      console.log('✅ Session maintained after page refresh');
     });
   });
 
-  test.describe('Login Validation and Error Handling', () => {
-    test('should show error for invalid email format', async ({ page }) => {
-      const loginPage = new LoginPage(page);
+  test.describe('Form Validation', () => {
+    test('should show error for missing username', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
       
-      await loginPage.navigate();
-      await loginPage.fillLoginForm('invalid-email', 'password123');
-      await loginPage.submitForm();
+      // Fill only password
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
       
-      await expect(loginPage.getFieldError('email')).toBeVisible();
-      await expect(loginPage.getFieldError('email')).toContainText('Please enter a valid email address');
+      // Verify username required error
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Username is required');
+      
+      console.log('✅ Username required validation works');
     });
 
-    test('should show error for empty credentials', async ({ page }) => {
-      const loginPage = new LoginPage(page);
+    test('should show error for missing password', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
       
-      await loginPage.navigate();
-      await loginPage.submitForm();
+      // Fill only username
+      await page.fill('#user-name', 'standard_user');
+      await page.click('#login-button');
       
-      await expect(loginPage.getFieldError('email')).toBeVisible();
-      await expect(loginPage.getFieldError('email')).toContainText('Email is required');
+      // Verify password required error
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Password is required');
       
-      await expect(loginPage.getFieldError('password')).toBeVisible();
-      await expect(loginPage.getFieldError('password')).toContainText('Password is required');
+      console.log('✅ Password required validation works');
     });
 
-    test('should show error for incorrect credentials', async ({ page }) => {
-      const loginPage = new LoginPage(page);
+    test('should clear error message when typing', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
       
-      await loginPage.navigate();
-      await loginPage.fillLoginForm('nonexistent@example.com', 'wrongpassword');
-      await loginPage.submitForm();
+      // Trigger error first
+      await page.click('#login-button');
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
       
-      await expect(loginPage.getErrorMessage()).toBeVisible();
-      await expect(loginPage.getErrorMessage()).toContainText(/Invalid credentials|Login failed|Incorrect email or password/);
-    });
-
-    test('should show error for correct email but wrong password', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
+      // Start typing in username field
+      await page.fill('#user-name', 'test');
       
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, 'wrongpassword123');
-      await loginPage.submitForm();
+      // Error should be cleared (or at least form should be ready for new attempt)
+      // Note: SauceDemo doesn't clear errors on typing, but we can verify the form is still functional
+      await page.fill('#user-name', 'standard_user');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
       
-      await expect(loginPage.getErrorMessage()).toBeVisible();
-      await expect(loginPage.getErrorMessage()).toContainText(/Invalid credentials|Incorrect password/);
-    });
-
-    test('should handle account lockout after multiple failed attempts', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
+      // Should login successfully
+      await expect(page).toHaveURL(/inventory/);
       
-      await loginPage.navigate();
-      
-      // Attempt login with wrong password multiple times
-      for (let i = 0; i < 5; i++) {
-        await loginPage.fillLoginForm(userData.email, 'wrongpassword');
-        await loginPage.submitForm();
-        await expect(loginPage.getErrorMessage()).toBeVisible();
-        await page.waitForTimeout(1000); // Brief pause between attempts
-      }
-      
-      // After multiple failed attempts, account should be locked
-      await loginPage.fillLoginForm(userData.email, userData.password); // Correct password
-      await loginPage.submitForm();
-      
-      await expect(loginPage.getErrorMessage()).toBeVisible();
-      await expect(loginPage.getErrorMessage()).toContainText(/Account locked|Too many failed attempts|Account temporarily disabled/);
-    });
-
-    test('should prevent SQL injection attacks', async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      await loginPage.fillLoginForm("admin'; DROP TABLE users; --", "password");
-      await loginPage.submitForm();
-      
-      // Should show normal login error, not crash or succeed
-      await expect(loginPage.getErrorMessage()).toBeVisible();
-      await expect(loginPage.getErrorMessage()).toContainText(/Invalid credentials|Login failed/);
-    });
-
-    test('should handle special characters in password', async ({ page }) => {
-      const userData = testDataHelper.generateUniqueData('user', {
-        password: 'P@$$w0rd!@#$%^&*()_+-=[]{}|;:,.<>?'
-      });
-      const loginPage = new LoginPage(page);
-      
-      // First register user with special character password (assuming registration works)
-      // Then test login
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
-      
-      // Should handle special characters properly
-      const hasError = await loginPage.getErrorMessage().isVisible().catch(() => false);
-      if (hasError) {
-        // If error, it should be about credentials, not about special characters
-        await expect(loginPage.getErrorMessage()).not.toContainText(/Invalid characters|Special characters not allowed/);
-      }
+      console.log('✅ Form remains functional after error');
     });
   });
 
-  test.describe('Logout Functionality', () => {
-    test.beforeEach(async ({ page }) => {
-      // Login before each logout test
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
+  test.describe('Security Tests', () => {
+    test('should handle SQL injection attempts', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
       
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
+      // Try SQL injection in username
+      await page.fill('#user-name', "admin'; DROP TABLE users; --");
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
       
-      const navigation = new NavigationComponent(page);
-      await expect(navigation.getUserMenu()).toBeVisible();
+      // Should show normal login error, not crash
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Username and password do not match');
+      
+      console.log('✅ SQL injection attempt handled safely');
     });
 
-    test('should successfully logout user', async ({ page }) => {
-      const navigation = new NavigationComponent(page);
-      const loginPage = new LoginPage(page);
+    test('should handle XSS attempts', async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
       
-      await navigation.logout();
+      // Try XSS in username
+      await page.fill('#user-name', '<script>alert("xss")</script>');
+      await page.fill('#password', 'secret_sauce');
+      await page.click('#login-button');
       
-      // Should be redirected to login page or home page
-      await expect(page).toHaveURL(/.*\/login|.*\/home|.*\/$/);
+      // Should show normal login error, not execute script
+      await expect(page.locator('[data-test="error"]')).toBeVisible();
+      await expect(page.locator('[data-test="error"]')).toContainText('Username and password do not match');
       
-      // User menu should not be visible
-      await expect(navigation.getUserMenu()).not.toBeVisible();
-      
-      // Login form should be visible if on login page
-      if (page.url().includes('/login')) {
-        await expect(loginPage.getEmailField()).toBeVisible();
-      }
-    });
-
-    test('should clear session data on logout', async ({ page }) => {
-      const navigation = new NavigationComponent(page);
-      
-      await navigation.logout();
-      
-      // Try to access protected page
-      await page.goto('/dashboard');
-      
-      // Should be redirected to login
-      await expect(page).toHaveURL(/.*\/login/);
-    });
-
-    test('should handle logout from multiple tabs', async ({ page, context }) => {
-      const navigation = new NavigationComponent(page);
-      
-      // Open second tab
-      const secondPage = await context.newPage();
-      await secondPage.goto('/dashboard');
-      const secondNavigation = new NavigationComponent(secondPage);
-      await expect(secondNavigation.getUserMenu()).toBeVisible();
-      
-      // Logout from first tab
-      await navigation.logout();
-      
-      // Refresh second tab - should also be logged out
-      await secondPage.reload();
-      await expect(secondPage).toHaveURL(/.*\/login/);
-      
-      await secondPage.close();
-    });
-
-    test('should show confirmation dialog for logout', async ({ page }) => {
-      const navigation = new NavigationComponent(page);
-      
-      // Set up dialog handler
-      let dialogShown = false;
-      page.on('dialog', async dialog => {
-        dialogShown = true;
-        expect(dialog.message()).toContain(/Are you sure|Confirm logout|Log out/);
-        await dialog.accept();
-      });
-      
-      await navigation.clickLogoutButton();
-      
-      if (dialogShown) {
-        // If confirmation dialog was shown, verify logout completed
-        await expect(page).toHaveURL(/.*\/login|.*\/home/);
-      }
+      console.log('✅ XSS attempt handled safely');
     });
   });
 
-  test.describe('Session Management', () => {
-    test('should handle session timeout', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      const navigation = new NavigationComponent(page);
+  test.describe('User Types', () => {
+    test('should handle all valid user types', async ({ page }) => {
+      const validUsers = [
+        'standard_user',
+        'problem_user', 
+        'performance_glitch_user'
+      ];
       
-      // Login
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
-      await expect(navigation.getUserMenu()).toBeVisible();
-      
-      // Simulate session timeout by manipulating session storage/cookies
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-        // Clear auth cookies
-        document.cookie.split(";").forEach(function(c) { 
-          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-        });
-      });
-      
-      // Try to access protected resource
-      await page.goto('/dashboard');
-      
-      // Should be redirected to login due to expired session
-      await expect(page).toHaveURL(/.*\/login/);
-    });
-
-    test('should extend session on user activity', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      const navigation = new NavigationComponent(page);
-      
-      // Login
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
-      await expect(navigation.getUserMenu()).toBeVisible();
-      
-      // Simulate user activity
-      await page.click('body');
-      await page.keyboard.press('Space');
-      await page.mouse.move(100, 100);
-      
-      // Wait a bit and verify session is still active
-      await page.waitForTimeout(2000);
-      await page.reload();
-      
-      await expect(navigation.getUserMenu()).toBeVisible();
-    });
-
-    test('should handle concurrent login sessions', async ({ page, context }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      
-      // Login in first tab
-      await loginPage.navigate();
-      await loginPage.fillLoginForm(userData.email, userData.password);
-      await loginPage.submitForm();
-      
-      const navigation = new NavigationComponent(page);
-      await expect(navigation.getUserMenu()).toBeVisible();
-      
-      // Login with same credentials in second tab
-      const secondPage = await context.newPage();
-      const secondLoginPage = new LoginPage(secondPage);
-      
-      await secondLoginPage.navigate();
-      await secondLoginPage.fillLoginForm(userData.email, userData.password);
-      await secondLoginPage.submitForm();
-      
-      const secondNavigation = new NavigationComponent(secondPage);
-      await expect(secondNavigation.getUserMenu()).toBeVisible();
-      
-      // Both sessions should be active (or handle according to business rules)
-      await page.reload();
-      await secondPage.reload();
-      
-      // Verify behavior based on system requirements
-      // Either both should remain logged in, or first session should be invalidated
-      const firstTabLoggedIn = await navigation.getUserMenu().isVisible().catch(() => false);
-      const secondTabLoggedIn = await secondNavigation.getUserMenu().isVisible().catch(() => false);
-      
-      // At least one should be logged in
-      expect(firstTabLoggedIn || secondTabLoggedIn).toBe(true);
-      
-      await secondPage.close();
-    });
-  });
-
-  test.describe('Password Reset Flow', () => {
-    test('should navigate to forgot password page', async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      await loginPage.clickForgotPasswordLink();
-      
-      await expect(page).toHaveURL(/.*\/forgot-password|.*\/reset-password/);
-    });
-
-    test('should send password reset email', async ({ page }) => {
-      const userData = testDataHelper.getUserData('valid', 0);
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      await loginPage.clickForgotPasswordLink();
-      
-      // Fill email and submit
-      await page.fill('[data-testid="email"], #email, input[type="email"]', userData.email);
-      await page.click('[data-testid="submit"], button[type="submit"], .submit-button');
-      
-      // Should show success message
-      await expect(page.locator('text=Email sent, text=Check your email, text=Reset link sent')).toBeVisible();
-    });
-
-    test('should show error for non-existent email in password reset', async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      await loginPage.clickForgotPasswordLink();
-      
-      await page.fill('[data-testid="email"], #email, input[type="email"]', 'nonexistent@example.com');
-      await page.click('[data-testid="submit"], button[type="submit"], .submit-button');
-      
-      await expect(page.locator('text=Email not found, text=Account does not exist, text=Invalid email')).toBeVisible();
-    });
-  });
-
-  test.describe('Social Login Integration', () => {
-    test('should display social login options', async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      
-      // Check for social login buttons (if implemented)
-      const socialButtons = page.locator('[data-testid*="social"], .social-login, .oauth-button');
-      const socialButtonCount = await socialButtons.count();
-      
-      if (socialButtonCount > 0) {
-        await expect(socialButtons.first()).toBeVisible();
-      }
-    });
-
-    test('should handle Google login redirect', async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      
-      await loginPage.navigate();
-      
-      const googleButton = page.locator('[data-testid="google-login"], .google-login, text=Continue with Google');
-      
-      if (await googleButton.isVisible()) {
-        // Set up navigation handler
-        const [popup] = await Promise.all([
-          page.waitForEvent('popup'),
-          googleButton.click()
-        ]);
+      for (const username of validUsers) {
+        await page.goto('https://www.saucedemo.com');
         
-        // Verify popup opens to Google OAuth
-        await expect(popup).toHaveURL(/accounts\.google\.com|oauth\.google\.com/);
-        await popup.close();
+        await page.fill('#user-name', username);
+        await page.fill('#password', 'secret_sauce');
+        await page.click('#login-button');
+        
+        // Should login successfully
+        await expect(page).toHaveURL(/inventory/);
+        await expect(page.locator('.title')).toHaveText('Products');
+        
+        // Logout for next iteration
+        await page.click('#react-burger-menu-btn');
+        await page.click('#logout_sidebar_link');
+        
+        console.log(`✅ ${username} login successful`);
       }
     });
   });

@@ -1,0 +1,932 @@
+{
+    "info": {
+        "name": "Enhanced E-commerce Product Catalog API",
+        "description": "Comprehensive API tests for product catalog functionality with search, filtering, pagination, and negative test scenarios",
+        "version": "2.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "{{base_url}}",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "v1",
+            "type": "string"
+        },
+        {
+            "key": "test_product_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "test_category_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "exec": [
+                    "// Global pre-request script for product catalog tests",
+                    "console.log('Starting Product Catalog API Test: ' + pm.info.requestName);",
+                    "",
+                    "// Set dynamic test data",
+                    "const timestamp = Date.now();",
+                    "pm.globals.set('timestamp', timestamp);",
+                    "pm.globals.set('random_sku', `SKU${timestamp}`);",
+                    "pm.globals.set('random_product_name', `Test Product ${timestamp}`);",
+                    "",
+                    "// Set request headers",
+                    "pm.request.headers.add({",
+                    "    key: 'Content-Type',",
+                    "    value: 'application/json'",
+                    "});",
+                    "",
+                    "pm.request.headers.add({",
+                    "    key: 'Accept',",
+                    "    value: 'application/json'",
+                    "});",
+                    "",
+                    "// Add request ID for tracing",
+                    "pm.request.headers.add({",
+                    "    key: 'X-Request-ID',",
+                    "    value: pm.globals.get('timestamp')",
+                    "});"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "Product Listing Tests",
+            "description": "Product listing and retrieval test scenarios",
+            "item": [
+                {
+                    "name": "Get All Products - Default Pagination",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is acceptable', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has correct structure', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson).to.have.property('data');",
+                                    "    pm.expect(responseJson.data).to.have.property('products');",
+                                    "    pm.expect(responseJson.data).to.have.property('pagination');",
+                                    "    pm.expect(responseJson.data).to.have.property('totalCount');",
+                                    "});",
+                                    "",
+                                    "pm.test('Products array contains valid product objects', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const products = responseJson.data.products;",
+                                    "    ",
+                                    "    pm.expect(products).to.be.an('array');",
+                                    "    ",
+                                    "    if (products.length > 0) {",
+                                    "        const firstProduct = products[0];",
+                                    "        pm.expect(firstProduct).to.have.property('id');",
+                                    "        pm.expect(firstProduct).to.have.property('name');",
+                                    "        pm.expect(firstProduct).to.have.property('description');",
+                                    "        pm.expect(firstProduct).to.have.property('price');",
+                                    "        pm.expect(firstProduct).to.have.property('sku');",
+                                    "        pm.expect(firstProduct).to.have.property('category');",
+                                    "        pm.expect(firstProduct).to.have.property('inStock');",
+                                    "        pm.expect(firstProduct).to.have.property('images');",
+                                    "        ",
+                                    "        // Store first product ID for subsequent tests",
+                                    "        pm.globals.set('test_product_id', firstProduct.id);",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "pm.test('Pagination metadata is correct', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const pagination = responseJson.data.pagination;",
+                                    "    ",
+                                    "    pm.expect(pagination).to.have.property('page');",
+                                    "    pm.expect(pagination).to.have.property('limit');",
+                                    "    pm.expect(pagination).to.have.property('totalPages');",
+                                    "    pm.expect(pagination).to.have.property('hasNext');",
+                                    "    pm.expect(pagination).to.have.property('hasPrev');",
+                                    "    ",
+                                    "    pm.expect(pagination.page).to.be.a('number');",
+                                    "    pm.expect(pagination.limit).to.be.a('number');",
+                                    "    pm.expect(pagination.totalPages).to.be.a('number');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Products - Custom Pagination",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Pagination parameters are respected', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const pagination = responseJson.data.pagination;",
+                                    "    const products = responseJson.data.products;",
+                                    "    ",
+                                    "    pm.expect(pagination.page).to.eql(2);",
+                                    "    pm.expect(pagination.limit).to.eql(5);",
+                                    "    pm.expect(products.length).to.be.at.most(5);",
+                                    "});",
+                                    "",
+                                    "pm.test('Products are different from first page', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const products = responseJson.data.products;",
+                                    "    const firstProductId = pm.globals.get('test_product_id');",
+                                    "    ",
+                                    "    if (products.length > 0 && firstProductId) {",
+                                    "        const productIds = products.map(p => p.id);",
+                                    "        pm.expect(productIds).to.not.include(firstProductId);",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products?page=2&limit=5",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "2"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Products - Invalid Pagination",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates invalid pagination', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('pagination');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products?page=-1&limit=0",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "-1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "0"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Single Product - Valid ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Product details are complete', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('product');",
+                                    "    ",
+                                    "    const product = responseJson.data.product;",
+                                    "    pm.expect(product).to.have.property('id');",
+                                    "    pm.expect(product).to.have.property('name');",
+                                    "    pm.expect(product).to.have.property('description');",
+                                    "    pm.expect(product).to.have.property('price');",
+                                    "    pm.expect(product).to.have.property('sku');",
+                                    "    pm.expect(product).to.have.property('category');",
+                                    "    pm.expect(product).to.have.property('specifications');",
+                                    "    pm.expect(product).to.have.property('images');",
+                                    "    pm.expect(product).to.have.property('reviews');",
+                                    "    pm.expect(product).to.have.property('rating');",
+                                    "});",
+                                    "",
+                                    "pm.test('Product data types are correct', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const product = responseJson.data.product;",
+                                    "    ",
+                                    "    pm.expect(product.price).to.be.a('number');",
+                                    "    pm.expect(product.price).to.be.above(0);",
+                                    "    pm.expect(product.images).to.be.an('array');",
+                                    "    pm.expect(product.inStock).to.be.a('boolean');",
+                                    "    pm.expect(product.rating).to.be.a('number');",
+                                    "    pm.expect(product.rating).to.be.at.least(0).and.at.most(5);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/{{test_product_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "{{test_product_id}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Single Product - Invalid ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 404 Not Found', function () {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates product not found', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('not found');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/99999999",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "99999999"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Product Search Tests",
+            "description": "Product search functionality test scenarios",
+            "item": [
+                {
+                    "name": "Search Products - By Name",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Search results contain query term', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const products = responseJson.data.products;",
+                                    "    const searchTerm = 'laptop';",
+                                    "    ",
+                                    "    if (products.length > 0) {",
+                                    "        products.forEach(product => {",
+                                    "            const nameMatch = product.name.toLowerCase().includes(searchTerm);",
+                                    "            const descMatch = product.description.toLowerCase().includes(searchTerm);",
+                                    "            pm.expect(nameMatch || descMatch).to.be.true;",
+                                    "        });",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "pm.test('Search metadata is present', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.data).to.have.property('searchQuery');",
+                                    "    pm.expect(responseJson.data).to.have.property('totalCount');",
+                                    "    pm.expect(responseJson.data.searchQuery).to.eql('laptop');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/search?q=laptop",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "search"],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "laptop"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Products - Empty Query",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates empty query', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('query');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/search?q=",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "search"],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Products - No Results",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Empty results are handled correctly', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data.products).to.be.an('array');",
+                                    "    pm.expect(responseJson.data.products).to.have.lengthOf(0);",
+                                    "    pm.expect(responseJson.data.totalCount).to.eql(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/search?q=nonexistentproduct12345",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "search"],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "nonexistentproduct12345"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Product Filtering Tests",
+            "description": "Product filtering and sorting test scenarios",
+            "item": [
+                {
+                    "name": "Filter Products - By Category",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('All products belong to specified category', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const products = responseJson.data.products;",
+                                    "    const categoryFilter = 'electronics';",
+                                    "    ",
+                                    "    if (products.length > 0) {",
+                                    "        products.forEach(product => {",
+                                    "            pm.expect(product.category.toLowerCase()).to.include(categoryFilter);",
+                                    "        });",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "pm.test('Filter metadata is present', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.data).to.have.property('filters');",
+                                    "    pm.expect(responseJson.data.filters).to.have.property('category');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products?category=electronics",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"],
+                            "query": [
+                                {
+                                    "key": "category",
+                                    "value": "electronics"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Filter Products - By Price Range",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('All products are within price range', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const products = responseJson.data.products;",
+                                    "    const minPrice = 100;",
+                                    "    const maxPrice = 500;",
+                                    "    ",
+                                    "    if (products.length > 0) {",
+                                    "        products.forEach(product => {",
+                                    "            pm.expect(product.price).to.be.at.least(minPrice);",
+                                    "            pm.expect(product.price).to.be.at.most(maxPrice);",
+                                    "        });",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "pm.test('Price filter metadata is correct', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.data.filters).to.have.property('priceRange');",
+                                    "    pm.expect(responseJson.data.filters.priceRange).to.have.property('min', 100);",
+                                    "    pm.expect(responseJson.data.filters.priceRange).to.have.property('max', 500);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products?minPrice=100&maxPrice=500",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"],
+                            "query": [
+                                {
+                                    "key": "minPrice",
+                                    "value": "100"
+                                },
+                                {
+                                    "key": "maxPrice",
+                                    "value": "500"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Sort Products - By Price Ascending",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Products are sorted by price ascending', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const products = responseJson.data.products;",
+                                    "    ",
+                                    "    if (products.length > 1) {",
+                                    "        for (let i = 1; i < products.length; i++) {",
+                                    "            pm.expect(products[i].price).to.be.at.least(products[i-1].price);",
+                                    "        }",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "pm.test('Sort metadata is present', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.data).to.have.property('sort');",
+                                    "    pm.expect(responseJson.data.sort).to.have.property('field', 'price');",
+                                    "    pm.expect(responseJson.data.sort).to.have.property('order', 'asc');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products?sortBy=price&sortOrder=asc",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"],
+                            "query": [
+                                {
+                                    "key": "sortBy",
+                                    "value": "price"
+                                },
+                                {
+                                    "key": "sortOrder",
+                                    "value": "asc"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Filter Products - Invalid Parameters",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates invalid parameters', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('invalid');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products?minPrice=invalid&maxPrice=also_invalid",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"],
+                            "query": [
+                                {
+                                    "key": "minPrice",
+                                    "value": "invalid"
+                                },
+                                {
+                                    "key": "maxPrice",
+                                    "value": "also_invalid"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Product Management Tests",
+            "description": "Product creation, update, and deletion test scenarios (Admin only)",
+            "item": [
+                {
+                    "name": "Create Product - Valid Data (Admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201 Created', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Product created successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('product');",
+                                    "    ",
+                                    "    const product = responseJson.data.product;",
+                                    "    pm.expect(product).to.have.property('id');",
+                                    "    pm.expect(product).to.have.property('name');",
+                                    "    pm.expect(product).to.have.property('sku');",
+                                    "    pm.expect(product).to.have.property('createdAt');",
+                                    "    ",
+                                    "    // Store product ID for subsequent tests",
+                                    "    pm.globals.set('created_product_id', product.id);",
+                                    "});",
+                                    "",
+                                    "pm.test('Product data matches input', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const product = responseJson.data.product;",
+                                    "    ",
+                                    "    pm.expect(product.name).to.include('Test Product');",
+                                    "    pm.expect(product.price).to.eql(99.99);",
+                                    "    pm.expect(product.category).to.eql('Electronics');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"name\\\": \\\"{{random_product_name}}\\\",\\n  \\\"description\\\": \\\"A comprehensive test product for API validation\\\",\\n  \\\"price\\\": 99.99,\\n  \\\"sku\\\": \\\"{{random_sku}}\\\",\\n  \\\"category\\\": \\\"Electronics\\\",\\n  \\\"stock\\\": 100,\\n  \\\"specifications\\\": {\\n    \\\"brand\\\": \\\"TestBrand\\\",\\n    \\\"model\\\": \\\"TB-001\\\",\\n    \\\"warranty\\\": \\\"1 year\\\"\\n  },\\n  \\\"images\\\": [\\n    \\\"https://example.com/image1.jpg\\\",\\n    \\\"https://example.com/image2.jpg\\\"\\n  ],\\n  \\\"tags\\\": [\\\"test\\\", \\\"electronics\\\", \\\"api\\\"]\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Product - Unauthorized",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 403 Forbidden', function () {",
+                                    "    pm.response.to.have.status(403);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates insufficient permissions', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('permission');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"name\\\": \\\"Unauthorized Product\\\",\\n  \\\"price\\\": 99.99\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Product - Valid Data (Admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Product updated successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('product');",
+                                    "    ",
+                                    "    const product = responseJson.data.product;",
+                                    "    pm.expect(product.name).to.include('Updated');",
+                                    "    pm.expect(product.price).to.eql(149.99);",
+                                    "});",
+                                    "",
+                                    "pm.test('Updated timestamp is recent', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const product = responseJson.data.product;",
+                                    "    const updatedAt = new Date(product.updatedAt);",
+                                    "    const now = new Date();",
+                                    "    const timeDiff = now - updatedAt;",
+                                    "    ",
+                                    "    // Updated within last 5 seconds",
+                                    "    pm.expect(timeDiff).to.be.below(5000);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"name\\\": \\\"Updated {{random_product_name}}\\\",\\n  \\\"description\\\": \\\"An updated test product for API validation\\\",\\n  \\\"price\\\": 149.99,\\n  \\\"stock\\\": 75\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/{{created_product_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "{{created_product_id}}"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Security Tests",
+            "description": "Security-focused test scenarios for product catalog",
+            "item": [
+                {
+                    "name": "SQL Injection Attempt - Product Search",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('SQL injection is prevented', function () {",
+                                    "    // Should return 400 Bad Request or 200 with no results",
+                                    "    const validStatuses = [200, 400];",
+                                    "    pm.expect(validStatuses).to.include(pm.response.code);",
+                                    "});",
+                                    "",
+                                    "pm.test('No SQL error messages in response', function () {",
+                                    "    const responseText = pm.response.text().toLowerCase();",
+                                    "    pm.expect(responseText).to.not.include('sql');",
+                                    "    pm.expect(responseText).to.not.include('database');",
+                                    "    pm.expect(responseText).to.not.include('mysql');",
+                                    "    pm.expect(responseText).to.not.include('syntax error');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products/search?q='; DROP TABLE products; --",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products", "search"],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "'; DROP TABLE products; --"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "XSS Attempt - Product Creation",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('XSS payload is rejected', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('invalid');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"name\\\": \\\"<script>alert('XSS')</script>\\\",\\n  \\\"description\\\": \\\"<img src=x onerror=alert('XSS')>\\\",\\n  \\\"price\\\": 99.99\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/products",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "products"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

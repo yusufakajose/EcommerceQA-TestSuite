@@ -1,6 +1,6 @@
 {
-  "baseURL": "https://demo.playwright.dev/todomvc",
-  "apiBaseURL": "https://demo.playwright.dev/api",
+  "baseURL": "https://magento.softwaretestingboard.com",
+  "apiBaseURL": "https://magento.softwaretestingboard.com/rest",
   "timeout": {
     "action": 45000,
     "navigation": 45000,

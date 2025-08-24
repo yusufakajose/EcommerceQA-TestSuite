@@ -1,0 +1,163 @@
+{
+    "info": {
+        "name": "E-commerce API Complete Test Suite",
+        "description": "Complete API test suite for e-commerce application covering all endpoints and workflows",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "exec": [
+                    "// Global pre-request script",
+                    "console.log('Running request:', pm.info.requestName);",
+                    "console.log('Environment:', pm.environment.name);",
+                    "console.log('Base URL:', pm.environment.get('base_url'));",
+                    "",
+                    "// Add rate limiting for production",
+                    "const environment = pm.environment.name.toLowerCase();",
+                    "if (environment.includes('production')) {",
+                    "    const delay = pm.environment.get('rate_limit_delay') || 1000;",
+                    "    setTimeout(() => {}, delay);",
+                    "}"
+                ],
+                "type": "text/javascript"
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "exec": [
+                    "// Global test script",
+                    "pm.test('Response time is acceptable', function () {",
+                    "    const timeout = parseInt(pm.environment.get('test_timeout')) || 5000;",
+                    "    pm.expect(pm.response.responseTime).to.be.below(timeout);",
+                    "});",
+                    "",
+                    "pm.test('Response has valid JSON structure', function () {",
+                    "    if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                    "        pm.response.to.be.json;",
+                    "    }",
+                    "});",
+                    "",
+                    "pm.test('No server errors', function () {",
+                    "    pm.response.to.not.have.status(500);",
+                    "    pm.response.to.not.have.status(502);",
+                    "    pm.response.to.not.have.status(503);",
+                    "    pm.response.to.not.have.status(504);",
+                    "});",
+                    "",
+                    "// Log response details in debug mode",
+                    "if (pm.environment.get('debug_mode') === 'true') {",
+                    "    console.log('Response Status:', pm.response.status);",
+                    "    console.log('Response Time:', pm.response.responseTime + 'ms');",
+                    "    console.log('Response Size:', pm.response.responseSize + ' bytes');",
+                    "}"
+                ],
+                "type": "text/javascript"
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "{{base_url}}",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "v1",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health Check",
+            "description": "API health and status checks",
+            "item": [
+                {
+                    "name": "API Health Check",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('API is healthy', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Health check response is valid', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('status');",
+                                    "    pm.expect(responseJson.status).to.equal('healthy');",
+                                    "});",
+                                    "",
+                                    "pm.test('Database connection is healthy', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('database');",
+                                    "    pm.expect(responseJson.database.status).to.equal('connected');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/health",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "health"]
+                        },
+                        "description": "Check API health and database connectivity"
+                    }
+                },
+                {
+                    "name": "API Version Info",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Version info available', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Version info is complete', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('version');",
+                                    "    pm.expect(responseJson).to.have.property('buildDate');",
+                                    "    pm.expect(responseJson).to.have.property('environment');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/version",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "version"]
+                        },
+                        "description": "Get API version and build information"
+                    }
+                }
+            ]
+        }
+    ]
+}

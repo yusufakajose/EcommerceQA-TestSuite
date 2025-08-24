@@ -8,8 +8,8 @@ const environment = process.env.TEST_ENV || 'development';
 const envConfigPath = path.join(__dirname, 'environments', `${environment}.json`);
 
 let envConfig = {
-  baseURL: 'http://localhost:3000',
-  apiBaseURL: 'http://localhost:3001/api',
+  baseURL: 'https://magento.softwaretestingboard.com',
+  apiBaseURL: 'https://magento.softwaretestingboard.com/rest',
   timeout: { action: 30000, navigation: 30000, test: 60000 },
   retries: 0,
   workers: undefined,
@@ -31,7 +31,7 @@ if (fs.existsSync(envConfigPath)) {
  * @see https://playwright.dev/docs/test-configuration
  */
 module.exports = defineConfig({
-  testDir: path.join(__dirname, '../automated-tests/ui-tests'),
+  testDir: path.join(__dirname, '../automated-tests'),
   
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -111,82 +111,44 @@ module.exports = defineConfig({
 
   /* Environment-specific browser projects */
   projects: [
-    // Desktop browsers
+    // Desktop browsers - using simple names that match TestExecutor expectations
     ...(envConfig.browsers.includes('chromium') ? [{
-      name: 'Desktop Chrome',
+      name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
         channel: 'chrome'
       },
     }] : []),
     
-    // Brave Browser support
-    {
-      name: 'Brave Browser',
-      use: { 
-        ...devices['Desktop Chrome'],
-        channel: 'chrome',
-        executablePath: process.env.BRAVE_EXECUTABLE_PATH || '/usr/bin/brave-browser'
-      },
-    },
-    
     ...(envConfig.browsers.includes('firefox') ? [{
-      name: 'Desktop Firefox',
+      name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     }] : []),
     
     ...(envConfig.browsers.includes('webkit') ? [{
-      name: 'Desktop Safari',
+      name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     }] : []),
 
     // Mobile browsers (only in development and staging)
     ...(environment !== 'production' ? [
       {
-        name: 'Mobile Chrome',
+        name: 'mobile-chrome',
         use: { ...devices['Pixel 5'] },
       },
       {
-        name: 'Mobile Safari',
+        name: 'mobile-safari',
         use: { ...devices['iPhone 12'] },
       },
       {
-        name: 'Mobile Chrome Small',
-        use: { 
-          ...devices['Galaxy S5'],
-          viewport: { width: 360, height: 640 }
-        },
-      },
-      {
-        name: 'Mobile Safari Small',
-        use: { 
-          ...devices['iPhone SE'],
-          viewport: { width: 375, height: 667 }
-        },
-      },
-      {
-        name: 'Tablet',
+        name: 'tablet',
         use: { ...devices['iPad Pro'] },
-      },
-      {
-        name: 'Tablet Landscape',
-        use: { 
-          ...devices['iPad Pro'],
-          viewport: { width: 1024, height: 768 }
-        },
-      },
-      {
-        name: 'Tablet Portrait',
-        use: { 
-          ...devices['iPad Pro'],
-          viewport: { width: 768, height: 1024 }
-        },
       }
     ] : []),
 
     // Edge browser for comprehensive testing
     ...(environment === 'development' ? [{
-      name: 'Microsoft Edge',
+      name: 'edge',
       use: { 
         ...devices['Desktop Edge'], 
         channel: 'msedge' 

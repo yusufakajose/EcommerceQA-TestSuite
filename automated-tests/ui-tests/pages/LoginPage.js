@@ -13,32 +13,32 @@ class LoginPage extends BasePage {
     this.form = new FormComponent(page);
     this.navigation = new NavigationComponent(page);
     
-    // Page URL
-    this.url = '/login';
+    // Page URL - Magento login page
+    this.url = '/customer/account/login';
     
-    // Page selectors
+    // Page selectors - Magento actual elements
     this.selectors = {
       // Form elements
-      emailInput: '[data-testid="email-input"]',
-      passwordInput: '[data-testid="password-input"]',
-      loginButton: '[data-testid="login-button"]',
-      rememberMeCheckbox: '[data-testid="remember-me"]',
+      emailInput: '#email',
+      passwordInput: '#pass',
+      loginButton: '#send2',
+      rememberMeCheckbox: '#remember_me',
       
       // Links
-      forgotPasswordLink: '[data-testid="forgot-password-link"]',
-      registerLink: '[data-testid="register-link"]',
+      forgotPasswordLink: '.action.remind',
+      registerLink: '.action.create.primary',
       
       // Messages
-      loginError: '[data-testid="login-error"]',
-      loginSuccess: '[data-testid="login-success"]',
+      loginError: '.message-error',
+      loginSuccess: '.message-success',
       
-      // Social login
+      // Social login (if available)
       googleLoginButton: '[data-testid="google-login"]',
       facebookLoginButton: '[data-testid="facebook-login"]',
       
       // Page elements
-      pageTitle: '[data-testid="login-title"]',
-      loginForm: '[data-testid="login-form"]'
+      pageTitle: '.page-title',
+      loginForm: '#login-form'
     };
   }
 

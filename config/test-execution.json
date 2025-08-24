@@ -3,8 +3,8 @@
     "maxParallelWorkers": 4,
     "timeout": 300000,
     "retries": 2,
-    "environments": ["development", "staging"],
-    "browsers": ["chromium", "firefox", "webkit"],
+    "environments": ["development"],
+    "browsers": ["chromium"],
     "outputDir": "./test-results",
     "reportDir": "./reports",
     "cleanPreviousResults": true

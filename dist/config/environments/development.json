@@ -1,0 +1,17 @@
+{
+    "baseURL": "https://demo.playwright.dev/todomvc",
+    "apiBaseURL": "https://demo.playwright.dev/api",
+    "timeout": {
+        "action": 30000,
+        "navigation": 30000,
+        "test": 60000
+    },
+    "retries": 0,
+    "workers": 4,
+    "browsers": ["chromium"],
+    "headless": true,
+    "video": "retain-on-failure",
+    "screenshot": "only-on-failure",
+    "trace": "on-first-retry",
+    "slowMo": 0
+}

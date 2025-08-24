@@ -1,0 +1,1183 @@
+{
+    "info": {
+        "name": "Enhanced E-commerce Order Processing API",
+        "description": "Comprehensive API tests for shopping cart and order processing functionality with extensive positive and negative test scenarios",
+        "version": "2.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "{{base_url}}",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "v1",
+            "type": "string"
+        },
+        {
+            "key": "test_cart_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "test_order_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "exec": [
+                    "// Global pre-request script for order processing tests",
+                    "console.log('Starting Order Processing API Test: ' + pm.info.requestName);",
+                    "",
+                    "// Set dynamic test data",
+                    "const timestamp = Date.now();",
+                    "pm.globals.set('timestamp', timestamp);",
+                    "pm.globals.set('random_order_ref', `ORD${timestamp}`);",
+                    "",
+                    "// Set request headers",
+                    "pm.request.headers.add({",
+                    "    key: 'Content-Type',",
+                    "    value: 'application/json'",
+                    "});",
+                    "",
+                    "pm.request.headers.add({",
+                    "    key: 'Accept',",
+                    "    value: 'application/json'",
+                    "});",
+                    "",
+                    "// Add request ID for tracing",
+                    "pm.request.headers.add({",
+                    "    key: 'X-Request-ID',",
+                    "    value: pm.globals.get('timestamp')",
+                    "});"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "Shopping Cart Tests",
+            "description": "Shopping cart management test scenarios",
+            "item": [
+                {
+                    "name": "Create Cart - Authenticated User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201 Created', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Cart created successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('cart');",
+                                    "    ",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    pm.expect(cart).to.have.property('id');",
+                                    "    pm.expect(cart).to.have.property('userId');",
+                                    "    pm.expect(cart).to.have.property('items');",
+                                    "    pm.expect(cart).to.have.property('totalAmount');",
+                                    "    pm.expect(cart).to.have.property('createdAt');",
+                                    "    ",
+                                    "    // Store cart ID for subsequent tests",
+                                    "    pm.globals.set('test_cart_id', cart.id);",
+                                    "});",
+                                    "",
+                                    "pm.test('New cart is empty', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    ",
+                                    "    pm.expect(cart.items).to.be.an('array');",
+                                    "    pm.expect(cart.items).to.have.lengthOf(0);",
+                                    "    pm.expect(cart.totalAmount).to.eql(0);",
+                                    "    pm.expect(cart.itemCount).to.eql(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Item to Cart - Valid Product",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Item added to cart successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('cart');",
+                                    "    ",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    pm.expect(cart.items).to.have.lengthOf(1);",
+                                    "    pm.expect(cart.itemCount).to.eql(2); // quantity = 2",
+                                    "    pm.expect(cart.totalAmount).to.be.above(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('Cart item has correct structure', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    const item = cart.items[0];",
+                                    "    ",
+                                    "    pm.expect(item).to.have.property('productId');",
+                                    "    pm.expect(item).to.have.property('quantity', 2);",
+                                    "    pm.expect(item).to.have.property('unitPrice');",
+                                    "    pm.expect(item).to.have.property('totalPrice');",
+                                    "    pm.expect(item).to.have.property('product');",
+                                    "    ",
+                                    "    // Verify calculations",
+                                    "    pm.expect(item.totalPrice).to.eql(item.unitPrice * item.quantity);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"productId\\\": \\\"{{test_product_id}}\\\",\\n  \\\"quantity\\\": 2\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/{{test_cart_id}}/items",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "{{test_cart_id}}",
+                                "items"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Item to Cart - Invalid Product",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 404 Not Found', function () {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates product not found', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('product');",
+                                    "    pm.expect(responseJson.error.message).to.include('not found');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"productId\\\": \\\"99999999\\\",\\n  \\\"quantity\\\": 1\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/{{test_cart_id}}/items",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "{{test_cart_id}}",
+                                "items"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Item to Cart - Invalid Quantity",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates invalid quantity', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('quantity');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"productId\\\": \\\"{{test_product_id}}\\\",\\n  \\\"quantity\\\": -1\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/{{test_cart_id}}/items",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "{{test_cart_id}}",
+                                "items"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Cart Item Quantity",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Item quantity updated successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('cart');",
+                                    "    ",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    const item = cart.items[0];",
+                                    "    pm.expect(item.quantity).to.eql(5);",
+                                    "    pm.expect(cart.itemCount).to.eql(5);",
+                                    "});",
+                                    "",
+                                    "pm.test('Total amount recalculated correctly', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    const item = cart.items[0];",
+                                    "    ",
+                                    "    pm.expect(item.totalPrice).to.eql(item.unitPrice * 5);",
+                                    "    pm.expect(cart.totalAmount).to.eql(item.totalPrice);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"quantity\\\": 5\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/{{test_cart_id}}/items/{{test_product_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "{{test_cart_id}}",
+                                "items",
+                                "{{test_product_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Remove Item from Cart",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Item removed from cart successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('cart');",
+                                    "    ",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    pm.expect(cart.items).to.have.lengthOf(0);",
+                                    "    pm.expect(cart.itemCount).to.eql(0);",
+                                    "    pm.expect(cart.totalAmount).to.eql(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/{{test_cart_id}}/items/{{test_product_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "{{test_cart_id}}",
+                                "items",
+                                "{{test_product_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Cart - Authenticated User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Cart data is complete', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('cart');",
+                                    "    ",
+                                    "    const cart = responseJson.data.cart;",
+                                    "    pm.expect(cart).to.have.property('id');",
+                                    "    pm.expect(cart).to.have.property('userId');",
+                                    "    pm.expect(cart).to.have.property('items');",
+                                    "    pm.expect(cart).to.have.property('totalAmount');",
+                                    "    pm.expect(cart).to.have.property('itemCount');",
+                                    "    pm.expect(cart).to.have.property('createdAt');",
+                                    "    pm.expect(cart).to.have.property('updatedAt');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/{{test_cart_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "{{test_cart_id}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Order Creation Tests",
+            "description": "Order creation and management test scenarios",
+            "item": [
+                {
+                    "name": "Create Order - Valid Cart",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Add item back to cart before creating order",
+                                    "pm.sendRequest({",
+                                    "    url: pm.globals.get('base_url') + '/api/v1/cart/' + pm.globals.get('test_cart_id') + '/items',",
+                                    "    method: 'POST',",
+                                    "    header: {",
+                                    "        'Authorization': 'Bearer ' + pm.globals.get('auth_token'),",
+                                    "        'Content-Type': 'application/json'",
+                                    "    },",
+                                    "    body: {",
+                                    "        mode: 'raw',",
+                                    "        raw: JSON.stringify({",
+                                    "            productId: pm.globals.get('test_product_id'),",
+                                    "            quantity: 1",
+                                    "        })",
+                                    "    }",
+                                    "}, function (err, response) {",
+                                    "    if (err) {",
+                                    "        console.log('Failed to add item to cart:', err);",
+                                    "    } else {",
+                                    "        console.log('Item added to cart for order creation');",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201 Created', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Order created successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('order');",
+                                    "    ",
+                                    "    const order = responseJson.data.order;",
+                                    "    pm.expect(order).to.have.property('id');",
+                                    "    pm.expect(order).to.have.property('orderNumber');",
+                                    "    pm.expect(order).to.have.property('userId');",
+                                    "    pm.expect(order).to.have.property('status', 'pending');",
+                                    "    pm.expect(order).to.have.property('items');",
+                                    "    pm.expect(order).to.have.property('totalAmount');",
+                                    "    pm.expect(order).to.have.property('shippingAddress');",
+                                    "    pm.expect(order).to.have.property('billingAddress');",
+                                    "    pm.expect(order).to.have.property('createdAt');",
+                                    "    ",
+                                    "    // Store order ID for subsequent tests",
+                                    "    pm.globals.set('test_order_id', order.id);",
+                                    "});",
+                                    "",
+                                    "pm.test('Order contains cart items', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const order = responseJson.data.order;",
+                                    "    ",
+                                    "    pm.expect(order.items).to.be.an('array');",
+                                    "    pm.expect(order.items.length).to.be.above(0);",
+                                    "    pm.expect(order.totalAmount).to.be.above(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('Order addresses are complete', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const order = responseJson.data.order;",
+                                    "    ",
+                                    "    pm.expect(order.shippingAddress).to.have.property('street');",
+                                    "    pm.expect(order.shippingAddress).to.have.property('city');",
+                                    "    pm.expect(order.shippingAddress).to.have.property('zipCode');",
+                                    "    pm.expect(order.shippingAddress).to.have.property('country');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"cartId\\\": \\\"{{test_cart_id}}\\\",\\n  \\\"shippingAddress\\\": {\\n    \\\"street\\\": \\\"123 Test Street\\\",\\n    \\\"city\\\": \\\"Test City\\\",\\n    \\\"state\\\": \\\"Test State\\\",\\n    \\\"zipCode\\\": \\\"12345\\\",\\n    \\\"country\\\": \\\"Test Country\\\"\\n  },\\n  \\\"billingAddress\\\": {\\n    \\\"street\\\": \\\"123 Test Street\\\",\\n    \\\"city\\\": \\\"Test City\\\",\\n    \\\"state\\\": \\\"Test State\\\",\\n    \\\"zipCode\\\": \\\"12345\\\",\\n    \\\"country\\\": \\\"Test Country\\\"\\n  },\\n  \\\"paymentMethod\\\": {\\n    \\\"type\\\": \\\"credit_card\\\",\\n    \\\"cardNumber\\\": \\\"4111111111111111\\\",\\n    \\\"expiryMonth\\\": \\\"12\\\",\\n    \\\"expiryYear\\\": \\\"2025\\\",\\n    \\\"cvv\\\": \\\"123\\\"\\n  }\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Order - Empty Cart",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates empty cart', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('empty');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"cartId\\\": \\\"empty_cart_id\\\",\\n  \\\"shippingAddress\\\": {\\n    \\\"street\\\": \\\"123 Test Street\\\",\\n    \\\"city\\\": \\\"Test City\\\",\\n    \\\"zipCode\\\": \\\"12345\\\",\\n    \\\"country\\\": \\\"Test Country\\\"\\n  }\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Order - Invalid Payment Method",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 400 Bad Request', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates invalid payment', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('payment');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"cartId\\\": \\\"{{test_cart_id}}\\\",\\n  \\\"shippingAddress\\\": {\\n    \\\"street\\\": \\\"123 Test Street\\\",\\n    \\\"city\\\": \\\"Test City\\\",\\n    \\\"zipCode\\\": \\\"12345\\\",\\n    \\\"country\\\": \\\"Test Country\\\"\\n  },\\n  \\\"paymentMethod\\\": {\\n    \\\"type\\\": \\\"credit_card\\\",\\n    \\\"cardNumber\\\": \\\"invalid_card\\\",\\n    \\\"expiryMonth\\\": \\\"13\\\",\\n    \\\"expiryYear\\\": \\\"2020\\\",\\n    \\\"cvv\\\": \\\"12\\\"\\n  }\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Order Management Tests",
+            "description": "Order retrieval and status management test scenarios",
+            "item": [
+                {
+                    "name": "Get Order - Valid ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Order details are complete', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('order');",
+                                    "    ",
+                                    "    const order = responseJson.data.order;",
+                                    "    pm.expect(order).to.have.property('id');",
+                                    "    pm.expect(order).to.have.property('orderNumber');",
+                                    "    pm.expect(order).to.have.property('status');",
+                                    "    pm.expect(order).to.have.property('items');",
+                                    "    pm.expect(order).to.have.property('totalAmount');",
+                                    "    pm.expect(order).to.have.property('shippingAddress');",
+                                    "    pm.expect(order).to.have.property('createdAt');",
+                                    "    pm.expect(order).to.have.property('updatedAt');",
+                                    "});",
+                                    "",
+                                    "pm.test('Order items have product details', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const order = responseJson.data.order;",
+                                    "    ",
+                                    "    if (order.items.length > 0) {",
+                                    "        const item = order.items[0];",
+                                    "        pm.expect(item).to.have.property('productId');",
+                                    "        pm.expect(item).to.have.property('quantity');",
+                                    "        pm.expect(item).to.have.property('unitPrice');",
+                                    "        pm.expect(item).to.have.property('totalPrice');",
+                                    "        pm.expect(item).to.have.property('product');",
+                                    "        pm.expect(item.product).to.have.property('name');",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders/{{test_order_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders",
+                                "{{test_order_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Order - Invalid ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 404 Not Found', function () {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates order not found', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('not found');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders/99999999",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders",
+                                "99999999"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Orders - Authenticated",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Orders list is returned', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('orders');",
+                                    "    pm.expect(responseJson.data).to.have.property('pagination');",
+                                    "    pm.expect(responseJson.data).to.have.property('totalCount');",
+                                    "    ",
+                                    "    pm.expect(responseJson.data.orders).to.be.an('array');",
+                                    "});",
+                                    "",
+                                    "pm.test('Orders contain required fields', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const orders = responseJson.data.orders;",
+                                    "    ",
+                                    "    if (orders.length > 0) {",
+                                    "        const order = orders[0];",
+                                    "        pm.expect(order).to.have.property('id');",
+                                    "        pm.expect(order).to.have.property('orderNumber');",
+                                    "        pm.expect(order).to.have.property('status');",
+                                    "        pm.expect(order).to.have.property('totalAmount');",
+                                    "        pm.expect(order).to.have.property('createdAt');",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Order Status - Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Order status updated successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('order');",
+                                    "    ",
+                                    "    const order = responseJson.data.order;",
+                                    "    pm.expect(order.status).to.eql('processing');",
+                                    "});",
+                                    "",
+                                    "pm.test('Status history is updated', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const order = responseJson.data.order;",
+                                    "    ",
+                                    "    pm.expect(order).to.have.property('statusHistory');",
+                                    "    pm.expect(order.statusHistory).to.be.an('array');",
+                                    "    pm.expect(order.statusHistory.length).to.be.above(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"status\\\": \\\"processing\\\",\\n  \\\"notes\\\": \\\"Order is being processed\\\"\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders/{{test_order_id}}/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders",
+                                "{{test_order_id}}",
+                                "status"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Cancel Order - Customer",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Order cancelled successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', true);",
+                                    "    pm.expect(responseJson.data).to.have.property('order');",
+                                    "    ",
+                                    "    const order = responseJson.data.order;",
+                                    "    pm.expect(order.status).to.eql('cancelled');",
+                                    "});",
+                                    "",
+                                    "pm.test('Cancellation reason is recorded', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    const order = responseJson.data.order;",
+                                    "    ",
+                                    "    pm.expect(order).to.have.property('cancellationReason');",
+                                    "    pm.expect(order.cancellationReason).to.include('customer request');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\\n  \\\"reason\\\": \\\"Changed mind - customer request\\\"\\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders/{{test_order_id}}/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders",
+                                "{{test_order_id}}",
+                                "cancel"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Security Tests",
+            "description": "Security-focused test scenarios for order processing",
+            "item": [
+                {
+                    "name": "Access Other User's Cart - Unauthorized",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 403 Forbidden', function () {",
+                                    "    pm.response.to.have.status(403);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates access denied', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('access');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/cart/other_user_cart_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "cart",
+                                "other_user_cart_id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Access Other User's Order - Unauthorized",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 403 Forbidden', function () {",
+                                    "    pm.response.to.have.status(403);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error message indicates access denied', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('success', false);",
+                                    "    pm.expect(responseJson.error.message).to.include('access');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders/other_user_order_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders",
+                                "other_user_order_id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SQL Injection Attempt - Order Search",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('SQL injection is prevented', function () {",
+                                    "    // Should return 400 Bad Request or 200 with no results",
+                                    "    const validStatuses = [200, 400];",
+                                    "    pm.expect(validStatuses).to.include(pm.response.code);",
+                                    "});",
+                                    "",
+                                    "pm.test('No SQL error messages in response', function () {",
+                                    "    const responseText = pm.response.text().toLowerCase();",
+                                    "    pm.expect(responseText).to.not.include('sql');",
+                                    "    pm.expect(responseText).to.not.include('database');",
+                                    "    pm.expect(responseText).to.not.include('mysql');",
+                                    "    pm.expect(responseText).to.not.include('syntax error');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/orders?search='; DROP TABLE orders; --",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "{{api_version}}",
+                                "orders"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "'; DROP TABLE orders; --"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

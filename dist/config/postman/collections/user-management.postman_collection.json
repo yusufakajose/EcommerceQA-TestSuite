@@ -1,0 +1,517 @@
+{
+    "info": {
+        "name": "E-commerce User Management API",
+        "description": "Comprehensive API tests for user management functionality including registration, authentication, and profile management",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "{{base_url}}",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "v1",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "description": "User authentication endpoints",
+            "item": [
+                {
+                    "name": "User Registration",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has user data', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('user');",
+                                    "    pm.expect(responseJson.user).to.have.property('id');",
+                                    "    pm.expect(responseJson.user).to.have.property('email');",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is less than 2000ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                                    "});",
+                                    "",
+                                    "// Store user ID for subsequent tests",
+                                    "if (pm.response.code === 201) {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.environment.set('user_id', responseJson.user.id);",
+                                    "    pm.environment.set('user_email', responseJson.user.email);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        },
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Generate unique email for registration",
+                                    "const timestamp = Date.now();",
+                                    "const randomNum = Math.floor(Math.random() * 1000);",
+                                    "const uniqueEmail = `testuser${timestamp}${randomNum}@example.com`;",
+                                    "pm.environment.set('unique_email', uniqueEmail);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"firstName\": \"{{$randomFirstName}}\",\n  \"lastName\": \"{{$randomLastName}}\",\n  \"email\": \"{{unique_email}}\",\n  \"password\": \"SecurePassword123!\",\n  \"phone\": \"+1-555-{{$randomInt}}\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"address\": {\n    \"street\": \"{{$randomStreetAddress}}\",\n    \"city\": \"{{$randomCity}}\",\n    \"state\": \"{{$randomStateAbbr}}\",\n    \"zipCode\": \"{{$randomZipCode}}\",\n    \"country\": \"United States\"\n  },\n  \"preferences\": {\n    \"newsletter\": true,\n    \"notifications\": false\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/auth/register",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "auth", "register"]
+                        },
+                        "description": "Register a new user account with complete profile information"
+                    }
+                },
+                {
+                    "name": "User Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has authentication token', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('token');",
+                                    "    pm.expect(responseJson).to.have.property('user');",
+                                    "});",
+                                    "",
+                                    "pm.test('Token is valid format', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.token).to.be.a('string');",
+                                    "    pm.expect(responseJson.token.length).to.be.greaterThan(10);",
+                                    "});",
+                                    "",
+                                    "// Store authentication token",
+                                    "if (pm.response.code === 200) {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.environment.set('auth_token', responseJson.token);",
+                                    "    pm.environment.set('current_user_id', responseJson.user.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"SecurePassword123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/auth/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "auth", "login"]
+                        },
+                        "description": "Authenticate user and receive access token"
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has new token', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('token');",
+                                    "});",
+                                    "",
+                                    "// Update stored token",
+                                    "if (pm.response.code === 200) {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.environment.set('auth_token', responseJson.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/auth/refresh",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "auth", "refresh"]
+                        },
+                        "description": "Refresh authentication token"
+                    }
+                },
+                {
+                    "name": "User Logout",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response confirms logout', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('message');",
+                                    "});",
+                                    "",
+                                    "// Clear stored authentication data",
+                                    "pm.environment.unset('auth_token');",
+                                    "pm.environment.unset('current_user_id');"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/auth/logout",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "auth", "logout"]
+                        },
+                        "description": "Logout user and invalidate token"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "User Profile Management",
+            "description": "User profile CRUD operations",
+            "item": [
+                {
+                    "name": "Get User Profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has user profile data', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('id');",
+                                    "    pm.expect(responseJson).to.have.property('email');",
+                                    "    pm.expect(responseJson).to.have.property('firstName');",
+                                    "    pm.expect(responseJson).to.have.property('lastName');",
+                                    "});",
+                                    "",
+                                    "pm.test('Email format is valid', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/users/{{current_user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "users", "{{current_user_id}}"]
+                        },
+                        "description": "Get current user's profile information"
+                    }
+                },
+                {
+                    "name": "Update User Profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has updated user data', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('id');",
+                                    "    pm.expect(responseJson).to.have.property('firstName');",
+                                    "});",
+                                    "",
+                                    "pm.test('Profile was updated', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.firstName).to.equal('UpdatedFirstName');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"firstName\": \"UpdatedFirstName\",\n  \"lastName\": \"UpdatedLastName\",\n  \"phone\": \"+1-555-9999\",\n  \"preferences\": {\n    \"newsletter\": false,\n    \"notifications\": true\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/users/{{current_user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "users", "{{current_user_id}}"]
+                        },
+                        "description": "Update user profile information"
+                    }
+                },
+                {
+                    "name": "Change Password",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response confirms password change', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('message');",
+                                    "    pm.expect(responseJson.message).to.include('password');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentPassword\": \"SecurePassword123!\",\n  \"newPassword\": \"NewSecurePassword456@\",\n  \"confirmPassword\": \"NewSecurePassword456@\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/users/{{current_user_id}}/password",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "users", "{{current_user_id}}", "password"]
+                        },
+                        "description": "Change user password"
+                    }
+                },
+                {
+                    "name": "Delete User Account",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 or 204', function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response confirms deletion', function () {",
+                                    "    if (pm.response.code === 200) {",
+                                    "        const responseJson = pm.response.json();",
+                                    "        pm.expect(responseJson).to.have.property('message');",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "// Clear environment variables",
+                                    "pm.environment.unset('auth_token');",
+                                    "pm.environment.unset('current_user_id');",
+                                    "pm.environment.unset('user_id');",
+                                    "pm.environment.unset('user_email');"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/users/{{current_user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "users", "{{current_user_id}}"]
+                        },
+                        "description": "Delete user account permanently"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Password Reset",
+            "description": "Password reset workflow",
+            "item": [
+                {
+                    "name": "Request Password Reset",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response confirms reset email sent', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('message');",
+                                    "    pm.expect(responseJson.message).to.include('email');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{user_email}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/auth/forgot-password",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "auth", "forgot-password"]
+                        },
+                        "description": "Request password reset email"
+                    }
+                },
+                {
+                    "name": "Reset Password",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response confirms password reset', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson).to.have.property('message');",
+                                    "    pm.expect(responseJson.message).to.include('password');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"token\": \"{{reset_token}}\",\n  \"newPassword\": \"ResetPassword789#\",\n  \"confirmPassword\": \"ResetPassword789#\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/{{api_version}}/auth/reset-password",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "{{api_version}}", "auth", "reset-password"]
+                        },
+                        "description": "Reset password using token from email"
+                    }
+                }
+            ]
+        }
+    ]
+}

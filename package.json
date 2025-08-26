@@ -31,7 +31,8 @@
     "clean": "rm -rf test-results/ reports/ playwright-report/",
     "ci:test": "npm run test -- --reporter=junit",
     "ci:load": "npm run test:load:comprehensive -- --testType=smoke",
-    "ci:health-check": "npm run test:api"
+    "ci:health-check": "npm run test:api",
+    "ci:monitor": "node scripts/ci/monitor.js"
   },
   "keywords": [
     "qa",

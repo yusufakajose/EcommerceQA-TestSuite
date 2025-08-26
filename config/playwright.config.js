@@ -32,6 +32,10 @@ if (fs.existsSync(envConfigPath)) {
  */
 module.exports = defineConfig({
   testDir: path.join(__dirname, '../automated-tests'),
+  testIgnore: [
+    '**/contract-tests/**',
+    '**/load-tests/**'
+  ],
   
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -55,7 +59,7 @@ module.exports = defineConfig({
       outputFile: `reports/test-execution/${environment}/test-results.json` 
     }],
     ['junit', { 
-      outputFile: `reports/test-execution/${environment}/junit-results.xml` 
+      outputFile: `reports/junit.xml` 
     }],
     ['list', { printSteps: environment === 'development' }]
   ],

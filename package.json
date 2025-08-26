@@ -28,11 +28,20 @@
     "demo:load": "npm run test:load:comprehensive",
     "setup": "npm install && npx playwright install",
     "lint": "eslint automated-tests/ scripts/ --ext .js",
+    "lint:check": "eslint automated-tests/ scripts/ --ext .js --max-warnings=0",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json",
     "clean": "rm -rf test-results/ reports/ playwright-report/",
     "ci:test": "npm run test -- --reporter=junit",
     "ci:load": "npm run test:load:comprehensive -- --testType=smoke",
     "ci:health-check": "npm run test:api",
-    "ci:monitor": "node scripts/ci/monitor.js"
+    "ci:monitor": "node scripts/ci/monitor.js",
+    "test:ci:smoke": "playwright test --config=config/playwright.config.js --project=chromium",
+    "test:api:comprehensive": "npm run test:api",
+    "test:performance:advanced": "npm run report:performance",
+    "test:security": "playwright test security-tests/ --config=config/playwright.config.js",
+    "test:aggregate": "node scripts/reporting/aggregate.js",
+    "report:consolidated": "node scripts/reporting/consolidated-report.js"
   },
   "keywords": [
     "qa",

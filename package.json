@@ -36,7 +36,7 @@
     "ci:load": "npm run test:load:comprehensive -- --testType=smoke",
     "ci:health-check": "npm run test:api",
     "ci:monitor": "node scripts/ci/monitor.js",
-    "test:ci:smoke": "playwright test --config=config/playwright.config.js --project=chromium",
+    "test:ci:smoke": "playwright test automated-tests/ui-tests/smoke.spec.js --config=config/playwright.config.js --project=chromium",
     "test:api:comprehensive": "npm run test:api",
     "test:performance:advanced": "npm run report:performance",
     "test:security": "playwright test security-tests/ --config=config/playwright.config.js",

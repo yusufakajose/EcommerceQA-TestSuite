@@ -7,6 +7,7 @@ on:
 
 env:
   NODE_VERSION: '18'
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/ms-playwright
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
@@ -77,6 +78,15 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run smoke tests
@@ -85,6 +95,16 @@ jobs:
         env:
           CI: true
           PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-pr-smoke
+          path: |
+            test-results/
+            reports/test-execution/**/playwright-report/
+          retention-days: 3
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -95,6 +115,48 @@ jobs:
             reports/
             test-results/
           retention-days: 3
+
+      - name: PR job summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const reportPath = path.join('reports','test-execution','development','test-results.json');
+            const totals = { total: 0, passed: 0, failed: 0, skipped: 0 };
+            function walkSuite(suite) {
+              for (const s of suite.suites || []) walkSuite(s);
+              for (const spec of suite.specs || []) {
+                for (const test of spec.tests || []) {
+                  totals.total++;
+                  const res = (test.results && test.results[0]) || {};
+                  const st = res.status || test.status || 'unknown';
+                  if (st === 'passed') totals.passed++;
+                  else if (st === 'skipped' || st === 'interrupted') totals.skipped++;
+                  else totals.failed++;
+                }
+              }
+            }
+            try {
+              if (fs.existsSync(reportPath)) {
+                const data = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                if (data && Array.isArray(data.suites)) walkSuite({ suites: data.suites });
+              }
+            } catch (e) {
+              // ignore parsing errors; leave totals as zeros
+            }
+            await core.summary
+              .addHeading('PR Smoke Test Summary')
+              .addTable([
+                ['Metric','Count'],
+                ['Total', String(totals.total)],
+                ['Passed', String(totals.passed)],
+                ['Failed', String(totals.failed)],
+                ['Skipped', String(totals.skipped)],
+              ])
+              .addLink('View workflow and artifacts', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`)
+              .write();
 
       - name: Comment PR with results
         if: always()

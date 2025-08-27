@@ -2,6 +2,7 @@
 const { defineConfig, devices } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
+const isCI = !!process.env.CI;
 
 // Load environment-specific configuration
 const environment = process.env.TEST_ENV || 'development';
@@ -119,8 +120,9 @@ module.exports = defineConfig({
     ...(envConfig.browsers.includes('chromium') ? [{
       name: 'chromium',
       use: { 
-        ...devices['Desktop Chrome'],
-        channel: 'chrome'
+    ...devices['Desktop Chrome'],
+    // In CI, rely on Playwright's bundled Chromium instead of system Chrome
+    ...(isCI ? {} : { channel: 'chrome' })
       },
     }] : []),
     
@@ -134,8 +136,8 @@ module.exports = defineConfig({
       use: { ...devices['Desktop Safari'] },
     }] : []),
 
-    // Mobile browsers (only in development and staging)
-    ...(environment !== 'production' ? [
+  // Mobile browsers (development/staging only, and never in CI)
+  ...(environment !== 'production' && !isCI ? [
       {
         name: 'mobile-chrome',
         use: { ...devices['Pixel 5'] },
@@ -150,8 +152,8 @@ module.exports = defineConfig({
       }
     ] : []),
 
-    // Edge browser for comprehensive testing
-    ...(environment === 'development' ? [{
+  // Edge browser for comprehensive testing (not in CI)
+  ...(environment === 'development' && !isCI ? [{
       name: 'edge',
       use: { 
         ...devices['Desktop Edge'], 

@@ -73,47 +73,28 @@
     "browser": {
       "description": "Users who browse without purchasing",
       "weight": 40,
-      "actions": [
-        "browse_products",
-        "search_products",
-        "view_product_details"
-      ],
+      "actions": ["browse_products", "search_products", "view_product_details"],
       "purchaseProbability": 0.1,
       "sessionDuration": "short"
     },
     "researcher": {
       "description": "Users who research products extensively",
       "weight": 25,
-      "actions": [
-        "search_products",
-        "filter_products",
-        "compare_products",
-        "read_reviews"
-      ],
+      "actions": ["search_products", "filter_products", "compare_products", "read_reviews"],
       "purchaseProbability": 0.3,
       "sessionDuration": "long"
     },
     "shopper": {
       "description": "Users who actively shop and make purchases",
       "weight": 30,
-      "actions": [
-        "browse_products",
-        "add_to_cart",
-        "checkout",
-        "complete_purchase"
-      ],
+      "actions": ["browse_products", "add_to_cart", "checkout", "complete_purchase"],
       "purchaseProbability": 0.8,
       "sessionDuration": "medium"
     },
     "returner": {
       "description": "Returning users with specific purchase intent",
       "weight": 5,
-      "actions": [
-        "login",
-        "search_specific_product",
-        "add_to_cart",
-        "checkout"
-      ],
+      "actions": ["login", "search_specific_product", "add_to_cart", "checkout"],
       "purchaseProbability": 0.9,
       "sessionDuration": "short"
     }
@@ -155,18 +136,12 @@
       "passwordComplexity": "medium"
     },
     "productSelection": {
-      "categories": [
-        "electronics",
-        "clothing",
-        "books",
-        "home",
-        "sports"
-      ],
+      "categories": ["electronics", "clothing", "books", "home", "sports"],
       "priceRanges": [
-        {"min": 10, "max": 50},
-        {"min": 50, "max": 200},
-        {"min": 200, "max": 1000},
-        {"min": 1000, "max": 5000}
+        { "min": 10, "max": 50 },
+        { "min": 50, "max": 200 },
+        { "min": 200, "max": 1000 },
+        { "min": 1000, "max": 5000 }
       ]
     },
     "cartBehavior": {
@@ -183,12 +158,7 @@
       "concurrent_users",
       "resource_utilization"
     ],
-    "aggregationIntervals": [
-      "1s",
-      "10s",
-      "1m",
-      "5m"
-    ],
+    "aggregationIntervals": ["1s", "10s", "1m", "5m"],
     "percentiles": [50, 75, 90, 95, 99],
     "generateCharts": true,
     "includeRawData": false

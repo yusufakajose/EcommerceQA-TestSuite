@@ -1,6 +1,7 @@
 # Bug Report: Login Fails with Valid Credentials
 
 ## Bug Information
+
 - **Bug ID**: BUG-AUTH-001
 - **Bug Title**: Login fails with valid credentials after password reset
 - **Reporter**: QA Testing Team
@@ -9,6 +10,7 @@
 - **Assigned To**: Authentication Team
 
 ## Classification
+
 - **Severity**: High
 - **Priority**: P2
 - **Bug Type**: Functional
@@ -16,6 +18,7 @@
 - **Status**: Open
 
 ## Environment Information
+
 - **Browser**: Chrome 120.0.6099.109
 - **Operating System**: Windows 11
 - **Device**: Desktop
@@ -24,13 +27,17 @@
 - **Test Environment**: Staging
 
 ## Bug Description
+
 ### Summary
+
 Users cannot log in with valid credentials after completing a password reset process, receiving "Invalid credentials" error despite using the new password.
 
 ### Detailed Description
+
 After a user successfully resets their password through the "Forgot Password" flow and receives a confirmation email, they are unable to log in using the new password. The system consistently returns an "Invalid email or password" error message, even though the credentials are correct. This prevents users from accessing their accounts after password reset, effectively locking them out of the system.
 
 ## Steps to Reproduce
+
 1. Navigate to the login page
 2. Click "Forgot Password" link
 3. Enter valid email address: "testuser@example.com"
@@ -46,35 +53,43 @@ After a user successfully resets their password through the "Forgot Password" fl
 13. Click "Login" button
 
 ## Expected Result
+
 User should be successfully logged in and redirected to their dashboard/home page.
 
 ## Actual Result
+
 System displays error message "Invalid email or password" and user remains on the login page. Login attempt fails despite using the correct new password.
 
 ## Test Data Used
-| Field | Value | Notes |
-|-------|-------|-------|
-| Email | testuser@example.com | Valid registered user account |
-| Old Password | OldPassword123! | Previous password before reset |
-| New Password | NewSecurePass123! | New password set during reset |
+
+| Field        | Value                | Notes                          |
+| ------------ | -------------------- | ------------------------------ |
+| Email        | testuser@example.com | Valid registered user account  |
+| Old Password | OldPassword123!      | Previous password before reset |
+| New Password | NewSecurePass123!    | New password set during reset  |
 
 ## Reproducibility
+
 - **Frequency**: Always
 - **Reproducible**: Yes
 - **Conditions**: Occurs consistently after password reset process
 
 ## Impact Assessment
+
 ### Business Impact
+
 - **User Impact**: All users attempting password reset are affected
 - **Functional Impact**: Password reset functionality is completely broken
 - **Revenue Impact**: Users cannot access accounts to make purchases
 
 ### Technical Impact
+
 - **System Impact**: Authentication system not properly updating password hashes
 - **Data Impact**: Possible password hash synchronization issue
 - **Integration Impact**: May affect other authentication-dependent features
 
 ## Attachments
+
 - [x] **Screenshots**: Login error message screenshot attached
 - [x] **Video Recording**: Screen recording of complete reproduction steps
 - [ ] **Log Files**: Server logs requested from development team
@@ -82,13 +97,16 @@ System displays error message "Invalid email or password" and user remains on th
 - [ ] **Database Queries**: Database state investigation needed
 
 ## Additional Information
+
 ### Browser Console Errors
+
 ```
 POST /api/auth/login 401 (Unauthorized)
 Error: Authentication failed - invalid credentials
 ```
 
 ### Network Requests
+
 ```
 Request: POST /api/auth/login
 {
@@ -104,31 +122,39 @@ Response: 401 Unauthorized
 ```
 
 ### Related Issues
+
 - **Related Bugs**: None identified
 - **Duplicate Of**: N/A
 - **Blocks**: User account access, purchase functionality
 - **Blocked By**: None
 
 ## Resolution Information
+
 ### Root Cause Analysis
+
 [To be filled by developer]
 
 ### Fix Description
+
 [To be filled by developer]
 
 ### Code Changes
+
 [To be filled by developer]
 
 ### Testing Notes
+
 [To be filled by tester]
 
 ## Verification
+
 - **Verification Date**: [Pending fix]
 - **Verified By**: [Pending]
 - **Verification Result**: [Pending]
 - **Verification Notes**: [Pending]
 
 ## Closure Information
+
 - **Resolution**: [Pending]
 - **Closed Date**: [Pending]
 - **Closed By**: [Pending]

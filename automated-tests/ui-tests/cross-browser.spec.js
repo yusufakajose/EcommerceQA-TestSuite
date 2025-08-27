@@ -52,9 +52,13 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await loginPage.fillLoginForm(userData.email, userData.password);
       await loginPage.submitForm();
 
-      const isSuccessful = await page.url().includes('/dashboard') ||
-                           await page.url().includes('/profile') ||
-                           await loginPage.getSuccessMessage().isVisible().catch(() => false);
+      const isSuccessful =
+        (await page.url().includes('/dashboard')) ||
+        (await page.url().includes('/profile')) ||
+        (await loginPage
+          .getSuccessMessage()
+          .isVisible()
+          .catch(() => false));
       expect(isSuccessful).toBe(true);
 
       if (browserName === 'webkit') {
@@ -71,8 +75,12 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await expect(firstProduct).toBeVisible();
       await firstProduct.click();
 
-      const isProductPageLoaded = await page.url().includes('/product/') ||
-                                 await catalogPage.getProductModal().isVisible().catch(() => false);
+      const isProductPageLoaded =
+        (await page.url().includes('/product/')) ||
+        (await catalogPage
+          .getProductModal()
+          .isVisible()
+          .catch(() => false));
       expect(isProductPageLoaded).toBe(true);
 
       if (browserName !== 'webkit' || !page.context().browser().version().includes('Mobile')) {
@@ -122,7 +130,7 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       expect(footerBox.y).toBeGreaterThan(mainBox.y);
 
       if (browserName === 'firefox') {
-        const fontSize = await main.evaluate(el => window.getComputedStyle(el).fontSize);
+        const fontSize = await main.evaluate((el) => window.getComputedStyle(el).fontSize);
         expect(fontSize).toMatch(/\d+px/);
       }
     });
@@ -134,16 +142,16 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       const productGrid = catalogPage.getProductGrid();
       await expect(productGrid).toBeVisible();
 
-      const gridStyle = await productGrid.evaluate(el => {
+      const gridStyle = await productGrid.evaluate((el) => {
         const style = window.getComputedStyle(el);
         return {
           display: style.display,
           gridTemplateColumns: style.gridTemplateColumns,
-          flexWrap: style.flexWrap
+          flexWrap: style.flexWrap,
         };
       });
 
-      expect(['grid', 'flex'].some(display => gridStyle.display.includes(display))).toBe(true);
+      expect(['grid', 'flex'].some((display) => gridStyle.display.includes(display))).toBe(true);
 
       const products = await catalogPage.getAllProducts();
       const productCount = await products.count();
@@ -175,7 +183,9 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await expect(cartPage.getCartItems()).toHaveCount(1);
 
       if (browserName === 'webkit') {
-        const cartIconStyle = await cartIcon.evaluate(el => window.getComputedStyle(el).transition);
+        const cartIconStyle = await cartIcon.evaluate(
+          (el) => window.getComputedStyle(el).transition
+        );
         expect(typeof cartIconStyle).toBe('string');
       }
     });
@@ -193,7 +203,10 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await catalogPage.addProductToCart('prod001');
       await page.reload();
 
-      const cartCount = await catalogPage.getCartItemCount().textContent().catch(() => '0');
+      const cartCount = await catalogPage
+        .getCartItemCount()
+        .textContent()
+        .catch(() => '0');
       expect(parseInt(cartCount) || 0).toBeGreaterThanOrEqual(0);
 
       await page.evaluate(() => localStorage.removeItem('testKey'));
@@ -222,9 +235,9 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       const catalogPage = new ProductCatalogPage(page);
       await catalogPage.navigate();
 
-      await page.evaluate(() => document.cookie = 'testCookie=testCookieValue; path=/');
+      await page.evaluate(() => (document.cookie = 'testCookie=testCookieValue; path=/'));
       const cookies = await page.context().cookies();
-      const testCookie = cookies.find(cookie => cookie.name === 'testCookie');
+      const testCookie = cookies.find((cookie) => cookie.name === 'testCookie');
       expect(testCookie).toBeDefined();
       expect(testCookie.value).toBe('testCookieValue');
 
@@ -235,10 +248,11 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await loginPage.submitForm();
 
       const authCookies = await page.context().cookies();
-      const hasAuthCookie = authCookies.some(cookie => 
-        cookie.name.includes('auth') || 
-        cookie.name.includes('session') || 
-        cookie.name.includes('token')
+      const hasAuthCookie = authCookies.some(
+        (cookie) =>
+          cookie.name.includes('auth') ||
+          cookie.name.includes('session') ||
+          cookie.name.includes('token')
       );
       expect(typeof hasAuthCookie).toBe('boolean');
     });
@@ -256,8 +270,11 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await catalogPage.searchProducts('test');
       await page.waitForTimeout(2000);
 
-      const hasResults = await catalogPage.getSearchResults().count() > 0;
-      const hasNoResultsMessage = await catalogPage.getNoResultsMessage().isVisible().catch(() => false);
+      const hasResults = (await catalogPage.getSearchResults().count()) > 0;
+      const hasNoResultsMessage = await catalogPage
+        .getNoResultsMessage()
+        .isVisible()
+        .catch(() => false);
       expect(hasResults || hasNoResultsMessage).toBe(true);
     });
   });
@@ -279,8 +296,15 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       await passwordInput.fill('123');
       await loginPage.submitForm();
 
-      const hasValidationErrors = await loginPage.getFieldError('email').isVisible().catch(() => false) ||
-                                 await loginPage.getErrorMessage().isVisible().catch(() => false);
+      const hasValidationErrors =
+        (await loginPage
+          .getFieldError('email')
+          .isVisible()
+          .catch(() => false)) ||
+        (await loginPage
+          .getErrorMessage()
+          .isVisible()
+          .catch(() => false));
       expect(hasValidationErrors).toBe(true);
     });
 
@@ -323,14 +347,21 @@ test.describe('Cross-Browser Compatibility Tests', () => {
   test.describe('Error Handling Across Browsers', () => {
     test('should handle network errors consistently', async ({ page }) => {
       const catalogPage = new ProductCatalogPage(page);
-      await page.route('**/api/**', route => route.abort());
+      await page.route('**/api/**', (route) => route.abort());
 
       await catalogPage.navigate();
       await catalogPage.searchProducts('test');
       await page.waitForTimeout(3000);
 
-      const hasErrorMessage = await catalogPage.getErrorMessage().isVisible().catch(() => false) ||
-                             await catalogPage.getNetworkErrorMessage().isVisible().catch(() => false);
+      const hasErrorMessage =
+        (await catalogPage
+          .getErrorMessage()
+          .isVisible()
+          .catch(() => false)) ||
+        (await catalogPage
+          .getNetworkErrorMessage()
+          .isVisible()
+          .catch(() => false));
       expect(hasErrorMessage).toBe(true);
 
       await page.unroute('**/api/**');
@@ -340,20 +371,23 @@ test.describe('Cross-Browser Compatibility Tests', () => {
       const catalogPage = new ProductCatalogPage(page);
 
       const consoleErrors = [];
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         if (msg.type() === 'error') consoleErrors.push(msg.text());
       });
 
       const pageErrors = [];
-      page.on('pageerror', error => pageErrors.push(error.message));
+      page.on('pageerror', (error) => pageErrors.push(error.message));
 
       await catalogPage.navigate();
       await catalogPage.searchProducts('test');
       await catalogPage.addProductToCart('prod001');
       await page.waitForTimeout(2000);
 
-      const criticalErrors = [...consoleErrors, ...pageErrors].filter(error =>
-        error.includes('TypeError') || error.includes('ReferenceError') || error.includes('SyntaxError')
+      const criticalErrors = [...consoleErrors, ...pageErrors].filter(
+        (error) =>
+          error.includes('TypeError') ||
+          error.includes('ReferenceError') ||
+          error.includes('SyntaxError')
       );
       expect(criticalErrors.length).toBe(0);
     });

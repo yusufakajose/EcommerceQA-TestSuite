@@ -1,3 +1,4 @@
+/* eslint-disable no-empty, no-constant-condition */
 /**
  * Executive Summary Report Generator
  * Creates professional test metrics dashboard and executive summary
@@ -14,7 +15,7 @@ class ExecutiveSummaryGenerator {
       overallMetrics: {},
       performanceMetrics: {},
       qualityGates: {},
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -23,20 +24,20 @@ class ExecutiveSummaryGenerator {
    */
   async generateReport() {
     console.log('📊 Generating Executive Summary Report...');
-    
+
     // Load test results
     await this.loadTestResults();
-    
+
     // Calculate metrics
     this.calculateOverallMetrics();
     this.calculateQualityGates();
     this.generateRecommendations();
-    
+
     // Generate reports
     await this.generateHTMLDashboard();
     await this.generateExecutiveSummary();
     await this.generateMetricsJSON();
-    
+
     console.log('✅ Executive Summary Report Generated Successfully!');
     console.log(`📄 HTML Dashboard: reports/executive-dashboard.html`);
     console.log(`📋 Executive Summary: reports/executive-summary.md`);
@@ -57,7 +58,7 @@ class ExecutiveSummaryGenerator {
         skipped: 0,
         duration: 26600, // ms
         coverage: 100,
-        categories: ['Security', 'User Management', 'Session Management']
+        categories: ['Security', 'User Management', 'Session Management'],
       },
       {
         name: 'E-commerce Comprehensive Tests',
@@ -67,7 +68,7 @@ class ExecutiveSummaryGenerator {
         skipped: 0,
         duration: 15800, // ms
         coverage: 95,
-        categories: ['Shopping Cart', 'Checkout', 'Product Catalog']
+        categories: ['Shopping Cart', 'Checkout', 'Product Catalog'],
       },
       {
         name: 'SauceDemo E-commerce Tests',
@@ -77,7 +78,7 @@ class ExecutiveSummaryGenerator {
         skipped: 0,
         duration: 14800, // ms
         coverage: 90,
-        categories: ['User Flows', 'Integration']
+        categories: ['User Flows', 'Integration'],
       },
       {
         name: 'System & Setup Tests',
@@ -87,8 +88,8 @@ class ExecutiveSummaryGenerator {
         skipped: 0,
         duration: 3800, // ms
         coverage: 100,
-        categories: ['Infrastructure', 'Setup']
-      }
+        categories: ['Infrastructure', 'Setup'],
+      },
     ];
 
     // Add performance data
@@ -97,7 +98,7 @@ class ExecutiveSummaryGenerator {
       averageTestDuration: 1694, // ms (total 61s / 36 tests)
       slowestTest: 'Complete checkout process',
       fastestTest: 'Simple setup verification',
-      performanceScore: 85
+      performanceScore: 85,
     };
   }
 
@@ -105,21 +106,24 @@ class ExecutiveSummaryGenerator {
    * Calculate overall test metrics
    */
   calculateOverallMetrics() {
-    const totals = this.reportData.testSuites.reduce((acc, suite) => ({
-      totalTests: acc.totalTests + suite.totalTests,
-      passed: acc.passed + suite.passed,
-      failed: acc.failed + suite.failed,
-      skipped: acc.skipped + suite.skipped,
-      duration: acc.duration + suite.duration
-    }), { totalTests: 0, passed: 0, failed: 0, skipped: 0, duration: 0 });
+    const totals = this.reportData.testSuites.reduce(
+      (acc, suite) => ({
+        totalTests: acc.totalTests + suite.totalTests,
+        passed: acc.passed + suite.passed,
+        failed: acc.failed + suite.failed,
+        skipped: acc.skipped + suite.skipped,
+        duration: acc.duration + suite.duration,
+      }),
+      { totalTests: 0, passed: 0, failed: 0, skipped: 0, duration: 0 }
+    );
 
     this.reportData.overallMetrics = {
       ...totals,
       passRate: ((totals.passed / totals.totalTests) * 100).toFixed(1),
       failRate: ((totals.failed / totals.totalTests) * 100).toFixed(1),
       averageDuration: Math.round(totals.duration / totals.totalTests),
-      totalDurationMinutes: Math.round(totals.duration / 60000 * 100) / 100,
-      testVelocity: Math.round(totals.totalTests / (totals.duration / 60000) * 100) / 100
+      totalDurationMinutes: Math.round((totals.duration / 60000) * 100) / 100,
+      testVelocity: Math.round((totals.totalTests / (totals.duration / 60000)) * 100) / 100,
     };
   }
 
@@ -128,32 +132,48 @@ class ExecutiveSummaryGenerator {
    */
   calculateQualityGates() {
     const metrics = this.reportData.overallMetrics;
-    
+    // Derive a dynamic functional coverage proxy (passed/total)
+    const covActual = (() => {
+      try {
+        const totals = this.reportData.testSuites.reduce(
+          (acc, s) => ({
+            total: acc.total + s.totalTests,
+            passed: acc.passed + s.passed,
+          }),
+          { total: 0, passed: 0 }
+        );
+        return totals.total > 0 ? Math.round((totals.passed / totals.total) * 100) : 0;
+      } catch (e) {
+        return 0;
+      }
+    })();
+    const covStatus = covActual >= 80 ? 'PASS' : 'FAIL';
+
     this.reportData.qualityGates = {
       passRateGate: {
         threshold: 95,
         actual: parseFloat(metrics.passRate),
         status: parseFloat(metrics.passRate) >= 95 ? 'PASS' : 'FAIL',
-        description: 'Minimum 95% pass rate required'
+        description: 'Minimum 95% pass rate required',
       },
       performanceGate: {
         threshold: 2000,
         actual: metrics.averageDuration,
         status: metrics.averageDuration <= 2000 ? 'PASS' : 'FAIL',
-        description: 'Average test duration under 2 seconds'
+        description: 'Average test duration under 2 seconds',
       },
       coverageGate: {
         threshold: 80,
-        actual: 96, // Based on our comprehensive coverage
-        status: 96 >= 80 ? 'PASS' : 'FAIL',
-        description: 'Minimum 80% functional coverage'
+        actual: covActual,
+        status: covStatus,
+        description: 'Minimum 80% functional coverage',
       },
       stabilityGate: {
         threshold: 0,
         actual: parseFloat(metrics.failRate),
         status: parseFloat(metrics.failRate) === 0 ? 'PASS' : 'FAIL',
-        description: 'Zero critical test failures'
-      }
+        description: 'Zero critical test failures',
+      },
     };
   }
 
@@ -162,14 +182,14 @@ class ExecutiveSummaryGenerator {
    */
   generateRecommendations() {
     const recommendations = [];
-    
+
     // All quality gates are passing, so provide optimization recommendations
     recommendations.push({
       priority: 'HIGH',
       category: 'Expansion',
       title: 'Add API Testing Coverage',
       description: 'Implement API testing to complement the excellent UI test coverage',
-      impact: 'Increase overall test coverage to 98%+'
+      impact: 'Increase overall test coverage to 98%+',
     });
 
     recommendations.push({
@@ -177,7 +197,7 @@ class ExecutiveSummaryGenerator {
       category: 'Performance',
       title: 'Implement Visual Regression Testing',
       description: 'Add screenshot comparison tests to catch visual regressions',
-      impact: 'Improve UI quality assurance'
+      impact: 'Improve UI quality assurance',
     });
 
     recommendations.push({
@@ -185,7 +205,7 @@ class ExecutiveSummaryGenerator {
       category: 'Automation',
       title: 'CI/CD Pipeline Integration',
       description: 'Integrate test suite with CI/CD pipeline for automated execution',
-      impact: 'Reduce manual testing effort by 80%'
+      impact: 'Reduce manual testing effort by 80%',
     });
 
     recommendations.push({
@@ -193,7 +213,7 @@ class ExecutiveSummaryGenerator {
       category: 'Optimization',
       title: 'Cross-Browser Test Expansion',
       description: 'Expand testing to include Safari and Edge browsers',
-      impact: 'Increase browser compatibility coverage'
+      impact: 'Increase browser compatibility coverage',
     });
 
     this.reportData.recommendations = recommendations;
@@ -205,7 +225,7 @@ class ExecutiveSummaryGenerator {
   async generateHTMLDashboard() {
     const html = this.generateDashboardHTML();
     const reportPath = path.join('reports', 'executive-dashboard.html');
-    
+
     // Ensure reports directory exists
     await fs.promises.mkdir('reports', { recursive: true });
     await fs.promises.writeFile(reportPath, html);
@@ -217,7 +237,65 @@ class ExecutiveSummaryGenerator {
   generateDashboardHTML() {
     const data = this.reportData;
     const metrics = data.overallMetrics;
-    
+    // Build a compact load-test trend widget if history exists
+    let trendWidgetHTML = '';
+    try {
+      const histPath = path.join('reports', 'load-tests', 'test-history.json');
+      if (fs.existsSync(histPath)) {
+        const history = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+        if (Array.isArray(history) && history.length >= 2) {
+          const prev = history[history.length - 2];
+          const cur = history[history.length - 1];
+          const prevThr = prev.summary?.overallThroughput ?? null;
+          const curThr = cur.summary?.overallThroughput ?? null;
+          const prevErr =
+            typeof prev.summary?.overallErrorRate === 'string'
+              ? parseFloat(prev.summary.overallErrorRate)
+              : prev.summary?.overallErrorRate;
+          const curErr =
+            typeof cur.summary?.overallErrorRate === 'string'
+              ? parseFloat(cur.summary.overallErrorRate)
+              : cur.summary?.overallErrorRate;
+          const thrDelta =
+            isFinite(prevThr) && isFinite(curThr)
+              ? ((curThr - prevThr) / (prevThr || 1)) * 100
+              : null;
+          const errDelta =
+            isFinite(prevErr) && isFinite(curErr)
+              ? ((curErr - prevErr) / (prevErr || 1)) * 100
+              : null;
+          const fmt = (v) =>
+            v === null ? 'n/a' : `${v > 0 ? '+' : ''}${Math.round(v * 10) / 10}%`;
+          const badge = (delta, positiveGood) => {
+            const good =
+              delta === null
+                ? 'neutral'
+                : delta === 0
+                  ? 'neutral'
+                  : delta > 0
+                    ? positiveGood
+                      ? 'good'
+                      : 'bad'
+                    : positiveGood
+                      ? 'bad'
+                      : 'good';
+            const bg = good === 'good' ? '#dcfce7' : good === 'bad' ? '#fee2e2' : '#e5e7eb';
+            return `<span style="padding:2px 8px; border-radius:12px; background:${bg}; margin-left:6px;">${fmt(delta)}</span>`;
+          };
+          trendWidgetHTML = `
+            <div class="chart-container">
+              <h3>Load Test Trend (last vs previous)</h3>
+              <div style="display:flex; gap:2rem; margin-top:0.5rem;">
+                <div><strong>Throughput:</strong> ${curThr ?? 'n/a'} req/s ${badge(thrDelta, true)}</div>
+                <div><strong>Error Rate:</strong> ${curErr ?? 'n/a'}% ${badge(errDelta, false)}</div>
+              </div>
+            </div>`;
+        }
+      }
+    } catch (e) {
+      // trend history unavailable; proceed without widget (no-op)
+    }
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,7 +370,8 @@ class ExecutiveSummaryGenerator {
             </div>
         </div>
 
-        <div class="charts-section">
+  ${trendWidgetHTML}
+  <div class="charts-section">
             <div class="chart-container">
                 <h3>📊 Test Results Distribution</h3>
                 <canvas id="resultsChart" width="400" height="300"></canvas>
@@ -305,7 +384,9 @@ class ExecutiveSummaryGenerator {
 
         <div class="quality-gates">
             <h3>🚦 Quality Gates Status</h3>
-            ${Object.entries(data.qualityGates).map(([key, gate]) => `
+            ${Object.entries(data.qualityGates)
+              .map(
+                ([key, gate]) => `
                 <div class="gate ${gate.status.toLowerCase()}">
                     <div class="gate-info">
                         <strong>${gate.description}</strong><br>
@@ -313,19 +394,25 @@ class ExecutiveSummaryGenerator {
                     </div>
                     <div class="gate-status ${gate.status.toLowerCase()}">${gate.status}</div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
 
         <div class="recommendations">
             <h3>💡 Recommendations</h3>
-            ${data.recommendations.map(rec => `
+            ${data.recommendations
+              .map(
+                (rec) => `
                 <div class="recommendation ${rec.priority.toLowerCase()}">
                     <div class="rec-priority ${rec.priority.toLowerCase()}">${rec.priority}</div>
                     <div class="rec-title">${rec.title}</div>
                     <div>${rec.description}</div>
                     <small><strong>Impact:</strong> ${rec.impact}</small>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
 
         <div class="footer">
@@ -359,10 +446,10 @@ class ExecutiveSummaryGenerator {
         new Chart(perfCtx, {
             type: 'bar',
             data: {
-                labels: [${data.testSuites.map(s => `'${s.name}'`).join(', ')}],
+                labels: [${data.testSuites.map((s) => `'${s.name}'`).join(', ')}],
                 datasets: [{
                     label: 'Duration (seconds)',
-                    data: [${data.testSuites.map(s => (s.duration / 1000).toFixed(1)).join(', ')}],
+                    data: [${data.testSuites.map((s) => (s.duration / 1000).toFixed(1)).join(', ')}],
                     backgroundColor: '#3b82f6',
                     borderRadius: 5
                 }]
@@ -397,7 +484,7 @@ class ExecutiveSummaryGenerator {
   generateSummaryMarkdown() {
     const data = this.reportData;
     const metrics = data.overallMetrics;
-    
+
     return `# 📋 Executive Summary - QA Testing Results
 
 **Report Generated:** ${new Date().toLocaleString()}
@@ -420,30 +507,42 @@ class ExecutiveSummaryGenerator {
 
 ## 🧪 Test Suite Breakdown
 
-${data.testSuites.map(suite => `
+${data.testSuites
+  .map(
+    (suite) => `
 ### ${suite.name}
 - **Tests:** ${suite.totalTests} (${suite.passed} passed, ${suite.failed} failed)
 - **Duration:** ${(suite.duration / 1000).toFixed(1)}s
 - **Coverage:** ${suite.coverage}%
 - **Categories:** ${suite.categories.join(', ')}
-`).join('')}
+`
+  )
+  .join('')}
 
 ## 🚦 Quality Gates Status
 
-${Object.entries(data.qualityGates).map(([key, gate]) => `
+${Object.entries(data.qualityGates)
+  .map(
+    ([key, gate]) => `
 - **${gate.description}:** ${gate.status} ✅
   - Threshold: ${gate.threshold}
   - Actual: ${gate.actual}
-`).join('')}
+`
+  )
+  .join('')}
 
 ## 💡 Strategic Recommendations
 
-${data.recommendations.map((rec, index) => `
+${data.recommendations
+  .map(
+    (rec, index) => `
 ### ${index + 1}. ${rec.title} (${rec.priority} Priority)
 **Category:** ${rec.category}
 **Description:** ${rec.description}
 **Expected Impact:** ${rec.impact}
-`).join('')}
+`
+  )
+  .join('')}
 
 ## 🎯 Conclusion
 

@@ -17,22 +17,21 @@ class NightlyReporter {
 
   async generateReport() {
     console.log('📊 Generating nightly test report...');
-    
+
     try {
       // Ensure report directory exists
       this.ensureDirectoryExists(this.reportDir);
-      
+
       // Collect test results from artifacts
       const testResults = await this.collectTestResults();
-      
+
       // Generate HTML report
       const htmlReport = this.generateHTMLReport(testResults);
-      
+
       // Write report files
       await this.writeReportFiles(htmlReport, testResults);
-      
+
       console.log(`✅ Nightly report generated successfully at: ${this.reportDir}`);
-      
     } catch (error) {
       console.error('❌ Error generating nightly report:', error);
       process.exit(1);
@@ -53,27 +52,27 @@ class NightlyReporter {
         passed: 0,
         failed: 0,
         skipped: 0,
-        duration: 0
+        duration: 0,
       },
       suites: {
         ui: { status: 'unknown', tests: 0, passed: 0, failed: 0, duration: 0 },
         api: { status: 'unknown', tests: 0, passed: 0, failed: 0, duration: 0 },
         performance: { status: 'unknown', tests: 0, passed: 0, failed: 0, duration: 0 },
         security: { status: 'unknown', tests: 0, passed: 0, failed: 0, duration: 0 },
-        accessibility: { status: 'unknown', tests: 0, passed: 0, failed: 0, duration: 0 }
+        accessibility: { status: 'unknown', tests: 0, passed: 0, failed: 0, duration: 0 },
       },
-      artifacts: []
+      artifacts: [],
     };
 
     // Check if artifacts directory exists
     if (fs.existsSync(this.artifactsDir)) {
       const artifactDirs = fs.readdirSync(this.artifactsDir);
-      
+
       for (const artifactDir of artifactDirs) {
         const artifactPath = path.join(this.artifactsDir, artifactDir);
         if (fs.statSync(artifactPath).isDirectory()) {
           results.artifacts.push(artifactDir);
-          
+
           // Try to parse test results from each artifact
           this.parseArtifactResults(artifactPath, results);
         }
@@ -81,7 +80,7 @@ class NightlyReporter {
     }
 
     // Calculate summary
-    Object.values(results.suites).forEach(suite => {
+    Object.values(results.suites).forEach((suite) => {
       results.summary.total += suite.tests;
       results.summary.passed += suite.passed;
       results.summary.failed += suite.failed;
@@ -101,7 +100,8 @@ class NightlyReporter {
         results.suites[suiteType].status = 'completed';
         results.suites[suiteType].tests = Math.floor(Math.random() * 50) + 10;
         results.suites[suiteType].passed = Math.floor(results.suites[suiteType].tests * 0.9);
-        results.suites[suiteType].failed = results.suites[suiteType].tests - results.suites[suiteType].passed;
+        results.suites[suiteType].failed =
+          results.suites[suiteType].tests - results.suites[suiteType].passed;
         results.suites[suiteType].duration = Math.floor(Math.random() * 300) + 60;
       }
     }
@@ -122,14 +122,15 @@ class NightlyReporter {
       results.suites.performance.status = 'completed';
       results.suites.performance.tests = Math.floor(Math.random() * 10) + 5;
       results.suites.performance.passed = Math.floor(results.suites.performance.tests * 0.8);
-      results.suites.performance.failed = results.suites.performance.tests - results.suites.performance.passed;
+      results.suites.performance.failed =
+        results.suites.performance.tests - results.suites.performance.passed;
       results.suites.performance.duration = Math.floor(Math.random() * 600) + 300;
     }
   }
 
   determineSuiteType(artifactPath) {
     const artifactName = path.basename(artifactPath).toLowerCase();
-    
+
     if (artifactName.includes('ui') || artifactName.includes('nightly-results')) {
       return 'ui';
     } else if (artifactName.includes('security')) {
@@ -141,14 +142,16 @@ class NightlyReporter {
     } else if (artifactName.includes('api')) {
       return 'api';
     }
-    
+
     return null;
   }
 
   generateHTMLReport(results) {
-    const passRate = results.summary.total > 0 ? 
-      Math.round((results.summary.passed / results.summary.total) * 100) : 0;
-    
+    const passRate =
+      results.summary.total > 0
+        ? Math.round((results.summary.passed / results.summary.total) * 100)
+        : 0;
+
     const statusIcon = passRate >= 90 ? '✅' : passRate >= 70 ? '⚠️' : '❌';
     const statusColor = passRate >= 90 ? '#28a745' : passRate >= 70 ? '#ffc107' : '#dc3545';
 
@@ -331,7 +334,9 @@ class NightlyReporter {
 
         <div class="suites">
             <h3>Test Suite Results</h3>
-            ${Object.entries(results.suites).map(([name, suite]) => `
+            ${Object.entries(results.suites)
+              .map(
+                ([name, suite]) => `
                 <div class="suite">
                     <div class="suite-header">
                         <div class="suite-name">${name} Tests</div>
@@ -358,21 +363,31 @@ class NightlyReporter {
                         </div>
                     </div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
 
-        ${results.artifacts.length > 0 ? `
+        ${
+          results.artifacts.length > 0
+            ? `
         <div class="artifacts">
             <h3>Test Artifacts (${results.artifacts.length})</h3>
             <div class="artifact-list">
-                ${results.artifacts.map(artifact => `
+                ${results.artifacts
+                  .map(
+                    (artifact) => `
                     <div class="artifact-item">
                         📁 ${artifact}
                     </div>
-                `).join('')}
+                `
+                  )
+                  .join('')}
             </div>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
 
         <div class="footer">
             Generated by QA Testing Showcase Nightly Reporter
@@ -393,9 +408,11 @@ class NightlyReporter {
 
     // Write summary for CI
     const summaryPath = path.join(this.reportDir, 'summary.txt');
-    const passRate = results.summary.total > 0 ? 
-      Math.round((results.summary.passed / results.summary.total) * 100) : 0;
-    
+    const passRate =
+      results.summary.total > 0
+        ? Math.round((results.summary.passed / results.summary.total) * 100)
+        : 0;
+
     const summary = `
 Nightly Test Report Summary
 ===========================
@@ -407,11 +424,14 @@ Pass Rate: ${passRate}%
 Duration: ${Math.round(results.summary.duration / 60)} minutes
 
 Suite Status:
-${Object.entries(results.suites).map(([name, suite]) => 
-  `- ${name.toUpperCase()}: ${suite.status} (${suite.passed}/${suite.tests} passed)`
-).join('\n')}
+${Object.entries(results.suites)
+  .map(
+    ([name, suite]) =>
+      `- ${name.toUpperCase()}: ${suite.status} (${suite.passed}/${suite.tests} passed)`
+  )
+  .join('\n')}
 `;
-    
+
     fs.writeFileSync(summaryPath, summary);
 
     console.log(`📄 Reports written to:`);

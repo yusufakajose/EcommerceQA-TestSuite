@@ -12,7 +12,7 @@ const MasterTestRunner = require('./master-test-runner');
 class CITestRunner extends MasterTestRunner {
   constructor() {
     super();
-    
+
     this.ciConfig = {
       // CI-optimized test suites
       suites: {
@@ -22,7 +22,7 @@ class CITestRunner extends MasterTestRunner {
           environment: 'development',
           browsers: ['chromium'],
           timeout: 300000, // 5 minutes
-          parallel: true
+          parallel: true,
         },
         regression: {
           name: 'Regression Tests',
@@ -30,7 +30,7 @@ class CITestRunner extends MasterTestRunner {
           environment: 'staging',
           browsers: ['chromium', 'firefox'],
           timeout: 900000, // 15 minutes
-          parallel: true
+          parallel: true,
         },
         full: {
           name: 'Full Test Suite',
@@ -38,23 +38,23 @@ class CITestRunner extends MasterTestRunner {
           environment: 'staging',
           browsers: ['chromium', 'firefox', 'webkit'],
           timeout: 1800000, // 30 minutes
-          parallel: true
+          parallel: true,
         },
         performance: {
           name: 'Performance Tests',
           suites: ['performance'],
           environment: 'staging',
           timeout: 2400000, // 40 minutes
-          parallel: false
+          parallel: false,
         },
         security: {
           name: 'Security Tests',
           suites: ['security', 'accessibility'],
           environment: 'staging',
           timeout: 900000, // 15 minutes
-          parallel: false
-        }
-      }
+          parallel: false,
+        },
+      },
     };
   }
 
@@ -67,7 +67,7 @@ class CITestRunner extends MasterTestRunner {
     console.log(`CI Environment: ${process.env.CI ? 'Yes' : 'No'}`);
     console.log(`Branch: ${process.env.GITHUB_REF || process.env.GIT_BRANCH || 'unknown'}`);
     console.log(`Commit: ${process.env.GITHUB_SHA || process.env.GIT_COMMIT || 'unknown'}`);
-    
+
     const config = this.ciConfig.suites[suiteType];
     if (!config) {
       throw new Error(`Unknown CI suite type: ${suiteType}`);
@@ -83,7 +83,7 @@ class CITestRunner extends MasterTestRunner {
       ci: true,
       headless: true,
       workers: this.getCIWorkers(),
-      timeout: config.timeout
+      timeout: config.timeout,
     };
 
     console.log(`\n📋 Executing ${config.name}...`);
@@ -93,35 +93,34 @@ class CITestRunner extends MasterTestRunner {
     console.log(`Workers: ${testOptions.workers}`);
 
     const startTime = Date.now();
-    
+
     try {
       // Set CI environment variables
       this.setCIEnvironmentVariables();
-      
+
       // Execute tests
       const results = await this.executeAllTests(testOptions);
-      
+
       // Process CI-specific results
       const ciResults = await this.processCIResults(results, suiteType);
-      
+
       // Generate CI artifacts
       await this.generateCIArtifacts(ciResults);
-      
+
       // Check quality gates
       const qualityGateResult = await this.checkQualityGates(ciResults);
-      
+
       return {
         ...ciResults,
         qualityGate: qualityGateResult,
-        ciMetadata: this.getCIMetadata()
+        ciMetadata: this.getCIMetadata(),
       };
-      
     } catch (error) {
       console.error('❌ CI test execution failed:', error);
-      
+
       // Generate failure artifacts
       await this.generateFailureArtifacts(error, suiteType);
-      
+
       throw error;
     }
   }
@@ -132,11 +131,11 @@ class CITestRunner extends MasterTestRunner {
   getCIWorkers() {
     const cpus = require('os').cpus().length;
     const ciWorkers = process.env.CI_WORKERS ? parseInt(process.env.CI_WORKERS) : null;
-    
+
     if (ciWorkers) {
       return Math.min(ciWorkers, cpus);
     }
-    
+
     // Conservative worker count for CI stability
     return Math.min(Math.max(1, Math.floor(cpus / 2)), 4);
   }
@@ -148,10 +147,10 @@ class CITestRunner extends MasterTestRunner {
     process.env.CI = 'true';
     process.env.HEADLESS = 'true';
     process.env.NO_SANDBOX = 'true';
-    
+
     // Playwright CI optimizations
     process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH || '0';
-    
+
     // Reduce resource usage
     process.env.NODE_OPTIONS = process.env.NODE_OPTIONS || '--max-old-space-size=4096';
   }
@@ -168,17 +167,17 @@ class CITestRunner extends MasterTestRunner {
         reports: [],
         screenshots: [],
         videos: [],
-        logs: []
+        logs: [],
       },
-      notifications: []
+      notifications: [],
     };
 
     // Collect artifacts
     ciResults.artifacts = await this.collectCIArtifacts();
-    
+
     // Generate notifications
     ciResults.notifications = this.generateNotifications(results);
-    
+
     return ciResults;
   }
 
@@ -193,9 +192,10 @@ class CITestRunner extends MasterTestRunner {
       commit: process.env.GITHUB_SHA || process.env.GIT_COMMIT || 'unknown',
       pullRequest: process.env.GITHUB_EVENT_NAME === 'pull_request',
       buildNumber: process.env.GITHUB_RUN_NUMBER || process.env.BUILD_NUMBER || 'unknown',
-      buildUrl: process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID ?
-        `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` :
-        'unknown'
+      buildUrl:
+        process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
+          ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+          : 'unknown',
     };
   }
 
@@ -220,26 +220,22 @@ class CITestRunner extends MasterTestRunner {
       reports: [],
       screenshots: [],
       videos: [],
-      logs: []
+      logs: [],
     };
 
     try {
       // Collect test reports
-      const reportDirs = [
-        'reports',
-        'test-results',
-        'playwright-report'
-      ];
+      const reportDirs = ['reports', 'test-results', 'playwright-report'];
 
       for (const dir of reportDirs) {
         const fullPath = path.join(this.baseDir, dir);
         if (fs.existsSync(fullPath)) {
           const files = this.collectFilesRecursively(fullPath);
-          
-          files.forEach(file => {
+
+          files.forEach((file) => {
             const ext = path.extname(file).toLowerCase();
             const relativePath = path.relative(this.baseDir, file);
-            
+
             if (['.html', '.json', '.xml'].includes(ext)) {
               artifacts.reports.push(relativePath);
             } else if (['.png', '.jpg', '.jpeg'].includes(ext)) {
@@ -264,14 +260,14 @@ class CITestRunner extends MasterTestRunner {
    */
   collectFilesRecursively(dir) {
     const files = [];
-    
+
     try {
       const items = fs.readdirSync(dir);
-      
+
       for (const item of items) {
         const itemPath = path.join(dir, item);
         const stat = fs.statSync(itemPath);
-        
+
         if (stat.isDirectory()) {
           files.push(...this.collectFilesRecursively(itemPath));
         } else {
@@ -281,7 +277,7 @@ class CITestRunner extends MasterTestRunner {
     } catch (error) {
       console.warn(`Failed to read directory ${dir}:`, error.message);
     }
-    
+
     return files;
   }
 
@@ -290,37 +286,38 @@ class CITestRunner extends MasterTestRunner {
    */
   generateNotifications(results) {
     const notifications = [];
-    
+
     // Failure notifications
     if (results.summary.failed > 0) {
       notifications.push({
         type: 'failure',
         title: 'Test Failures Detected',
         message: `${results.summary.failed} out of ${results.summary.total} tests failed`,
-        severity: 'high'
+        severity: 'high',
       });
     }
-    
+
     // Success notifications
     if (results.summary.failed === 0 && results.summary.total > 0) {
       notifications.push({
         type: 'success',
         title: 'All Tests Passed',
         message: `${results.summary.total} tests executed successfully`,
-        severity: 'info'
+        severity: 'info',
       });
     }
-    
+
     // Performance notifications
-    if (results.duration > 1800000) { // 30 minutes
+    if (results.duration > 1800000) {
+      // 30 minutes
       notifications.push({
         type: 'warning',
         title: 'Long Test Execution',
         message: `Test execution took ${Math.round(results.duration / 60000)} minutes`,
-        severity: 'medium'
+        severity: 'medium',
       });
     }
-    
+
     return notifications;
   }
 
@@ -332,31 +329,31 @@ class CITestRunner extends MasterTestRunner {
       passRate: {
         threshold: 95,
         actual: results.summary.passRate,
-        passed: results.summary.passRate >= 95
+        passed: results.summary.passRate >= 95,
       },
       maxFailures: {
         threshold: 0,
         actual: results.summary.failed,
-        passed: results.summary.failed === 0
+        passed: results.summary.failed === 0,
       },
       maxDuration: {
         threshold: 1800000, // 30 minutes
         actual: results.duration,
-        passed: results.duration <= 1800000
-      }
+        passed: results.duration <= 1800000,
+      },
     };
 
-    const overallPassed = Object.values(gates).every(gate => gate.passed);
-    
+    const overallPassed = Object.values(gates).every((gate) => gate.passed);
+
     console.log('\n🚪 Quality Gates Check:');
     Object.entries(gates).forEach(([name, gate]) => {
       const status = gate.passed ? '✅' : '❌';
       console.log(`  ${status} ${name}: ${gate.actual} (threshold: ${gate.threshold})`);
     });
-    
+
     return {
       passed: overallPassed,
-      gates
+      gates,
     };
   }
 
@@ -365,19 +362,18 @@ class CITestRunner extends MasterTestRunner {
    */
   async generateCIArtifacts(results) {
     console.log('\n📦 Generating CI artifacts...');
-    
+
     try {
       // Generate JUnit XML for CI integration
       await this.generateJUnitXML(results);
-      
+
       // Generate CI summary
       await this.generateCISummary(results);
-      
+
       // Generate GitHub Actions summary if applicable
       if (process.env.GITHUB_ACTIONS) {
         await this.generateGitHubActionsSummary(results);
       }
-      
     } catch (error) {
       console.error('Failed to generate CI artifacts:', error.message);
     }
@@ -389,7 +385,7 @@ class CITestRunner extends MasterTestRunner {
   async generateJUnitXML(results) {
     const xml = this.createJUnitXML(results);
     const xmlPath = path.join(this.resultsDir, 'junit-results.xml');
-    
+
     fs.writeFileSync(xmlPath, xml);
     console.log(`  📄 JUnit XML: ${xmlPath}`);
   }
@@ -398,14 +394,16 @@ class CITestRunner extends MasterTestRunner {
    * Create JUnit XML content
    */
   createJUnitXML(results) {
-    const testsuites = Object.entries(results.suites).map(([suiteId, suite]) => {
-      const failures = suite.tests.failed || 0;
-      const errors = suite.status === 'error' ? 1 : 0;
-      
-      return `    <testsuite name="${suite.name}" tests="${suite.tests.total}" failures="${failures}" errors="${errors}" time="${suite.duration / 1000}">
+    const testsuites = Object.entries(results.suites)
+      .map(([suiteId, suite]) => {
+        const failures = suite.tests.failed || 0;
+        const errors = suite.status === 'error' ? 1 : 0;
+
+        return `    <testsuite name="${suite.name}" tests="${suite.tests.total}" failures="${failures}" errors="${errors}" time="${suite.duration / 1000}">
 ${suite.error ? `      <error message="${suite.error}"></error>` : ''}
     </testsuite>`;
-    }).join('\n');
+      })
+      .join('\n');
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <testsuites name="CI Test Results" tests="${results.summary.total}" failures="${results.summary.failed}" time="${results.duration / 1000}">
@@ -423,7 +421,7 @@ ${testsuites}
       summary: results.summary,
       qualityGate: results.qualityGate,
       artifacts: results.artifacts,
-      notifications: results.notifications
+      notifications: results.notifications,
     };
 
     const summaryPath = path.join(this.resultsDir, 'ci-summary.json');
@@ -440,7 +438,7 @@ ${testsuites}
     }
 
     const summary = this.createGitHubActionsSummary(results);
-    
+
     try {
       fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
       console.log('  📝 GitHub Actions Summary updated');
@@ -455,7 +453,7 @@ ${testsuites}
   createGitHubActionsSummary(results) {
     const passRate = results.summary.passRate;
     const status = results.qualityGate.passed ? '✅' : '❌';
-    
+
     return `
 ## ${status} Test Execution Summary
 
@@ -470,19 +468,27 @@ ${testsuites}
 
 ### Test Suites
 
-${Object.entries(results.suites).map(([suiteId, suite]) => {
-  const suiteStatus = suite.status === 'passed' ? '✅' : suite.status === 'failed' ? '❌' : '⚠️';
-  return `- ${suiteStatus} **${suite.name}**: ${suite.tests.passed}/${suite.tests.total} passed`;
-}).join('\n')}
+${Object.entries(results.suites)
+  .map(([suiteId, suite]) => {
+    const suiteStatus = suite.status === 'passed' ? '✅' : suite.status === 'failed' ? '❌' : '⚠️';
+    return `- ${suiteStatus} **${suite.name}**: ${suite.tests.passed}/${suite.tests.total} passed`;
+  })
+  .join('\n')}
 
-${results.notifications.length > 0 ? `
+${
+  results.notifications.length > 0
+    ? `
 ### Notifications
 
-${results.notifications.map(notif => {
-  const icon = notif.type === 'success' ? '✅' : notif.type === 'failure' ? '❌' : '⚠️';
-  return `- ${icon} **${notif.title}**: ${notif.message}`;
-}).join('\n')}
-` : ''}
+${results.notifications
+  .map((notif) => {
+    const icon = notif.type === 'success' ? '✅' : notif.type === 'failure' ? '❌' : '⚠️';
+    return `- ${icon} **${notif.title}**: ${notif.message}`;
+  })
+  .join('\n')}
+`
+    : ''
+}
 `;
   }
 
@@ -491,20 +497,20 @@ ${results.notifications.map(notif => {
    */
   async generateFailureArtifacts(error, suiteType) {
     console.log('\n💥 Generating failure artifacts...');
-    
+
     const failureReport = {
       timestamp: new Date().toISOString(),
       suiteType,
       error: {
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       },
       ciMetadata: this.getCIMetadata(),
       environment: {
         nodeVersion: process.version,
         platform: process.platform,
-        arch: process.arch
-      }
+        arch: process.arch,
+      },
     };
 
     const failurePath = path.join(this.resultsDir, 'failure-report.json');
@@ -516,7 +522,7 @@ ${results.notifications.map(notif => {
 // CLI Interface
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 CI/CD Test Runner
@@ -542,15 +548,15 @@ Examples:
 `);
     process.exit(0);
   }
-  
+
   const suiteType = args[0] || 'smoke';
   const options = {};
-  
+
   // Parse additional options
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
     const nextArg = args[i + 1];
-    
+
     switch (arg) {
       case '--environment':
         if (nextArg) {
@@ -560,28 +566,29 @@ Examples:
         break;
       case '--browsers':
         if (nextArg) {
-          options.browsers = nextArg.split(',').map(b => b.trim());
+          options.browsers = nextArg.split(',').map((b) => b.trim());
           i++;
         }
         break;
     }
   }
-  
+
   const runner = new CITestRunner();
-  
-  runner.executeCITests(suiteType, options)
-    .then(results => {
+
+  runner
+    .executeCITests(suiteType, options)
+    .then((results) => {
       const exitCode = results.qualityGate.passed ? 0 : 1;
-      
+
       if (exitCode === 0) {
         console.log('\n🎉 CI tests completed successfully!');
       } else {
         console.log('\n💥 CI tests failed quality gates.');
       }
-      
+
       process.exit(exitCode);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('\n💥 CI test execution failed:', error.message);
       process.exit(1);
     });

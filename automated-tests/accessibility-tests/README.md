@@ -121,12 +121,12 @@ Reusable utility functions for accessibility testing:
 // Run comprehensive accessibility scan
 const results = await AccessibilityTestUtils.runAccessibilityScan(page, {
   tags: ['wcag2aa'],
-  rules: ['color-contrast', 'keyboard']
+  rules: ['color-contrast', 'keyboard'],
 });
 
 // Test keyboard navigation
 const keyboardResults = await AccessibilityTestUtils.testKeyboardNavigation(page, {
-  maxTabs: 20
+  maxTabs: 20,
 });
 
 // Validate form accessibility
@@ -146,24 +146,28 @@ const structureResults = await AccessibilityTestUtils.validatePageStructure(page
 The test suite validates compliance with:
 
 #### Perceivable
+
 - ✅ Color contrast ratios (4.5:1 normal, 3:1 large text)
 - ✅ Alternative text for images
 - ✅ Resizable text up to 200%
 - ✅ Visual focus indicators
 
 #### Operable
+
 - ✅ Keyboard accessibility
 - ✅ Focus management
 - ✅ Touch target sizes (44x44px minimum)
 - ✅ No seizure-inducing content
 
 #### Understandable
+
 - ✅ Form labels and instructions
 - ✅ Error identification and suggestions
 - ✅ Consistent navigation
 - ✅ Language identification
 
 #### Robust
+
 - ✅ Valid HTML and ARIA
 - ✅ Screen reader compatibility
 - ✅ Cross-browser accessibility
@@ -241,7 +245,7 @@ Form accessibility validation:
 - name: Run Accessibility Tests
   run: |
     npx playwright test accessibility-tests/
-    
+
 - name: Upload Accessibility Report
   uses: actions/upload-artifact@v3
   with:
@@ -257,7 +261,7 @@ const AccessibilityTestUtils = require('./utils/AccessibilityTestUtils');
 
 test('Custom accessibility check', async ({ page }) => {
   await page.goto('/custom-page');
-  
+
   const results = await AccessibilityTestUtils.runAccessibilityScan(page);
   expect(results.violations).toEqual([]);
 });
@@ -266,21 +270,25 @@ test('Custom accessibility check', async ({ page }) => {
 ## Best Practices
 
 ### 1. Test Early and Often
+
 - Run accessibility tests during development
 - Include in pull request validation
 - Monitor accessibility metrics over time
 
 ### 2. Focus on User Impact
+
 - Prioritize critical user flows
 - Test with realistic user scenarios
 - Consider different user abilities
 
 ### 3. Combine Automated and Manual Testing
+
 - Use automated tests for consistent validation
 - Supplement with manual testing
 - Test with actual assistive technologies
 
 ### 4. Continuous Improvement
+
 - Regular accessibility audits
 - Team accessibility training
 - User feedback integration
@@ -290,10 +298,11 @@ test('Custom accessibility check', async ({ page }) => {
 ### Common Issues
 
 1. **Test Failures**
+
    ```bash
    # Run with debug mode
    npx playwright test --debug accessibility-test-suite.spec.js
-   
+
    # Generate detailed report
    npx playwright test --reporter=html accessibility-tests/
    ```
@@ -319,7 +328,7 @@ test('Custom accessibility check', async ({ page }) => {
 // Run focused accessibility scans
 const results = await AccessibilityTestUtils.runAccessibilityScan(page, {
   include: ['main'], // Focus on specific areas
-  rules: ['color-contrast'] // Test specific rules only
+  rules: ['color-contrast'], // Test specific rules only
 });
 ```
 

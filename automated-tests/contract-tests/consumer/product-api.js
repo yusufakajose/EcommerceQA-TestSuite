@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require('axios');
 
 class ProductAPI {
   constructor(baseURL) {
@@ -8,7 +8,7 @@ class ProductAPI {
   async getProducts() {
     const response = await axios.get(`${this.baseURL}/products`, {
       headers: {
-        Authorization: "Bearer some-token",
+        Authorization: 'Bearer some-token',
       },
     });
     return response.data;

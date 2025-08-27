@@ -20,12 +20,12 @@ const requiredDirectories = [
   'automated-tests/ui-tests/screenshots',
   'automated-tests/ui-tests/videos',
   'test-data/fixtures',
-  'test-data/datasets'
+  'test-data/datasets',
 ];
 
 // Create required directories
 console.log('Creating required directories...');
-requiredDirectories.forEach(dir => {
+requiredDirectories.forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
     console.log(`   ✅ Created: ${dir}`);
@@ -40,10 +40,10 @@ const configFiles = [
   'config/playwright.config.js',
   'config/environments/development.json',
   'config/environments/staging.json',
-  'config/environments/production.json'
+  'config/environments/production.json',
 ];
 
-configFiles.forEach(file => {
+configFiles.forEach((file) => {
   if (fs.existsSync(file)) {
     console.log(`   ✅ Found: ${file}`);
   } else {
@@ -56,10 +56,10 @@ console.log('\nValidating test data fixtures...');
 const fixtureFiles = [
   'test-data/fixtures/users.json',
   'test-data/fixtures/products.json',
-  'test-data/fixtures/orders.json'
+  'test-data/fixtures/orders.json',
 ];
 
-fixtureFiles.forEach(file => {
+fixtureFiles.forEach((file) => {
   if (fs.existsSync(file)) {
     try {
       const data = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -78,7 +78,7 @@ try {
   const { execSync } = require('child_process');
   execSync('npx playwright --version', { stdio: 'pipe' });
   console.log('   ✅ Playwright is installed');
-  
+
   // Check if browsers are installed
   try {
     execSync('npx playwright install --dry-run', { stdio: 'pipe' });

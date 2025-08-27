@@ -25,10 +25,12 @@ This showcase demonstrates world-class QA engineering skills through a complete 
 ## 🚀 **Quick Start**
 
 ### Prerequisites
+
 - Node.js 16+
 - npm or yarn
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/ecommerce-qa-testsuite.git
@@ -47,6 +49,7 @@ npm run demo:showcase
 ## 📊 **Test Execution**
 
 ### UI Testing
+
 ```bash
 # Run all UI tests
 npm run test:ui
@@ -59,6 +62,7 @@ npm run test:mobile
 ```
 
 ### API Testing
+
 ```bash
 # Run API performance tests
 npm run test:api
@@ -68,6 +72,7 @@ npm run report:api
 ```
 
 ### Load Testing
+
 ```bash
 # Comprehensive load testing (K6 + JMeter)
 npm run test:load:comprehensive
@@ -76,11 +81,20 @@ npm run test:load:comprehensive
 npm run test:load:k6:smoke
 npm run test:load:k6:stress
 
+# New: k6 wrapper CLI examples
+# Run multiple scenarios serially
+npm run test:load:k6 -- --types=smoke,load
+# Override VUs and duration
+npm run test:load:k6 -- --types=load --vus 20 --duration 60s
+# Target a different base URL
+npm run test:load:k6 -- --types=smoke --base-url https://your-env.example.com
+
 # JMeter load testing
 npm run test:load:jmeter:all
 ```
 
 ### Reporting
+
 ```bash
 # Generate executive summary
 npm run report:executive
@@ -92,10 +106,11 @@ npm run report:all
 ## 🎯 **Test Results & Reports**
 
 ### Sample Performance Results
+
 ```
 🎯 PERFORMANCE SUMMARY:
 ✅ Page Load: 1403ms (Baseline: 3000ms) - EXCELLENT
-✅ Login Process: 271ms (Baseline: 2000ms) - EXCELLENT  
+✅ Login Process: 271ms (Baseline: 2000ms) - EXCELLENT
 ✅ Add to Cart: 169ms (Baseline: 1000ms) - EXCELLENT
 ✅ API Response: 229ms average across 4 endpoints
 ✅ Load Test: 19,000+ requests, 3.2% error rate
@@ -103,6 +118,7 @@ npm run report:all
 ```
 
 ### Generated Reports
+
 - **Executive Dashboard**: `reports/executive-dashboard.html`
 - **Performance Report**: `reports/performance-report.html`
 - **API Performance**: `reports/api-performance-report.html`
@@ -111,6 +127,7 @@ npm run report:all
 ## 🔧 **Framework Architecture**
 
 ### Directory Structure
+
 ```
 ecommerce-qa-testsuite/
 ├── automated-tests/
@@ -126,6 +143,7 @@ ecommerce-qa-testsuite/
 ```
 
 ### Key Components
+
 - **Performance Monitoring**: Real-time performance validation with baselines
 - **Executive Reporting**: Professional dashboards for stakeholders
 - **Load Testing Integration**: K6 and JMeter unified framework
@@ -135,18 +153,21 @@ ecommerce-qa-testsuite/
 ## 🎯 **Testing Capabilities**
 
 ### UI Testing
+
 - **Functional Testing**: Complete e-commerce user journeys
 - **Cross-browser Testing**: Chrome, Firefox, Safari, Edge
 - **Mobile Testing**: iOS Safari, Android Chrome
 - **Performance Monitoring**: Real-time UI performance validation
 
 ### API Testing
+
 - **Performance Testing**: Response time monitoring with baselines
 - **Backend Monitoring**: Health checks and database operations
 - **Load Testing**: Concurrent API request validation
 - **Error Handling**: Timeout and error rate monitoring
 
 ### Load Testing
+
 - **K6 Integration**: Modern JavaScript-based load testing
 - **JMeter Integration**: Enterprise-grade load testing
 - **Multiple Scenarios**: Smoke, Load, Stress, Spike, Endurance
@@ -154,17 +175,18 @@ ecommerce-qa-testsuite/
 
 ## 📈 **Performance Baselines**
 
-| Metric | Baseline | Current | Status |
-|--------|----------|---------|--------|
-| Page Load | < 3000ms | 1403ms | ✅ EXCELLENT |
-| Login Process | < 2000ms | 271ms | ✅ EXCELLENT |
-| API Response | < 500ms | 229ms | ✅ EXCELLENT |
-| Add to Cart | < 1000ms | 169ms | ✅ EXCELLENT |
-| Error Rate | < 5% | 3.2% | ✅ GOOD |
+| Metric        | Baseline | Current | Status       |
+| ------------- | -------- | ------- | ------------ |
+| Page Load     | < 3000ms | 1403ms  | ✅ EXCELLENT |
+| Login Process | < 2000ms | 271ms   | ✅ EXCELLENT |
+| API Response  | < 500ms  | 229ms   | ✅ EXCELLENT |
+| Add to Cart   | < 1000ms | 169ms   | ✅ EXCELLENT |
+| Error Rate    | < 5%     | 3.2%    | ✅ GOOD      |
 
 ## 🚀 **CI/CD Integration**
 
 ### GitHub Actions Ready
+
 ```yaml
 # Example workflow integration
 - name: Run QA Test Suite
@@ -176,6 +198,7 @@ ecommerce-qa-testsuite/
 ```
 
 ### Available Scripts
+
 - `npm run ci:test` - CI-optimized test execution
 - `npm run ci:load` - CI-optimized load testing
 - `npm run report:all` - Generate all reports
@@ -183,6 +206,7 @@ ecommerce-qa-testsuite/
 ## 🎯 **What This Demonstrates**
 
 ### Professional QA Engineering Skills
+
 - **Advanced Test Automation** - Comprehensive framework architecture
 - **Performance Engineering** - Real-time monitoring and validation
 - **Load Testing Expertise** - Multi-tool integration (K6 + JMeter)
@@ -190,6 +214,7 @@ ecommerce-qa-testsuite/
 - **DevOps Integration** - CI/CD ready automation
 
 ### Industry Best Practices
+
 - **Performance-First Testing** - Performance validation in all test types
 - **Data-Driven Quality** - Metrics-based decision making
 - **Comprehensive Coverage** - UI, API, and Load testing integration
@@ -199,12 +224,15 @@ ecommerce-qa-testsuite/
 ## 📊 **Sample Reports**
 
 ### Executive Dashboard
+
 ![Executive Dashboard](docs/images/executive-dashboard.png)
 
 ### Performance Report
+
 ![Performance Report](docs/images/performance-report.png)
 
 ### Load Testing Report
+
 ![Load Testing Report](docs/images/load-test-report.png)
 
 ## 🤝 **Contributing**
@@ -218,6 +246,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## 🎯 **Contact**
 
 This showcase demonstrates advanced QA engineering capabilities including:
+
 - UI Test Automation with Playwright
 - API Performance Testing and Monitoring
 - Load Testing with K6 and JMeter Integration

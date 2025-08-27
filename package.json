@@ -65,7 +65,7 @@
   "author": "QA Engineer",
   "license": "MIT",
   "devDependencies": {
-    "@pact-foundation/pact": "^12.5.0",
+    "@pact-foundation/pact": "^15.0.1",
     "@playwright/test": "^1.40.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",

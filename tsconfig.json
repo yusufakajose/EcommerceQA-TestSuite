@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -19,26 +17,13 @@
     "rootDir": "./",
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "./automated-tests/*"
-      ],
-      "@ui/*": [
-        "./automated-tests/ui-tests/*"
-      ],
-      "@api/*": [
-        "./automated-tests/api-tests/*"
-      ],
-      "@data/*": [
-        "./test-data/*"
-      ],
-      "@config/*": [
-        "./config/*"
-      ]
+      "@/*": ["./automated-tests/*"],
+      "@ui/*": ["./automated-tests/ui-tests/*"],
+      "@api/*": ["./automated-tests/api-tests/*"],
+      "@data/*": ["./test-data/*"],
+      "@config/*": ["./config/*"]
     },
-    "types": [
-      "node",
-      "@playwright/test"
-    ]
+    "types": ["node", "@playwright/test"]
   },
   "include": [
     "automated-tests/**/*.js",
@@ -50,10 +35,5 @@
     "*.ts",
     "*.js"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "reports",
-    "test-results"
-  ]
+  "exclude": ["node_modules", "dist", "reports", "test-results"]
 }

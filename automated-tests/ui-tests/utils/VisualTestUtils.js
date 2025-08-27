@@ -14,7 +14,7 @@ class VisualTestUtils {
     this.baselineDir = path.join(this.screenshotDir, 'baseline');
     this.actualDir = path.join(this.screenshotDir, 'actual');
     this.diffDir = path.join(this.screenshotDir, 'diff');
-    
+
     this.ensureDirectories();
   }
 
@@ -22,7 +22,7 @@ class VisualTestUtils {
    * Ensure screenshot directories exist
    */
   ensureDirectories() {
-    [this.screenshotDir, this.baselineDir, this.actualDir, this.diffDir].forEach(dir => {
+    [this.screenshotDir, this.baselineDir, this.actualDir, this.diffDir].forEach((dir) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -48,8 +48,8 @@ class VisualTestUtils {
         '.stock-indicator',
         '.live-data',
         '.notification',
-        '.dynamic-content'
-      ]
+        '.dynamic-content',
+      ],
     };
   }
 
@@ -59,23 +59,23 @@ class VisualTestUtils {
    */
   async preparePage(config = {}) {
     const finalConfig = { ...VisualTestUtils.DEFAULT_CONFIG, ...config };
-    
+
     // Disable animations
     if (finalConfig.animations === 'disabled') {
       await this.disableAnimations();
     }
-    
+
     // Hide dynamic elements
     if (finalConfig.hideElements.length > 0) {
       await this.hideDynamicElements(finalConfig.hideElements);
     }
-    
+
     // Wait for images to load
     await this.waitForImages();
-    
+
     // Wait for fonts to load
     await this.waitForFonts();
-    
+
     // Allow layout to settle
     await this.page.waitForTimeout(500);
   }
@@ -101,7 +101,7 @@ class VisualTestUtils {
             transition-duration: 0.01ms !important;
           }
         }
-      `
+      `,
     });
   }
 
@@ -111,14 +111,14 @@ class VisualTestUtils {
    */
   async hideDynamicElements(selectors) {
     if (selectors.length === 0) return;
-    
+
     await this.page.addStyleTag({
       content: `
         ${selectors.join(', ')} {
           visibility: hidden !important;
           opacity: 0 !important;
         }
-      `
+      `,
     });
   }
 
@@ -127,12 +127,17 @@ class VisualTestUtils {
    * @param {number} timeout - Timeout in milliseconds
    */
   async waitForImages(timeout = 10000) {
-    await this.page.waitForFunction(() => {
-      const images = Array.from(document.images);
-      return images.every(img => img.complete && img.naturalHeight !== 0);
-    }, { timeout }).catch(() => {
-      console.warn('Some images may not have loaded completely');
-    });
+    await this.page
+      .waitForFunction(
+        () => {
+          const images = Array.from(document.images);
+          return images.every((img) => img.complete && img.naturalHeight !== 0);
+        },
+        { timeout }
+      )
+      .catch(() => {
+        console.warn('Some images may not have loaded completely');
+      });
   }
 
   /**
@@ -140,11 +145,16 @@ class VisualTestUtils {
    * @param {number} timeout - Timeout in milliseconds
    */
   async waitForFonts(timeout = 5000) {
-    await this.page.waitForFunction(() => {
-      return document.fonts ? document.fonts.ready : true;
-    }, { timeout }).catch(() => {
-      console.warn('Font loading may not be complete');
-    });
+    await this.page
+      .waitForFunction(
+        () => {
+          return document.fonts ? document.fonts.ready : true;
+        },
+        { timeout }
+      )
+      .catch(() => {
+        console.warn('Font loading may not be complete');
+      });
   }
 
   /**
@@ -155,16 +165,16 @@ class VisualTestUtils {
    */
   async takeScreenshot(name, options = {}) {
     const config = { ...VisualTestUtils.DEFAULT_CONFIG, ...options };
-    
+
     await this.preparePage(config);
-    
+
     const screenshotOptions = {
       fullPage: config.fullPage,
       animations: config.animations,
       ...(config.clip && { clip: config.clip }),
-      ...(config.mask && config.mask.length > 0 && { mask: config.mask })
+      ...(config.mask && config.mask.length > 0 && { mask: config.mask }),
     };
-    
+
     return await this.page.screenshot(screenshotOptions);
   }
 
@@ -177,14 +187,14 @@ class VisualTestUtils {
    */
   async takeElementScreenshot(element, name, options = {}) {
     const config = { ...VisualTestUtils.DEFAULT_CONFIG, ...options };
-    
+
     await this.preparePage(config);
-    
+
     const screenshotOptions = {
       animations: config.animations,
-      ...(config.mask && config.mask.length > 0 && { mask: config.mask })
+      ...(config.mask && config.mask.length > 0 && { mask: config.mask }),
     };
-    
+
     return await element.screenshot(screenshotOptions);
   }
 
@@ -200,42 +210,42 @@ class VisualTestUtils {
     const baselinePath = path.join(this.baselineDir, `${name}-${this.browserName}.png`);
     const actualPath = path.join(this.actualDir, `${name}-${this.browserName}.png`);
     const diffPath = path.join(this.diffDir, `${name}-${this.browserName}.png`);
-    
+
     // Save actual screenshot
     fs.writeFileSync(actualPath, actualScreenshot);
-    
+
     // Check if baseline exists
     if (!fs.existsSync(baselinePath)) {
       // Create baseline from actual screenshot
       fs.writeFileSync(baselinePath, actualScreenshot);
-      
+
       return {
         status: 'baseline_created',
         message: `Baseline created for ${name}`,
         baselinePath: baselinePath,
         actualPath: actualPath,
-        diffPath: null
+        diffPath: null,
       };
     }
-    
+
     // Use Playwright's built-in comparison
     try {
       await this.page.screenshot({
         path: actualPath,
         fullPage: config.fullPage,
-        animations: config.animations
+        animations: config.animations,
       });
-      
+
       // This would typically use a visual comparison library
       // For now, we'll return a basic comparison result
       const baselineStats = fs.statSync(baselinePath);
       const actualStats = fs.statSync(actualPath);
-      
+
       const sizeDifference = Math.abs(baselineStats.size - actualStats.size);
       const sizeDifferencePercent = (sizeDifference / baselineStats.size) * 100;
-      
+
       const passed = sizeDifferencePercent <= config.threshold * 100;
-      
+
       return {
         status: passed ? 'passed' : 'failed',
         message: passed ? 'Screenshots match' : 'Screenshots differ',
@@ -244,14 +254,13 @@ class VisualTestUtils {
         diffPath: passed ? null : diffPath,
         sizeDifference: sizeDifference,
         sizeDifferencePercent: sizeDifferencePercent,
-        threshold: config.threshold
+        threshold: config.threshold,
       };
-      
     } catch (error) {
       return {
         status: 'error',
         message: `Screenshot comparison failed: ${error.message}`,
-        error: error
+        error: error,
       };
     }
   }
@@ -288,20 +297,20 @@ class VisualTestUtils {
    */
   async compareResponsiveScreenshots(name, viewports, options = {}) {
     const results = [];
-    
+
     for (const viewport of viewports) {
       await this.page.setViewportSize({ width: viewport.width, height: viewport.height });
       await this.page.waitForTimeout(500); // Allow layout to settle
-      
+
       const screenshotName = `${name}-${viewport.name}`;
       const result = await this.comparePageScreenshot(screenshotName, options);
-      
+
       results.push({
         viewport: viewport,
-        ...result
+        ...result,
       });
     }
-    
+
     return results;
   }
 
@@ -315,27 +324,27 @@ class VisualTestUtils {
    */
   async compareElementStates(element, baseName, states, options = {}) {
     const results = [];
-    
+
     for (const state of states) {
       // Apply state
       if (state.action) {
         await state.action();
       }
-      
+
       // Wait for state to settle
       if (state.waitTime) {
         await this.page.waitForTimeout(state.waitTime);
       }
-      
+
       const screenshotName = `${baseName}-${state.name}`;
       const result = await this.compareElementScreenshot(element, screenshotName, options);
-      
+
       results.push({
         state: state,
-        ...result
+        ...result,
       });
     }
-    
+
     return results;
   }
 
@@ -353,10 +362,10 @@ class VisualTestUtils {
       failed: 0,
       baselineCreated: 0,
       errors: 0,
-      results: results
+      results: results,
     };
-    
-    results.forEach(result => {
+
+    results.forEach((result) => {
       switch (result.status) {
         case 'passed':
           report.passed++;
@@ -372,10 +381,12 @@ class VisualTestUtils {
           break;
       }
     });
-    
-    report.successRate = report.totalTests > 0 ? 
-      ((report.passed + report.baselineCreated) / report.totalTests) * 100 : 0;
-    
+
+    report.successRate =
+      report.totalTests > 0
+        ? ((report.passed + report.baselineCreated) / report.totalTests) * 100
+        : 0;
+
     return report;
   }
 
@@ -384,19 +395,19 @@ class VisualTestUtils {
    * @param {number} daysOld - Remove screenshots older than this many days
    */
   async cleanupOldScreenshots(daysOld = 7) {
-    const cutoffTime = Date.now() - (daysOld * 24 * 60 * 60 * 1000);
-    
+    const cutoffTime = Date.now() - daysOld * 24 * 60 * 60 * 1000;
+
     const directories = [this.actualDir, this.diffDir];
-    
+
     for (const dir of directories) {
       if (!fs.existsSync(dir)) continue;
-      
+
       const files = fs.readdirSync(dir);
-      
+
       for (const file of files) {
         const filePath = path.join(dir, file);
         const stats = fs.statSync(filePath);
-        
+
         if (stats.mtime.getTime() < cutoffTime) {
           fs.unlinkSync(filePath);
         }
@@ -411,41 +422,40 @@ class VisualTestUtils {
    */
   static getScenarioConfig(scenario) {
     const configs = {
-      'homepage': {
+      homepage: {
         fullPage: true,
         hideElements: [
-          '.timestamp', '.live-chat', '.notification-badge',
-          '.current-time', '.live-data'
-        ]
+          '.timestamp',
+          '.live-chat',
+          '.notification-badge',
+          '.current-time',
+          '.live-data',
+        ],
       },
-      
+
       'product-grid': {
         fullPage: false,
-        hideElements: [
-          '.price-change', '.stock-indicator', '.dynamic-price'
-        ]
+        hideElements: ['.price-change', '.stock-indicator', '.dynamic-price'],
       },
-      
-      'form': {
+
+      form: {
         fullPage: false,
         hideElements: ['.validation-message'],
-        animations: 'disabled'
+        animations: 'disabled',
       },
-      
-      'modal': {
+
+      modal: {
         fullPage: false,
         animations: 'disabled',
-        mask: ['.backdrop']
+        mask: ['.backdrop'],
       },
-      
-      'mobile': {
+
+      mobile: {
         fullPage: true,
-        hideElements: [
-          '.timestamp', '.notification-badge', '.live-data'
-        ]
-      }
+        hideElements: ['.timestamp', '.notification-badge', '.live-data'],
+      },
     };
-    
+
     return configs[scenario] || VisualTestUtils.DEFAULT_CONFIG;
   }
 
@@ -459,7 +469,7 @@ class VisualTestUtils {
    */
   async compareThemeVariations(element, baseName, themes, options = {}) {
     const results = [];
-    
+
     for (const theme of themes) {
       // Apply theme
       if (theme.className) {
@@ -467,27 +477,27 @@ class VisualTestUtils {
           document.body.className = className;
         }, theme.className);
       }
-      
+
       if (theme.cssVariables) {
         await this.page.addStyleTag({
           content: `:root { ${Object.entries(theme.cssVariables)
             .map(([key, value]) => `${key}: ${value}`)
-            .join('; ')} }`
+            .join('; ')} }`,
         });
       }
-      
+
       // Wait for theme to apply
       await this.page.waitForTimeout(500);
-      
+
       const screenshotName = `${baseName}-${theme.name}`;
       const result = await this.compareElementScreenshot(element, screenshotName, options);
-      
+
       results.push({
         theme: theme,
-        ...result
+        ...result,
       });
     }
-    
+
     return results;
   }
 }

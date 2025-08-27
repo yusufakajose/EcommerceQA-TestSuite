@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /**
  * Performance Report Generator
  * Aggregates and analyzes performance data from test runs
@@ -20,9 +21,9 @@ class PerformanceReportGenerator {
         fullCheckoutFlow: 6000,
         completeCheckoutFlow: 5000,
         navigation: 2000,
-        logoutProcess: 1500
+        logoutProcess: 1500,
       },
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -31,20 +32,20 @@ class PerformanceReportGenerator {
    */
   async generateReport() {
     console.log('⚡ Generating Performance Report...');
-    
+
     // Simulate performance data (in real scenario, this would come from test execution)
     this.generateMockPerformanceData();
-    
+
     // Calculate aggregated metrics
     this.calculateAggregatedMetrics();
-    
+
     // Generate recommendations
     this.generatePerformanceRecommendations();
-    
+
     // Generate reports
     await this.generateHTMLReport();
     await this.generatePerformanceJSON();
-    
+
     console.log('✅ Performance Report Generated Successfully!');
     console.log(`📄 HTML Report: reports/performance-report.html`);
     console.log(`📊 Performance Data: reports/performance-data.json`);
@@ -60,59 +61,59 @@ class PerformanceReportGenerator {
         metrics: {
           pageLoad: 1200,
           loginProcess: 850,
-          totalDuration: 2050
+          totalDuration: 2050,
         },
         status: 'PASS',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         testName: 'Authentication - Logout user',
         metrics: {
           loginForLogout: 780,
           logoutProcess: 650,
-          totalDuration: 1430
+          totalDuration: 1430,
         },
         status: 'PASS',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         testName: 'E-commerce - Complete checkout process',
         metrics: {
           pageLoad: 1100,
           completeCheckoutFlow: 4200,
-          totalDuration: 5300
+          totalDuration: 5300,
         },
         status: 'PASS',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         testName: 'E-commerce - Add product to cart',
         metrics: {
           addToCart: 420,
-          totalDuration: 420
+          totalDuration: 420,
         },
         status: 'PASS',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         testName: 'SauceDemo - Add product to cart',
         metrics: {
           addToCart: 380,
-          totalDuration: 380
+          totalDuration: 380,
         },
         status: 'PASS',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         testName: 'SauceDemo - Full checkout process',
         metrics: {
           pageLoad: 1050,
           fullCheckoutFlow: 5800,
-          totalDuration: 6850
+          totalDuration: 6850,
         },
         status: 'PASS',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     ];
   }
 
@@ -121,9 +122,9 @@ class PerformanceReportGenerator {
    */
   calculateAggregatedMetrics() {
     const allMetrics = {};
-    
+
     // Collect all metrics
-    this.performanceData.testRuns.forEach(run => {
+    this.performanceData.testRuns.forEach((run) => {
       Object.entries(run.metrics).forEach(([key, value]) => {
         if (!allMetrics[key]) {
           allMetrics[key] = [];
@@ -144,7 +145,7 @@ class PerformanceReportGenerator {
         median: sorted[Math.floor(sorted.length / 2)],
         p95: sorted[Math.floor(sorted.length * 0.95)],
         baseline: this.performanceData.performanceBaselines[key] || 'N/A',
-        status: this.getPerformanceStatus(key, values)
+        status: this.getPerformanceStatus(key, values),
       };
     });
   }
@@ -155,10 +156,10 @@ class PerformanceReportGenerator {
   getPerformanceStatus(metricName, values) {
     const baseline = this.performanceData.performanceBaselines[metricName];
     if (!baseline) return 'UNKNOWN';
-    
+
     const average = values.reduce((a, b) => a + b, 0) / values.length;
     const p95 = values.sort((a, b) => a - b)[Math.floor(values.length * 0.95)];
-    
+
     if (p95 <= baseline * 0.8) return 'EXCELLENT';
     if (p95 <= baseline) return 'GOOD';
     if (p95 <= baseline * 1.2) return 'WARNING';
@@ -170,7 +171,7 @@ class PerformanceReportGenerator {
    */
   generatePerformanceRecommendations() {
     const recommendations = [];
-    
+
     Object.entries(this.performanceData.aggregatedMetrics).forEach(([metric, data]) => {
       if (data.status === 'CRITICAL') {
         recommendations.push({
@@ -178,7 +179,7 @@ class PerformanceReportGenerator {
           metric: metric,
           issue: `${metric} performance is critical (${data.p95}ms vs ${data.baseline}ms baseline)`,
           recommendation: `Investigate and optimize ${metric} performance immediately`,
-          impact: 'User experience significantly impacted'
+          impact: 'User experience significantly impacted',
         });
       } else if (data.status === 'WARNING') {
         recommendations.push({
@@ -186,7 +187,7 @@ class PerformanceReportGenerator {
           metric: metric,
           issue: `${metric} performance is above baseline (${data.p95}ms vs ${data.baseline}ms)`,
           recommendation: `Consider optimizing ${metric} performance`,
-          impact: 'Minor user experience impact'
+          impact: 'Minor user experience impact',
         });
       }
     });
@@ -197,8 +198,9 @@ class PerformanceReportGenerator {
         priority: 'LOW',
         metric: 'general',
         issue: 'All performance metrics are within acceptable ranges',
-        recommendation: 'Continue monitoring performance trends and establish more granular baselines',
-        impact: 'Maintain current excellent performance'
+        recommendation:
+          'Continue monitoring performance trends and establish more granular baselines',
+        impact: 'Maintain current excellent performance',
       });
     }
 
@@ -211,7 +213,7 @@ class PerformanceReportGenerator {
   async generateHTMLReport() {
     const html = this.generatePerformanceHTML();
     const reportPath = path.join('reports', 'performance-report.html');
-    
+
     // Ensure reports directory exists
     await fs.promises.mkdir('reports', { recursive: true });
     await fs.promises.writeFile(reportPath, html);
@@ -222,7 +224,66 @@ class PerformanceReportGenerator {
    */
   generatePerformanceHTML() {
     const data = this.performanceData;
-    
+    // Optional: compact trend widget from load-test history
+    let trendWidgetHTML = '';
+    try {
+      const histPath = path.join('reports', 'load-tests', 'test-history.json');
+      if (fs.existsSync(histPath)) {
+        const history = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+        if (Array.isArray(history) && history.length >= 2) {
+          const prev = history[history.length - 2];
+          const cur = history[history.length - 1];
+          const prevThr = prev.summary?.overallThroughput ?? null;
+          const curThr = cur.summary?.overallThroughput ?? null;
+          const prevErr =
+            typeof prev.summary?.overallErrorRate === 'string'
+              ? parseFloat(prev.summary.overallErrorRate)
+              : prev.summary?.overallErrorRate;
+          const curErr =
+            typeof cur.summary?.overallErrorRate === 'string'
+              ? parseFloat(cur.summary.overallErrorRate)
+              : cur.summary?.overallErrorRate;
+          const thrDelta =
+            isFinite(prevThr) && isFinite(curThr)
+              ? ((curThr - prevThr) / (prevThr || 1)) * 100
+              : null;
+          const errDelta =
+            isFinite(prevErr) && isFinite(curErr)
+              ? ((curErr - prevErr) / (prevErr || 1)) * 100
+              : null;
+          const fmt = (v) =>
+            v === null ? 'n/a' : `${v > 0 ? '+' : ''}${Math.round(v * 10) / 10}%`;
+          const badge = (delta, positiveGood) => {
+            const good =
+              delta === null
+                ? 'neutral'
+                : delta === 0
+                  ? 'neutral'
+                  : delta > 0
+                    ? positiveGood
+                      ? 'good'
+                      : 'bad'
+                    : positiveGood
+                      ? 'bad'
+                      : 'good';
+            const bg = good === 'good' ? '#dcfce7' : good === 'bad' ? '#fee2e2' : '#e5e7eb';
+            return `<span style="padding:2px 8px; border-radius:12px; background:${bg}; margin-left:6px;">${fmt(delta)}</span>`;
+          };
+          trendWidgetHTML = `
+            <div style="background:#fff; padding:18px; border-radius:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin: 20px 0;">
+              <h3 style="margin-bottom:10px;">Load Test Trend (last vs previous)</h3>
+              <div style="display:flex; gap:2rem;">
+                <div><strong>Throughput:</strong> ${curThr ?? 'n/a'} req/s ${badge(thrDelta, true)}</div>
+                <div><strong>Error Rate:</strong> ${curErr ?? 'n/a'}% ${badge(errDelta, false)}</div>
+              </div>
+            </div>`;
+        }
+      }
+    } catch (e) {
+      // ignore missing or invalid trend history
+      void 0;
+    }
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -274,8 +335,12 @@ class PerformanceReportGenerator {
             <p><small>Generated: ${new Date().toLocaleString()}</small></p>
         </div>
 
+  ${trendWidgetHTML}
+
         <div class="metrics-grid">
-            ${Object.entries(data.aggregatedMetrics).map(([metric, stats]) => `
+            ${Object.entries(data.aggregatedMetrics)
+              .map(
+                ([metric, stats]) => `
                 <div class="metric-card ${stats.status.toLowerCase()}">
                     <div class="metric-name">${metric.replace(/([A-Z])/g, ' $1').trim()}</div>
                     <div class="metric-values">
@@ -298,7 +363,9 @@ class PerformanceReportGenerator {
                     </div>
                     <div class="status-badge status-${stats.status.toLowerCase()}">${stats.status}</div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
 
         <div class="charts-section">
@@ -314,14 +381,18 @@ class PerformanceReportGenerator {
 
         <div class="recommendations">
             <h3>💡 Performance Recommendations</h3>
-            ${data.recommendations.map(rec => `
+            ${data.recommendations
+              .map(
+                (rec) => `
                 <div class="recommendation ${rec.priority.toLowerCase()}">
                     <div class="rec-priority ${rec.priority.toLowerCase()}">${rec.priority}</div>
                     <div><strong>${rec.metric.toUpperCase()}:</strong> ${rec.issue}</div>
                     <div><strong>Recommendation:</strong> ${rec.recommendation}</div>
                     <div><strong>Impact:</strong> ${rec.impact}</div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
     </div>
 
@@ -331,15 +402,21 @@ class PerformanceReportGenerator {
         new Chart(metricsCtx, {
             type: 'bar',
             data: {
-                labels: [${Object.keys(data.aggregatedMetrics).map(k => `'${k}'`).join(', ')}],
+                labels: [${Object.keys(data.aggregatedMetrics)
+                  .map((k) => `'${k}'`)
+                  .join(', ')}],
                 datasets: [{
                     label: 'Average (ms)',
-                    data: [${Object.values(data.aggregatedMetrics).map(v => v.average).join(', ')}],
+                    data: [${Object.values(data.aggregatedMetrics)
+                      .map((v) => v.average)
+                      .join(', ')}],
                     backgroundColor: '#3b82f6',
                     borderRadius: 6
                 }, {
                     label: '95th Percentile (ms)',
-                    data: [${Object.values(data.aggregatedMetrics).map(v => v.p95).join(', ')}],
+                    data: [${Object.values(data.aggregatedMetrics)
+                      .map((v) => v.p95)
+                      .join(', ')}],
                     backgroundColor: '#f59e0b',
                     borderRadius: 6
                 }]
@@ -355,16 +432,22 @@ class PerformanceReportGenerator {
         new Chart(baselineCtx, {
             type: 'radar',
             data: {
-                labels: [${Object.keys(data.aggregatedMetrics).map(k => `'${k}'`).join(', ')}],
+                labels: [${Object.keys(data.aggregatedMetrics)
+                  .map((k) => `'${k}'`)
+                  .join(', ')}],
                 datasets: [{
                     label: 'Baseline',
-                    data: [${Object.values(data.aggregatedMetrics).map(v => typeof v.baseline === 'number' ? v.baseline : 0).join(', ')}],
+                    data: [${Object.values(data.aggregatedMetrics)
+                      .map((v) => (typeof v.baseline === 'number' ? v.baseline : 0))
+                      .join(', ')}],
                     borderColor: '#10b981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
                     pointBackgroundColor: '#10b981'
                 }, {
                     label: 'Actual (95th %ile)',
-                    data: [${Object.values(data.aggregatedMetrics).map(v => v.p95).join(', ')}],
+                    data: [${Object.values(data.aggregatedMetrics)
+                      .map((v) => v.p95)
+                      .join(', ')}],
                     borderColor: '#ef4444',
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
                     pointBackgroundColor: '#ef4444'

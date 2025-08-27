@@ -10,17 +10,17 @@ class ProductCatalogPage extends BasePage {
   constructor(page) {
     super(page);
     this.navigation = new NavigationComponent(page);
-    
+
     // Page URL
     this.url = '/products';
-    
+
     // Page selectors
     this.selectors = {
       // Page elements
       pageTitle: '[data-testid="products-title"]',
       productGrid: '[data-testid="product-grid"]',
       productList: '[data-testid="product-list"]',
-      
+
       // Product items
       productItem: '[data-testid="product-item"]',
       productImage: '[data-testid="product-image"]',
@@ -31,55 +31,55 @@ class ProductCatalogPage extends BasePage {
       addToCartButton: '[data-testid="add-to-cart"]',
       quickViewButton: '[data-testid="quick-view"]',
       wishlistButton: '[data-testid="add-to-wishlist"]',
-      
+
       // Search and filters
       searchInput: '[data-testid="product-search"]',
       searchButton: '[data-testid="search-button"]',
       clearSearchButton: '[data-testid="clear-search"]',
-      
+
       // Category filters
       categoryFilter: '[data-testid="category-filter"]',
       categoryOption: '[data-testid="category-option"]',
-      
+
       // Price filters
       priceFilter: '[data-testid="price-filter"]',
       minPriceInput: '[data-testid="min-price"]',
       maxPriceInput: '[data-testid="max-price"]',
       applyPriceFilter: '[data-testid="apply-price-filter"]',
-      
+
       // Brand filters
       brandFilter: '[data-testid="brand-filter"]',
       brandCheckbox: '[data-testid="brand-checkbox"]',
-      
+
       // Rating filter
       ratingFilter: '[data-testid="rating-filter"]',
       ratingOption: '[data-testid="rating-option"]',
-      
+
       // Sorting
       sortDropdown: '[data-testid="sort-dropdown"]',
       sortOption: '[data-testid="sort-option"]',
-      
+
       // View options
       gridViewButton: '[data-testid="grid-view"]',
       listViewButton: '[data-testid="list-view"]',
-      
+
       // Pagination
       pagination: '[data-testid="pagination"]',
       previousPageButton: '[data-testid="previous-page"]',
       nextPageButton: '[data-testid="next-page"]',
       pageNumber: '[data-testid="page-number"]',
-      
+
       // Results info
       resultsCount: '[data-testid="results-count"]',
       noResultsMessage: '[data-testid="no-results"]',
-      
+
       // Loading states
       loadingSpinner: '[data-testid="loading-spinner"]',
-      
+
       // Quick view modal
       quickViewModal: '[data-testid="quick-view-modal"]',
       quickViewClose: '[data-testid="quick-view-close"]',
-      quickViewAddToCart: '[data-testid="quick-view-add-to-cart"]'
+      quickViewAddToCart: '[data-testid="quick-view-add-to-cart"]',
     };
   }
 
@@ -206,14 +206,14 @@ class ProductCatalogPage extends BasePage {
     if (index >= products.length) {
       throw new Error(`Product index ${index} out of range. Found ${products.length} products.`);
     }
-    
+
     const product = products[index];
-    
+
     return {
       title: await product.locator(this.selectors.productTitle).textContent(),
       price: await product.locator(this.selectors.productPrice).textContent(),
       rating: await product.locator(this.selectors.productRating).textContent(),
-      image: await product.locator(this.selectors.productImage).getAttribute('src')
+      image: await product.locator(this.selectors.productImage).getAttribute('src'),
     };
   }
 
@@ -226,7 +226,7 @@ class ProductCatalogPage extends BasePage {
     if (index >= products.length) {
       throw new Error(`Product index ${index} out of range. Found ${products.length} products.`);
     }
-    
+
     const addToCartButton = products[index].locator(this.selectors.addToCartButton);
     await addToCartButton.click();
     await this.waitForNetworkIdle();
@@ -239,7 +239,7 @@ class ProductCatalogPage extends BasePage {
   async addProductToCartByName(productName) {
     const productSelector = `${this.selectors.productItem}:has(${this.selectors.productTitle}:text("${productName}"))`;
     const addToCartButton = `${productSelector} ${this.selectors.addToCartButton}`;
-    
+
     await this.clickElement(addToCartButton);
     await this.waitForNetworkIdle();
   }
@@ -253,7 +253,7 @@ class ProductCatalogPage extends BasePage {
     if (index >= products.length) {
       throw new Error(`Product index ${index} out of range. Found ${products.length} products.`);
     }
-    
+
     const quickViewButton = products[index].locator(this.selectors.quickViewButton);
     await quickViewButton.click();
     await this.waitForElement(this.selectors.quickViewModal);
@@ -284,7 +284,7 @@ class ProductCatalogPage extends BasePage {
     if (index >= products.length) {
       throw new Error(`Product index ${index} out of range. Found ${products.length} products.`);
     }
-    
+
     const wishlistButton = products[index].locator(this.selectors.wishlistButton);
     await wishlistButton.click();
     await this.waitForNetworkIdle();
@@ -349,11 +349,11 @@ class ProductCatalogPage extends BasePage {
     if (await this.isElementVisible(this.selectors.loadingSpinner)) {
       await this.waitForElementToDisappear(this.selectors.loadingSpinner);
     }
-    
+
     // Wait for either products or no results message
     await Promise.race([
       this.waitForElement(this.selectors.productItem),
-      this.waitForElement(this.selectors.noResultsMessage)
+      this.waitForElement(this.selectors.noResultsMessage),
     ]);
   }
 
@@ -373,12 +373,12 @@ class ProductCatalogPage extends BasePage {
    */
   async validateSearchResults(searchTerm, expectedCount) {
     await this.waitForProductsToLoad();
-    
+
     if (expectedCount !== undefined) {
       const actualCount = await this.getProductCount();
       expect(actualCount).toBe(expectedCount);
     }
-    
+
     // Validate search term appears in URL or results
     const currentUrl = await this.getCurrentUrl();
     expect(currentUrl).toContain('search');
@@ -410,11 +410,11 @@ class ProductCatalogPage extends BasePage {
   async validatePriceFilterResults(minPrice, maxPrice) {
     await this.waitForProductsToLoad();
     const products = await this.getProductItems();
-    
+
     for (let i = 0; i < products.length; i++) {
       const productDetails = await this.getProductDetails(i);
       const price = parseFloat(productDetails.price.replace(/[^0-9.]/g, ''));
-      
+
       if (minPrice !== undefined) {
         expect(price).toBeGreaterThanOrEqual(minPrice);
       }
@@ -430,7 +430,7 @@ class ProductCatalogPage extends BasePage {
    */
   async validateCategoryFilterResults(category) {
     await this.waitForProductsToLoad();
-    
+
     // Check URL contains category or validate product categories
     const currentUrl = await this.getCurrentUrl();
     expect(currentUrl).toContain(category.toLowerCase());
@@ -443,16 +443,16 @@ class ProductCatalogPage extends BasePage {
   async validateSortOrder(sortBy) {
     await this.waitForProductsToLoad();
     const products = await this.getProductItems();
-    
+
     if (products.length < 2) return; // Can't validate sort with less than 2 items
-    
+
     const prices = [];
     for (let i = 0; i < Math.min(products.length, 5); i++) {
       const productDetails = await this.getProductDetails(i);
       const price = parseFloat(productDetails.price.replace(/[^0-9.]/g, ''));
       prices.push(price);
     }
-    
+
     if (sortBy === 'price-low') {
       for (let i = 1; i < prices.length; i++) {
         expect(prices[i]).toBeGreaterThanOrEqual(prices[i - 1]);

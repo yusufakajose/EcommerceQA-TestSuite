@@ -17,19 +17,19 @@ class AdvancedLoadTestRunner {
     this.dataDir = path.join(this.baseDir, 'jmeter/data');
     this.resultsDir = path.join(this.baseDir, 'jmeter/results');
     this.reportsDir = path.join(process.cwd(), 'reports/performance-tests');
-    
+
     this.loadScenarios = {};
     this.testPlans = {
       'user-journey': 'realistic-user-journey-load-test.jmx',
       'stress-test': 'stress-test-scenario.jmx',
       'user-auth': 'user-authentication-load-test.jmx',
       'product-catalog': 'product-catalog-load-test.jmx',
-      'shopping-cart': 'shopping-cart-checkout-load-test.jmx'
+      'shopping-cart': 'shopping-cart-checkout-load-test.jmx',
     };
-    
+
     this.defaultConfig = {
       baseUrl: 'http://localhost:3000',
-      scenario: 'normal_load'
+      scenario: 'normal_load',
     };
   }
 
@@ -46,7 +46,7 @@ class AdvancedLoadTestRunner {
    */
   async loadScenarioConfigurations() {
     const scenarioFile = path.join(this.dataDir, 'load-test-scenarios.csv');
-    
+
     if (!fs.existsSync(scenarioFile)) {
       console.warn('Load test scenarios file not found, using defaults');
       return;
@@ -54,7 +54,7 @@ class AdvancedLoadTestRunner {
 
     return new Promise((resolve, reject) => {
       const scenarios = {};
-      
+
       fs.createReadStream(scenarioFile)
         .pipe(csv())
         .on('data', (row) => {
@@ -64,7 +64,7 @@ class AdvancedLoadTestRunner {
             duration: parseInt(row.duration),
             thinkTimeMin: parseInt(row.thinkTimeMin),
             thinkTimeMax: parseInt(row.thinkTimeMax),
-            description: row.description
+            description: row.description,
           };
         })
         .on('end', () => {
@@ -81,8 +81,8 @@ class AdvancedLoadTestRunner {
    */
   ensureDirectories() {
     const dirs = [this.resultsDir, this.reportsDir];
-    
-    dirs.forEach(dir => {
+
+    dirs.forEach((dir) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -99,7 +99,7 @@ class AdvancedLoadTestRunner {
           reject(new Error('JMeter is not installed or not in PATH'));
           return;
         }
-        
+
         const version = stdout.split('\n')[0];
         console.log(`JMeter found: ${version}`);
         resolve(version);
@@ -119,7 +119,7 @@ class AdvancedLoadTestRunner {
     const testConfig = { ...this.defaultConfig, ...config };
     const testPlan = this.testPlans['user-journey'];
     const testPlanPath = path.join(this.testPlansDir, testPlan);
-    
+
     if (!fs.existsSync(testPlanPath)) {
       throw new Error(`Test plan file not found: ${testPlanPath}`);
     }
@@ -131,14 +131,19 @@ class AdvancedLoadTestRunner {
 
     console.log(`Running User Journey Load Test - ${scenarioName}`);
     console.log(`Description: ${scenario.description}`);
-    console.log(`Configuration: ${scenario.users} users, ${scenario.rampUp}s ramp-up, ${scenario.duration}s duration`);
+    console.log(
+      `Configuration: ${scenario.users} users, ${scenario.rampUp}s ramp-up, ${scenario.duration}s duration`
+    );
     console.log(`Think time: ${scenario.thinkTimeMin}-${scenario.thinkTimeMax}ms`);
 
     const jmeterArgs = [
       '-n',
-      '-t', testPlanPath,
-      '-l', resultFile,
-      '-j', logFile,
+      '-t',
+      testPlanPath,
+      '-l',
+      resultFile,
+      '-j',
+      logFile,
       '-Jbase_url=' + testConfig.baseUrl,
       '-Jnormal_users=' + Math.floor(scenario.users * 0.4),
       '-Jpeak_users=' + Math.floor(scenario.users * 0.8),
@@ -148,14 +153,15 @@ class AdvancedLoadTestRunner {
       '-Jthink_time_min=' + scenario.thinkTimeMin,
       '-Jthink_time_max=' + scenario.thinkTimeMax,
       '-e',
-      '-o', reportDir
+      '-o',
+      reportDir,
     ];
 
     return this.executeJMeterTest('User Journey Load Test', jmeterArgs, {
       resultFile,
       logFile,
       reportDir,
-      scenario: scenarioName
+      scenario: scenarioName,
     });
   }
 
@@ -166,7 +172,7 @@ class AdvancedLoadTestRunner {
     const testConfig = { ...this.defaultConfig, ...config };
     const testPlan = this.testPlans['stress-test'];
     const testPlanPath = path.join(this.testPlansDir, testPlan);
-    
+
     if (!fs.existsSync(testPlanPath)) {
       throw new Error(`Test plan file not found: ${testPlanPath}`);
     }
@@ -182,27 +188,33 @@ class AdvancedLoadTestRunner {
     const stepDuration = config.stepDuration || 300;
 
     console.log(`Running Stress Test to identify breaking points`);
-    console.log(`Configuration: ${initialUsers} to ${maxUsers} users, ${stepUsers} user steps, ${stepDuration}s per step`);
+    console.log(
+      `Configuration: ${initialUsers} to ${maxUsers} users, ${stepUsers} user steps, ${stepDuration}s per step`
+    );
 
     const jmeterArgs = [
       '-n',
-      '-t', testPlanPath,
-      '-l', resultFile,
-      '-j', logFile,
+      '-t',
+      testPlanPath,
+      '-l',
+      resultFile,
+      '-j',
+      logFile,
       '-Jbase_url=' + testConfig.baseUrl,
       '-Jinitial_users=' + initialUsers,
       '-Jmax_users=' + maxUsers,
       '-Jstep_users=' + stepUsers,
       '-Jstep_duration=' + stepDuration,
       '-e',
-      '-o', reportDir
+      '-o',
+      reportDir,
     ];
 
     return this.executeJMeterTest('Stress Test', jmeterArgs, {
       resultFile,
       logFile,
       reportDir,
-      scenario: 'stress_test'
+      scenario: 'stress_test',
     });
   }
 
@@ -222,7 +234,7 @@ class AdvancedLoadTestRunner {
         duration: 600,
         thinkTimeMin: 1000,
         thinkTimeMax: 3000,
-        description: `Concurrent user test with ${userCount} users`
+        description: `Concurrent user test with ${userCount} users`,
       };
 
       try {
@@ -231,20 +243,20 @@ class AdvancedLoadTestRunner {
         results.push({
           userCount,
           success: true,
-          ...result
+          ...result,
         });
 
         // Wait between tests to allow system recovery
         if (userCounts.indexOf(userCount) < userCounts.length - 1) {
           console.log('Waiting 60 seconds for system recovery...');
-          await new Promise(resolve => setTimeout(resolve, 60000));
+          await new Promise((resolve) => setTimeout(resolve, 60000));
         }
       } catch (error) {
         console.error(`Failed test with ${userCount} users:`, error.message);
         results.push({
           userCount,
           success: false,
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -261,15 +273,27 @@ class AdvancedLoadTestRunner {
     const testPlanPath = path.join(this.testPlansDir, testPlan);
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const resultFile = path.join(this.resultsDir, `custom-scenario-${scenario.users}users-${timestamp}.jtl`);
-    const logFile = path.join(this.resultsDir, `custom-scenario-${scenario.users}users-${timestamp}.log`);
-    const reportDir = path.join(this.reportsDir, `custom-scenario-${scenario.users}users-${timestamp}`);
+    const resultFile = path.join(
+      this.resultsDir,
+      `custom-scenario-${scenario.users}users-${timestamp}.jtl`
+    );
+    const logFile = path.join(
+      this.resultsDir,
+      `custom-scenario-${scenario.users}users-${timestamp}.log`
+    );
+    const reportDir = path.join(
+      this.reportsDir,
+      `custom-scenario-${scenario.users}users-${timestamp}`
+    );
 
     const jmeterArgs = [
       '-n',
-      '-t', testPlanPath,
-      '-l', resultFile,
-      '-j', logFile,
+      '-t',
+      testPlanPath,
+      '-l',
+      resultFile,
+      '-j',
+      logFile,
       '-Jbase_url=' + testConfig.baseUrl,
       '-Jnormal_users=' + Math.floor(scenario.users * 0.4),
       '-Jpeak_users=' + Math.floor(scenario.users * 0.8),
@@ -277,14 +301,15 @@ class AdvancedLoadTestRunner {
       '-Jramp_up=' + scenario.rampUp,
       '-Jduration=' + scenario.duration,
       '-e',
-      '-o', reportDir
+      '-o',
+      reportDir,
     ];
 
     return this.executeJMeterTest(`Custom Scenario (${scenario.users} users)`, jmeterArgs, {
       resultFile,
       logFile,
       reportDir,
-      scenario: 'custom'
+      scenario: 'custom',
     });
   }
 
@@ -295,44 +320,44 @@ class AdvancedLoadTestRunner {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
       const jmeter = spawn('jmeter', jmeterArgs);
-      
+
       let output = '';
       let errorOutput = '';
-      
+
       jmeter.stdout.on('data', (data) => {
         const text = data.toString();
         output += text;
         process.stdout.write(text);
       });
-      
+
       jmeter.stderr.on('data', (data) => {
         const text = data.toString();
         errorOutput += text;
         process.stderr.write(text);
       });
-      
+
       jmeter.on('close', (code) => {
         const endTime = Date.now();
         const duration = endTime - startTime;
-        
+
         if (code === 0) {
           console.log(`${testName} completed successfully in ${Math.round(duration / 1000)}s`);
           console.log(`Results: ${metadata.resultFile}`);
           console.log(`Report: ${metadata.reportDir}/index.html`);
-          
+
           resolve({
             testName,
             success: true,
             duration,
             ...metadata,
-            output
+            output,
           });
         } else {
           console.error(`${testName} failed with exit code ${code}`);
           reject(new Error(`JMeter test failed with exit code ${code}: ${errorOutput}`));
         }
       });
-      
+
       jmeter.on('error', (error) => {
         reject(new Error(`Failed to start JMeter: ${error.message}`));
       });
@@ -344,7 +369,7 @@ class AdvancedLoadTestRunner {
    */
   generateLoadTestReport(results, config) {
     const reportPath = path.join(this.reportsDir, 'comprehensive-load-test-report.html');
-    
+
     const html = `
 <!DOCTYPE html>
 <html>
@@ -370,7 +395,7 @@ class AdvancedLoadTestRunner {
         <h1>Comprehensive Load Test Report</h1>
         <p><strong>Generated:</strong> ${new Date().toISOString()}</p>
         <p><strong>Base URL:</strong> ${config.baseUrl}</p>
-        <p><strong>Test Duration:</strong> ${Math.round((results.reduce((sum, r) => sum + (r.duration || 0), 0)) / 1000 / 60)} minutes</p>
+        <p><strong>Test Duration:</strong> ${Math.round(results.reduce((sum, r) => sum + (r.duration || 0), 0) / 1000 / 60)} minutes</p>
     </div>
     
     <div class="scenario-section">
@@ -382,15 +407,15 @@ class AdvancedLoadTestRunner {
             </div>
             <div class="metric success">
                 <h3>Successful</h3>
-                <p>${results.filter(r => r.success).length}</p>
+                <p>${results.filter((r) => r.success).length}</p>
             </div>
             <div class="metric error">
                 <h3>Failed</h3>
-                <p>${results.filter(r => !r.success).length}</p>
+                <p>${results.filter((r) => !r.success).length}</p>
             </div>
             <div class="metric">
                 <h3>Success Rate</h3>
-                <p>${Math.round((results.filter(r => r.success).length / results.length) * 100)}%</p>
+                <p>${Math.round((results.filter((r) => r.success).length / results.length) * 100)}%</p>
             </div>
         </div>
     </div>
@@ -408,18 +433,23 @@ class AdvancedLoadTestRunner {
                 </tr>
             </thead>
             <tbody>
-                ${results.map(result => `
+                ${results
+                  .map(
+                    (result) => `
                     <tr class="${result.success ? 'success' : 'error'}">
                         <td>${result.testName}</td>
                         <td>${result.scenario || 'N/A'}</td>
                         <td>${result.success ? 'Success' : 'Failed'}</td>
                         <td>${result.duration ? Math.round(result.duration / 1000) + 's' : 'N/A'}</td>
-                        <td>${result.success && result.reportDir ? 
-                            `<a href="${path.basename(result.reportDir)}/index.html" target="_blank">View Report</a>` :
-                            'N/A'
+                        <td>${
+                          result.success && result.reportDir
+                            ? `<a href="${path.basename(result.reportDir)}/index.html" target="_blank">View Report</a>`
+                            : 'N/A'
                         }</td>
                     </tr>
-                `).join('')}
+                `
+                  )
+                  .join('')}
             </tbody>
         </table>
     </div>
@@ -428,9 +458,13 @@ class AdvancedLoadTestRunner {
         <h2>Load Testing Scenarios</h2>
         <p>The following load testing scenarios were executed:</p>
         <ul>
-            ${Object.entries(this.loadScenarios).map(([name, scenario]) => `
+            ${Object.entries(this.loadScenarios)
+              .map(
+                ([name, scenario]) => `
                 <li><strong>${name}:</strong> ${scenario.description} (${scenario.users} users, ${scenario.rampUp}s ramp-up)</li>
-            `).join('')}
+            `
+              )
+              .join('')}
         </ul>
     </div>
     
@@ -461,10 +495,10 @@ class AdvancedLoadTestRunner {
     </div>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(reportPath, html);
     console.log(`Comprehensive load test report generated: ${reportPath}`);
-    
+
     return reportPath;
   }
 
@@ -474,7 +508,7 @@ class AdvancedLoadTestRunner {
   listScenarios() {
     console.log('Available Load Test Scenarios:');
     console.log('================================');
-    
+
     Object.entries(this.loadScenarios).forEach(([name, scenario]) => {
       console.log(`${name}:`);
       console.log(`  Users: ${scenario.users}`);
@@ -492,23 +526,23 @@ class AdvancedLoadTestRunner {
   async runComprehensiveLoadTests(config = {}) {
     const results = [];
     const testConfig = { ...this.defaultConfig, ...config };
-    
+
     console.log('Starting Comprehensive Load Testing Suite...');
-    
+
     try {
       // Run different load scenarios
       const scenarios = ['light_load', 'normal_load', 'peak_load', 'heavy_load'];
-      
+
       for (const scenario of scenarios) {
         console.log(`\n--- Running ${scenario} scenario ---`);
         try {
           const result = await this.runUserJourneyTest(scenario, testConfig);
           results.push(result);
-          
+
           // Recovery time between scenarios
           if (scenarios.indexOf(scenario) < scenarios.length - 1) {
             console.log('Waiting 120 seconds for system recovery...');
-            await new Promise(resolve => setTimeout(resolve, 120000));
+            await new Promise((resolve) => setTimeout(resolve, 120000));
           }
         } catch (error) {
           console.error(`Failed ${scenario}:`, error.message);
@@ -516,11 +550,11 @@ class AdvancedLoadTestRunner {
             testName: `User Journey - ${scenario}`,
             scenario,
             success: false,
-            error: error.message
+            error: error.message,
           });
         }
       }
-      
+
       // Run stress test
       console.log('\n--- Running Stress Test ---');
       try {
@@ -532,20 +566,21 @@ class AdvancedLoadTestRunner {
           testName: 'Stress Test',
           scenario: 'stress_test',
           success: false,
-          error: error.message
+          error: error.message,
         });
       }
-      
+
       // Generate comprehensive report
       const reportPath = this.generateLoadTestReport(results, testConfig);
-      
+
       console.log('\nComprehensive Load Testing Suite completed!');
       console.log(`Results: ${results.length} tests executed`);
-      console.log(`Success rate: ${Math.round((results.filter(r => r.success).length / results.length) * 100)}%`);
+      console.log(
+        `Success rate: ${Math.round((results.filter((r) => r.success).length / results.length) * 100)}%`
+      );
       console.log(`Comprehensive report: ${reportPath}`);
-      
+
       return results;
-      
     } catch (error) {
       console.error('Comprehensive load testing failed:', error.message);
       throw error;
@@ -558,7 +593,7 @@ module.exports = AdvancedLoadTestRunner;
 // CLI Interface
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 Advanced Load Testing Runner
@@ -588,22 +623,22 @@ Examples:
 `);
     process.exit(0);
   }
-  
+
   const runner = new AdvancedLoadTestRunner();
-  
+
   (async () => {
     try {
       await runner.checkJMeter();
       await runner.initialize();
-      
+
       const command = args[0] || 'comprehensive';
       const config = {};
-      
+
       // Parse options
       for (let i = 1; i < args.length; i++) {
         const arg = args[i];
         const nextArg = args[i + 1];
-        
+
         switch (arg) {
           case '--base-url':
             if (nextArg) {
@@ -637,44 +672,45 @@ Examples:
             break;
         }
       }
-      
+
       let result;
-      
+
       switch (command) {
         case 'comprehensive':
           result = await runner.runComprehensiveLoadTests(config);
-          process.exit(result.every(r => r.success) ? 0 : 1);
+          process.exit(result.every((r) => r.success) ? 0 : 1);
           break;
-          
+
         case 'user-journey': {
           const scenario = args[1] || 'normal_load';
           result = await runner.runUserJourneyTest(scenario, config);
           process.exit(result.success ? 0 : 1);
           break;
         }
-          
+
         case 'stress-test':
           result = await runner.runStressTest(config);
           process.exit(result.success ? 0 : 1);
           break;
-          
+
         case 'concurrent-users': {
-          const userCounts = args[1] ? args[1].split(',').map(n => parseInt(n.trim())) : [50, 100, 200];
+          const userCounts = args[1]
+            ? args[1].split(',').map((n) => parseInt(n.trim()))
+            : [50, 100, 200];
           result = await runner.runConcurrentUserTest(userCounts, config);
-          process.exit(result.every(r => r.success) ? 0 : 1);
+          process.exit(result.every((r) => r.success) ? 0 : 1);
           break;
         }
-          
+
         case 'list-scenarios':
           runner.listScenarios();
           process.exit(0);
           break;
-          
+
         default:
           console.error(`Unknown command: ${command}`);
           process.exit(1);
       }
-      
     } catch (error) {
       console.error('Load testing failed:', error.message);
       process.exit(1);

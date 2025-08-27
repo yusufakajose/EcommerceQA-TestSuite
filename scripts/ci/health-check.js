@@ -23,24 +23,24 @@ class CIHealthCheck {
     this.checkNodeVersion();
     this.checkNpmVersion();
     this.checkCIEnvironment();
-    
+
     // Project structure checks
     this.checkProjectStructure();
     this.checkConfigFiles();
     this.checkDependencies();
-    
+
     // Test framework checks
     this.checkPlaywrightSetup();
     this.checkNewmanSetup();
     this.checkJMeterAvailability();
-    
+
     // Script availability checks
     this.checkNpmScripts();
     this.checkTestDirectories();
-    
+
     // Generate report
     this.generateReport();
-    
+
     // Exit with appropriate code
     if (this.errors.length > 0) {
       console.log('\nHealth check failed with errors');
@@ -58,7 +58,7 @@ class CIHealthCheck {
     try {
       const nodeVersion = process.version;
       const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0]);
-      
+
       if (majorVersion >= 18) {
         this.addCheck('Node.js Version', 'passed', `${nodeVersion} (>= 18)`);
       } else {
@@ -83,13 +83,13 @@ class CIHealthCheck {
     const githubActions = process.env.GITHUB_ACTIONS;
     const gitlabCI = process.env.GITLAB_CI;
     const azureDevOps = process.env.TF_BUILD;
-    
+
     if (ciEnv || githubActions || gitlabCI || azureDevOps) {
       let platform = 'Unknown CI';
       if (githubActions) platform = 'GitHub Actions';
       else if (gitlabCI) platform = 'GitLab CI';
       else if (azureDevOps) platform = 'Azure DevOps';
-      
+
       this.addCheck('CI Environment', 'passed', platform);
     } else {
       this.addWarning('CI Environment', 'Not detected (running locally?)');
@@ -97,19 +97,11 @@ class CIHealthCheck {
   }
 
   checkProjectStructure() {
-    const requiredDirs = [
-      'automated-tests',
-      'scripts',
-      'config',
-      'test-data'
-    ];
+    const requiredDirs = ['automated-tests', 'scripts', 'config', 'test-data'];
 
-    const requiredFiles = [
-      'package.json',
-      'package-lock.json'
-    ];
+    const requiredFiles = ['package.json', 'package-lock.json'];
 
-    requiredDirs.forEach(dir => {
+    requiredDirs.forEach((dir) => {
       if (fs.existsSync(dir)) {
         this.addCheck(`Directory: ${dir}`, 'passed', 'exists');
       } else {
@@ -117,7 +109,7 @@ class CIHealthCheck {
       }
     });
 
-    requiredFiles.forEach(file => {
+    requiredFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         this.addCheck(`File: ${file}`, 'passed', 'exists');
       } else {
@@ -131,7 +123,7 @@ class CIHealthCheck {
       { file: '.eslintrc.js', name: 'ESLint Config', required: false },
       { file: 'tsconfig.json', name: 'TypeScript Config', required: false },
       { file: 'config/playwright.config.js', name: 'Playwright Config', required: true },
-      { file: '.gitignore', name: 'Git Ignore', required: false }
+      { file: '.gitignore', name: 'Git Ignore', required: false },
     ];
 
     configFiles.forEach(({ file, name, required }) => {
@@ -149,15 +141,10 @@ class CIHealthCheck {
     try {
       const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
       const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
-      
-      const criticalDeps = [
-        '@playwright/test',
-        'newman',
-        'typescript',
-        'eslint'
-      ];
 
-      criticalDeps.forEach(dep => {
+      const criticalDeps = ['@playwright/test', 'newman', 'typescript', 'eslint'];
+
+      criticalDeps.forEach((dep) => {
         if (deps[dep]) {
           this.addCheck(`Dependency: ${dep}`, 'passed', deps[dep]);
         } else {
@@ -171,7 +158,6 @@ class CIHealthCheck {
       } else {
         this.addError('Dependencies Installed', 'node_modules missing - run npm install');
       }
-
     } catch (error) {
       this.addError('Package Dependencies', 'Unable to read package.json');
     }
@@ -183,7 +169,7 @@ class CIHealthCheck {
       const playwrightPath = path.join('node_modules', '@playwright', 'test');
       if (fs.existsSync(playwrightPath)) {
         this.addCheck('Playwright Installation', 'passed', 'installed');
-        
+
         // Check for browsers
         try {
           execSync('npx playwright --version', { stdio: 'pipe' });
@@ -204,7 +190,7 @@ class CIHealthCheck {
       const newmanPath = path.join('node_modules', 'newman');
       if (fs.existsSync(newmanPath)) {
         this.addCheck('Newman Installation', 'passed', 'installed');
-        
+
         // Check Newman CLI
         try {
           execSync('npx newman --version', { stdio: 'pipe' });
@@ -238,23 +224,16 @@ class CIHealthCheck {
     try {
       const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
       const scripts = packageJson.scripts || {};
-      
-      const criticalScripts = [
-        'test:ui',
-        'test:api',
-        'test:ci:smoke',
-        'lint',
-        'build'
-      ];
 
-      criticalScripts.forEach(script => {
+      const criticalScripts = ['test:ui', 'test:api', 'test:ci:smoke', 'lint', 'build'];
+
+      criticalScripts.forEach((script) => {
         if (scripts[script]) {
           this.addCheck(`Script: ${script}`, 'passed', 'defined');
         } else {
           this.addWarning(`Script: ${script}`, 'not defined');
         }
       });
-
     } catch (error) {
       this.addError('NPM Scripts', 'Unable to check scripts');
     }
@@ -266,15 +245,19 @@ class CIHealthCheck {
       'automated-tests/api-tests',
       'automated-tests/performance-tests',
       'automated-tests/accessibility-tests',
-      'automated-tests/security-tests'
+      'automated-tests/security-tests',
     ];
 
-    testDirs.forEach(dir => {
+    testDirs.forEach((dir) => {
       if (fs.existsSync(dir)) {
         // Count test files
         try {
-          const files = fs.readdirSync(dir, { recursive: true })
-            .filter(file => file.endsWith('.spec.js') || file.endsWith('.spec.ts') || file.endsWith('.test.js'));
+          const files = fs
+            .readdirSync(dir, { recursive: true })
+            .filter(
+              (file) =>
+                file.endsWith('.spec.js') || file.endsWith('.spec.ts') || file.endsWith('.test.js')
+            );
           this.addCheck(`Test Directory: ${dir}`, 'passed', `${files.length} test files`);
         } catch (error) {
           this.addCheck(`Test Directory: ${dir}`, 'passed', 'exists');
@@ -305,20 +288,20 @@ class CIHealthCheck {
     console.log('\nHealth Check Summary');
     console.log('====================');
     console.log(`Total Checks: ${this.checks.length}`);
-    console.log(`Passed: ${this.checks.filter(c => c.status === 'passed').length}`);
+    console.log(`Passed: ${this.checks.filter((c) => c.status === 'passed').length}`);
     console.log(`Warnings: ${this.warnings.length}`);
     console.log(`Errors: ${this.errors.length}`);
 
     if (this.errors.length > 0) {
       console.log('\nCritical Issues:');
-      this.errors.forEach(error => {
+      this.errors.forEach((error) => {
         console.log(`  - ${error.name}: ${error.message}`);
       });
     }
 
     if (this.warnings.length > 0) {
       console.log('\nWarnings:');
-      this.warnings.forEach(warning => {
+      this.warnings.forEach((warning) => {
         console.log(`  - ${warning.name}: ${warning.message}`);
       });
     }
@@ -328,13 +311,13 @@ class CIHealthCheck {
       timestamp: new Date().toISOString(),
       summary: {
         total: this.checks.length,
-        passed: this.checks.filter(c => c.status === 'passed').length,
+        passed: this.checks.filter((c) => c.status === 'passed').length,
         warnings: this.warnings.length,
-        errors: this.errors.length
+        errors: this.errors.length,
       },
       checks: this.checks,
       warnings: this.warnings,
-      errors: this.errors
+      errors: this.errors,
     };
 
     const reportsDir = path.join(process.cwd(), 'reports');
@@ -342,10 +325,7 @@ class CIHealthCheck {
       fs.mkdirSync(reportsDir, { recursive: true });
     }
 
-    fs.writeFileSync(
-      path.join(reportsDir, 'health-check.json'),
-      JSON.stringify(report, null, 2)
-    );
+    fs.writeFileSync(path.join(reportsDir, 'health-check.json'), JSON.stringify(report, null, 2));
   }
 }
 

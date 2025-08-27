@@ -9,7 +9,7 @@ const { expect } = require('@playwright/test');
 class NavigationComponent extends BasePage {
   constructor(page) {
     super(page);
-    
+
     // Navigation selectors
     this.selectors = {
       // Header navigation
@@ -20,33 +20,33 @@ class NavigationComponent extends BasePage {
       cartIcon: '[data-testid="cart-icon"]',
       searchBox: '[data-testid="search-box"]',
       searchButton: '[data-testid="search-button"]',
-      
+
       // Main navigation links
       homeLink: '[data-testid="nav-home"]',
       productsLink: '[data-testid="nav-products"]',
       categoriesLink: '[data-testid="nav-categories"]',
       aboutLink: '[data-testid="nav-about"]',
       contactLink: '[data-testid="nav-contact"]',
-      
+
       // User menu items
       loginLink: '[data-testid="nav-login"]',
       registerLink: '[data-testid="nav-register"]',
       profileLink: '[data-testid="nav-profile"]',
       ordersLink: '[data-testid="nav-orders"]',
       logoutLink: '[data-testid="nav-logout"]',
-      
+
       // Mobile navigation
       mobileMenuButton: '[data-testid="mobile-menu-button"]',
       mobileMenu: '[data-testid="mobile-menu"]',
       mobileMenuClose: '[data-testid="mobile-menu-close"]',
-      
+
       // Breadcrumbs
       breadcrumbs: '[data-testid="breadcrumbs"]',
       breadcrumbItem: '[data-testid="breadcrumb-item"]',
-      
+
       // Cart badge
       cartBadge: '[data-testid="cart-badge"]',
-      cartCount: '[data-testid="cart-count"]'
+      cartCount: '[data-testid="cart-count"]',
     };
   }
 
@@ -195,12 +195,12 @@ class NavigationComponent extends BasePage {
   async getBreadcrumbTrail() {
     const breadcrumbItems = await this.page.locator(this.selectors.breadcrumbItem).all();
     const trail = [];
-    
+
     for (const item of breadcrumbItems) {
       const text = await item.textContent();
       trail.push(text.trim());
     }
-    
+
     return trail;
   }
 
@@ -234,7 +234,7 @@ class NavigationComponent extends BasePage {
    */
   async validateSearchFunctionality(searchTerm) {
     await this.performSearch(searchTerm);
-    
+
     // Validate search results page or search term in URL
     const currentUrl = await this.getCurrentUrl();
     expect(currentUrl).toContain('search');

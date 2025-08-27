@@ -73,7 +73,7 @@ const newUser = testDataHelper.generateUniqueData('user');
 // Generate user with overrides
 const customUser = testDataHelper.generateUniqueData('user', {
   firstName: 'TestUser',
-  preferences: { newsletter: true }
+  preferences: { newsletter: true },
 });
 
 // Generate bulk data
@@ -89,7 +89,7 @@ const scenarioData = testDataHelper.getScenarioData('userRegistration');
 // Create custom test data
 const testData = testDataHelper.createTestData('myTest', {
   user: { type: 'generated', dataType: 'user' },
-  products: { type: 'fixture', fixture: 'products', dataKey: 'featuredProducts' }
+  products: { type: 'fixture', fixture: 'products', dataKey: 'featuredProducts' },
 });
 ```
 
@@ -154,7 +154,7 @@ const visa = testDataHelper.getPaymentMethodData('visa');
 const user = testDataHelper.generateUniqueData('user', {
   firstName: 'Custom',
   age: { min: 25, max: 35 },
-  preferences: { newsletter: false }
+  preferences: { newsletter: false },
 });
 ```
 
@@ -164,7 +164,7 @@ const user = testDataHelper.generateUniqueData('user', {
 const product = testDataHelper.generateUniqueData('product', {
   category: 'Electronics',
   price: 99.99,
-  inStock: true
+  inStock: true,
 });
 ```
 
@@ -180,12 +180,12 @@ const amex = testDataHelper.generateUniqueData('creditCard', { type: 'amex' });
 ```javascript
 // Generate 10 users with common overrides
 const users = testDataHelper.generateBulkData('user', 10, {
-  preferences: { newsletter: true }
+  preferences: { newsletter: true },
 });
 
 // Generate 5 products in same category
 const products = testDataHelper.generateBulkData('product', 5, {
-  category: 'Test Category'
+  category: 'Test Category',
 });
 ```
 
@@ -242,7 +242,7 @@ console.log(config.baseUrl); // https://staging.example.com
 Automatic cleanup prevents data pollution:
 
 ```javascript
-test.afterEach(async ({ }, testInfo) => {
+test.afterEach(async ({}, testInfo) => {
   // Clean up test-specific data
   testDataHelper.cleanupTestData(testInfo.title);
 });
@@ -265,19 +265,19 @@ const requirements = {
   primaryUser: {
     type: 'generated',
     dataType: 'user',
-    overrides: { firstName: 'Primary' }
+    overrides: { firstName: 'Primary' },
   },
   testProducts: {
     type: 'generated',
     dataType: 'product',
     bulk: true,
-    count: 3
+    count: 3,
   },
   existingUser: {
     type: 'fixture',
     fixture: 'users',
-    dataKey: 'validUsers'
-  }
+    dataKey: 'validUsers',
+  },
 };
 
 const testData = testDataHelper.createTestData('complexTest', requirements);
@@ -332,10 +332,10 @@ class RegistrationPage extends BasePage {
 test('user registration with valid data', async ({ page }) => {
   const userData = testDataHelper.getUserData('valid');
   const registrationPage = new RegistrationPage(page);
-  
+
   await registrationPage.fillRegistrationForm(userData);
   await registrationPage.submitForm();
-  
+
   // Assertions...
 });
 ```

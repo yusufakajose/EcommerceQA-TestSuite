@@ -14,7 +14,7 @@ class MasterTestRunner {
     this.baseDir = process.cwd();
     this.resultsDir = path.join(this.baseDir, 'reports', 'test-execution');
     this.logsDir = path.join(this.baseDir, 'logs');
-    
+
     this.testSuites = {
       ui: {
         name: 'UI Tests',
@@ -24,7 +24,7 @@ class MasterTestRunner {
         retries: 2,
         parallel: true,
         environments: ['development', 'staging', 'production'],
-        browsers: ['chromium', 'firefox', 'webkit']
+        browsers: ['chromium', 'firefox', 'webkit'],
       },
       api: {
         name: 'API Tests',
@@ -33,7 +33,7 @@ class MasterTestRunner {
         timeout: 300000, // 5 minutes
         retries: 3,
         parallel: true,
-        environments: ['development', 'staging', 'production']
+        environments: ['development', 'staging', 'production'],
       },
       performance: {
         name: 'Performance Tests',
@@ -42,7 +42,7 @@ class MasterTestRunner {
         timeout: 1800000, // 30 minutes
         retries: 1,
         parallel: false,
-        environments: ['staging', 'production']
+        environments: ['staging', 'production'],
       },
       accessibility: {
         name: 'Accessibility Tests',
@@ -51,7 +51,7 @@ class MasterTestRunner {
         timeout: 300000, // 5 minutes
         retries: 2,
         parallel: true,
-        environments: ['development', 'staging']
+        environments: ['development', 'staging'],
       },
       security: {
         name: 'Security Tests',
@@ -60,10 +60,10 @@ class MasterTestRunner {
         timeout: 600000, // 10 minutes
         retries: 1,
         parallel: false,
-        environments: ['development', 'staging']
-      }
+        environments: ['development', 'staging'],
+      },
     };
-    
+
     this.ensureDirectories();
   }
 
@@ -71,7 +71,7 @@ class MasterTestRunner {
    * Ensure required directories exist
    */
   ensureDirectories() {
-    [this.resultsDir, this.logsDir].forEach(dir => {
+    [this.resultsDir, this.logsDir].forEach((dir) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -84,11 +84,11 @@ class MasterTestRunner {
   async executeAllTests(options = {}) {
     const startTime = Date.now();
     const executionId = `execution-${Date.now()}`;
-    
+
     console.log('🚀 Starting Master Test Execution');
     console.log(`Execution ID: ${executionId}`);
     console.log(`Timestamp: ${new Date().toISOString()}`);
-    
+
     const config = {
       executionId,
       startTime: new Date().toISOString(),
@@ -98,7 +98,7 @@ class MasterTestRunner {
       suites: options.suites || Object.keys(this.testSuites),
       retryFailures: options.retryFailures !== false,
       generateReports: options.generateReports !== false,
-      ...options
+      ...options,
     };
 
     const results = {
@@ -113,13 +113,13 @@ class MasterTestRunner {
         passed: 0,
         failed: 0,
         skipped: 0,
-        passRate: 0
+        passRate: 0,
       },
       environment: {
         nodeVersion: process.version,
         platform: process.platform,
-        ci: process.env.CI === 'true'
-      }
+        ci: process.env.CI === 'true',
+      },
     };
 
     try {
@@ -131,10 +131,10 @@ class MasterTestRunner {
         }
 
         console.log(`\n📋 Executing ${this.testSuites[suiteId].name}...`);
-        
+
         const suiteResult = await this.executeSuite(suiteId, config);
         results.suites[suiteId] = suiteResult;
-        
+
         // Update summary
         results.summary.total += suiteResult.tests?.total || 0;
         results.summary.passed += suiteResult.tests?.passed || 0;
@@ -145,8 +145,10 @@ class MasterTestRunner {
       // Calculate final metrics
       results.endTime = new Date().toISOString();
       results.duration = Date.now() - startTime;
-      results.summary.passRate = results.summary.total > 0 ? 
-        Math.round((results.summary.passed / results.summary.total) * 100) : 0;
+      results.summary.passRate =
+        results.summary.total > 0
+          ? Math.round((results.summary.passed / results.summary.total) * 100)
+          : 0;
 
       // Save execution results
       await this.saveExecutionResults(results);
@@ -160,13 +162,12 @@ class MasterTestRunner {
       this.printExecutionSummary(results);
 
       return results;
-
     } catch (error) {
       console.error('❌ Master test execution failed:', error);
       results.endTime = new Date().toISOString();
       results.duration = Date.now() - startTime;
       results.error = error.message;
-      
+
       await this.saveExecutionResults(results);
       throw error;
     }
@@ -178,7 +179,7 @@ class MasterTestRunner {
   async executeSuite(suiteId, config) {
     const suite = this.testSuites[suiteId];
     const startTime = Date.now();
-    
+
     const result = {
       suiteId,
       name: suite.name,
@@ -192,18 +193,18 @@ class MasterTestRunner {
         total: 0,
         passed: 0,
         failed: 0,
-        skipped: 0
+        skipped: 0,
       },
       environments: {},
       browsers: {},
       logs: [],
-      error: null
+      error: null,
     };
 
     try {
       // Execute for each environment if specified
-      const environments = config.environment === 'all' ? 
-        (suite.environments || ['development']) : [config.environment];
+      const environments =
+        config.environment === 'all' ? suite.environments || ['development'] : [config.environment];
 
       for (const env of environments) {
         if (suite.environments && !suite.environments.includes(env)) {
@@ -212,13 +213,16 @@ class MasterTestRunner {
         }
 
         console.log(`  🌍 Environment: ${env}`);
-        
+
         const envResult = await this.executeSuiteForEnvironment(
-          suiteId, env, config.browsers, config
+          suiteId,
+          env,
+          config.browsers,
+          config
         );
-        
+
         result.environments[env] = envResult;
-        
+
         // Aggregate results
         result.tests.total += envResult.tests?.total || 0;
         result.tests.passed += envResult.tests?.passed || 0;
@@ -227,16 +231,17 @@ class MasterTestRunner {
       }
 
       result.status = result.tests.failed > 0 ? 'failed' : 'passed';
-      
     } catch (error) {
       console.error(`❌ Suite ${suite.name} failed:`, error.message);
       result.status = 'error';
       result.error = error.message;
-      
+
       // Retry if configured
       if (result.attempts < result.maxAttempts - 1 && config.retryFailures) {
         result.attempts++;
-        console.log(`🔄 Retrying ${suite.name} (attempt ${result.attempts + 1}/${result.maxAttempts})`);
+        console.log(
+          `🔄 Retrying ${suite.name} (attempt ${result.attempts + 1}/${result.maxAttempts})`
+        );
         return await this.executeSuite(suiteId, config);
       }
     } finally {
@@ -252,7 +257,7 @@ class MasterTestRunner {
    */
   async executeSuiteForEnvironment(suiteId, environment, browsers, config) {
     const suite = this.testSuites[suiteId];
-    
+
     const envResult = {
       environment,
       startTime: new Date().toISOString(),
@@ -263,7 +268,7 @@ class MasterTestRunner {
       browsers: {},
       command: null,
       exitCode: null,
-      logs: []
+      logs: [],
     };
 
     const startTime = Date.now();
@@ -273,12 +278,12 @@ class MasterTestRunner {
       const env = {
         ...process.env,
         TEST_ENV: environment,
-        NODE_ENV: environment
+        NODE_ENV: environment,
       };
 
       // Build command arguments
       let args = [...suite.args];
-      
+
       // Add environment-specific arguments
       if (suiteId === 'ui') {
         if (environment !== 'development') {
@@ -292,19 +297,15 @@ class MasterTestRunner {
       }
 
       envResult.command = `${suite.command} ${args.join(' ')}`;
-      
+
       console.log(`    🔧 Command: ${envResult.command}`);
 
       // Execute command
-      const execution = await this.executeCommand(
-        suite.command, 
-        args, 
-        { 
-          env, 
-          timeout: suite.timeout,
-          cwd: this.baseDir
-        }
-      );
+      const execution = await this.executeCommand(suite.command, args, {
+        env,
+        timeout: suite.timeout,
+        cwd: this.baseDir,
+      });
 
       envResult.exitCode = execution.exitCode;
       envResult.logs = execution.logs;
@@ -315,7 +316,6 @@ class MasterTestRunner {
       if (testResults) {
         envResult.tests = testResults;
       }
-
     } catch (error) {
       console.error(`    ❌ Environment ${environment} failed:`, error.message);
       envResult.status = 'error';
@@ -335,13 +335,13 @@ class MasterTestRunner {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
       const logs = [];
-      
+
       console.log(`    ⏳ Starting: ${command} ${args.join(' ')}`);
-      
+
       const child = spawn(command, args, {
         stdio: ['pipe', 'pipe', 'pipe'],
         env: options.env || process.env,
-        cwd: options.cwd || process.cwd()
+        cwd: options.cwd || process.cwd(),
       });
 
       let timeoutId;
@@ -368,14 +368,14 @@ class MasterTestRunner {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
-        
+
         const duration = Date.now() - startTime;
         console.log(`    ✅ Completed in ${Math.round(duration / 1000)}s with exit code ${code}`);
-        
+
         resolve({
           exitCode: code,
           duration,
-          logs
+          logs,
         });
       });
 
@@ -395,7 +395,7 @@ class MasterTestRunner {
     try {
       // Look for test result files based on suite type
       const resultPaths = this.getResultPaths(suiteId, environment);
-      
+
       for (const resultPath of resultPaths) {
         if (fs.existsSync(resultPath)) {
           const results = await this.parseResultFile(resultPath, suiteId);
@@ -407,7 +407,7 @@ class MasterTestRunner {
     } catch (error) {
       console.warn(`    ⚠️  Could not parse test results: ${error.message}`);
     }
-    
+
     return null;
   }
 
@@ -416,7 +416,7 @@ class MasterTestRunner {
    */
   getResultPaths(suiteId, environment) {
     const paths = [];
-    
+
     switch (suiteId) {
       case 'ui':
         paths.push(
@@ -432,22 +432,16 @@ class MasterTestRunner {
         );
         break;
       case 'performance':
-        paths.push(
-          path.join(this.baseDir, 'reports/performance-tests', 'summary.json')
-        );
+        paths.push(path.join(this.baseDir, 'reports/performance-tests', 'summary.json'));
         break;
       case 'accessibility':
-        paths.push(
-          path.join(this.baseDir, 'reports/accessibility-tests', 'summary.json')
-        );
+        paths.push(path.join(this.baseDir, 'reports/accessibility-tests', 'summary.json'));
         break;
       case 'security':
-        paths.push(
-          path.join(this.baseDir, 'reports/security-tests', 'summary.json')
-        );
+        paths.push(path.join(this.baseDir, 'reports/security-tests', 'summary.json'));
         break;
     }
-    
+
     return paths;
   }
 
@@ -458,7 +452,7 @@ class MasterTestRunner {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
       const data = JSON.parse(content);
-      
+
       // Parse based on suite type and file format
       switch (suiteId) {
         case 'ui':
@@ -483,7 +477,7 @@ class MasterTestRunner {
       total: data.stats?.total || 0,
       passed: data.stats?.passed || 0,
       failed: data.stats?.failed || 0,
-      skipped: data.stats?.skipped || 0
+      skipped: data.stats?.skipped || 0,
     };
   }
 
@@ -497,7 +491,7 @@ class MasterTestRunner {
         total: stats.tests?.total || 0,
         passed: (stats.tests?.total || 0) - (stats.tests?.failed || 0),
         failed: stats.tests?.failed || 0,
-        skipped: 0
+        skipped: 0,
       };
     }
     return null;
@@ -511,7 +505,7 @@ class MasterTestRunner {
       total: data.total || 0,
       passed: data.passed || 0,
       failed: data.failed || 0,
-      skipped: data.skipped || 0
+      skipped: data.skipped || 0,
     };
   }
 
@@ -522,14 +516,14 @@ class MasterTestRunner {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `execution-${timestamp}.json`;
     const filepath = path.join(this.resultsDir, filename);
-    
+
     try {
       fs.writeFileSync(filepath, JSON.stringify(results, null, 2));
-      
+
       // Also save as latest
       const latestPath = path.join(this.resultsDir, 'latest-execution.json');
       fs.writeFileSync(latestPath, JSON.stringify(results, null, 2));
-      
+
       console.log(`\n💾 Execution results saved: ${filepath}`);
     } catch (error) {
       console.error('Failed to save execution results:', error);
@@ -541,16 +535,16 @@ class MasterTestRunner {
    */
   async generateReports(results) {
     console.log('\n📊 Generating comprehensive reports...');
-    
+
     try {
       // Generate consolidated report
       const { spawn } = require('child_process');
-      
+
       const reportProcess = spawn('npm', ['run', 'report:consolidated'], {
         stdio: 'inherit',
-        cwd: this.baseDir
+        cwd: this.baseDir,
       });
-      
+
       await new Promise((resolve, reject) => {
         reportProcess.on('close', (code) => {
           if (code === 0) {
@@ -561,10 +555,9 @@ class MasterTestRunner {
             reject(new Error(`Report generation failed with code ${code}`));
           }
         });
-        
+
         reportProcess.on('error', reject);
       });
-      
     } catch (error) {
       console.error('Failed to generate reports:', error.message);
     }
@@ -575,7 +568,7 @@ class MasterTestRunner {
    */
   printExecutionSummary(results) {
     const duration = Math.round(results.duration / 1000);
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('🎯 MASTER TEST EXECUTION SUMMARY');
     console.log('='.repeat(80));
@@ -587,18 +580,17 @@ class MasterTestRunner {
     console.log(`Failed: ${results.summary.failed} ❌`);
     console.log(`Skipped: ${results.summary.skipped} ⏭️`);
     console.log(`Pass Rate: ${results.summary.passRate}%`);
-    
+
     console.log('\nSuite Results:');
     Object.entries(results.suites).forEach(([suiteId, suite]) => {
-      const status = suite.status === 'passed' ? '✅' : 
-                    suite.status === 'failed' ? '❌' : '⚠️';
+      const status = suite.status === 'passed' ? '✅' : suite.status === 'failed' ? '❌' : '⚠️';
       console.log(`  ${status} ${suite.name}: ${suite.tests.passed}/${suite.tests.total} passed`);
     });
-    
+
     if (results.summary.failed > 0) {
       console.log('\n⚠️  Some tests failed. Check detailed logs for more information.');
     }
-    
+
     console.log('='.repeat(80));
   }
 
@@ -608,18 +600,17 @@ class MasterTestRunner {
   async run(options = {}) {
     try {
       const results = await this.executeAllTests(options);
-      
+
       // Exit with appropriate code
       const exitCode = results.summary.failed > 0 ? 1 : 0;
-      
+
       if (exitCode === 0) {
         console.log('\n🎉 All tests completed successfully!');
       } else {
         console.log('\n💥 Some tests failed. Check the results for details.');
       }
-      
+
       return { results, exitCode };
-      
     } catch (error) {
       console.error('\n💥 Master test execution failed:', error.message);
       return { error, exitCode: 1 };
@@ -630,7 +621,7 @@ class MasterTestRunner {
 // CLI Interface
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 Master Test Execution Runner
@@ -654,14 +645,14 @@ Examples:
 `);
     process.exit(0);
   }
-  
+
   // Parse command line arguments
   const options = {};
-  
+
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     const nextArg = args[i + 1];
-    
+
     switch (arg) {
       case '--environment':
         if (nextArg) {
@@ -671,13 +662,13 @@ Examples:
         break;
       case '--suites':
         if (nextArg) {
-          options.suites = nextArg.split(',').map(s => s.trim());
+          options.suites = nextArg.split(',').map((s) => s.trim());
           i++;
         }
         break;
       case '--browsers':
         if (nextArg) {
-          options.browsers = nextArg.split(',').map(b => b.trim());
+          options.browsers = nextArg.split(',').map((b) => b.trim());
           i++;
         }
         break;
@@ -692,14 +683,15 @@ Examples:
         break;
     }
   }
-  
+
   const runner = new MasterTestRunner();
-  
-  runner.run(options)
+
+  runner
+    .run(options)
     .then(({ results, exitCode }) => {
       process.exit(exitCode);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Master test runner failed:', error);
       process.exit(1);
     });

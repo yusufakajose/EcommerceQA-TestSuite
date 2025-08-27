@@ -46,10 +46,10 @@ class APITestValidator {
       'config/postman/data',
       'scripts/api-tests',
       'reports',
-      'test-results'
+      'test-results',
     ];
 
-    requiredDirs.forEach(dir => {
+    requiredDirs.forEach((dir) => {
       if (!fs.existsSync(dir)) {
         this.errors.push(`Missing directory: ${dir}`);
       } else {
@@ -84,7 +84,6 @@ class APITestValidator {
       if (!config.data) {
         this.warnings.push('Newman config missing data section (optional)');
       }
-
     } catch (error) {
       this.errors.push(`Invalid Newman config JSON: ${error.message}`);
     }
@@ -96,7 +95,7 @@ class APITestValidator {
     } else {
       try {
         const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-        
+
         // Check for Newman dependency
         const hasNewman = pkg.devDependencies?.newman || pkg.dependencies?.newman;
         if (!hasNewman) {
@@ -106,14 +105,16 @@ class APITestValidator {
         }
 
         // Check for HTML reporter
-        const hasHtmlReporter = pkg.devDependencies?.['newman-reporter-htmlextra'] || 
-                               pkg.dependencies?.['newman-reporter-htmlextra'];
+        const hasHtmlReporter =
+          pkg.devDependencies?.['newman-reporter-htmlextra'] ||
+          pkg.dependencies?.['newman-reporter-htmlextra'];
         if (!hasHtmlReporter) {
-          this.warnings.push('newman-reporter-htmlextra not found (recommended for better reports)');
+          this.warnings.push(
+            'newman-reporter-htmlextra not found (recommended for better reports)'
+          );
         } else {
           console.log('  ✅ HTML reporter dependency found');
         }
-
       } catch (error) {
         this.errors.push(`Invalid package.json: ${error.message}`);
       }
@@ -131,7 +132,7 @@ class APITestValidator {
 
     Object.entries(config.collections).forEach(([name, filePath]) => {
       const fullPath = path.resolve(filePath);
-      
+
       if (!fs.existsSync(fullPath)) {
         this.errors.push(`Collection file not found: ${filePath}`);
         return;
@@ -139,7 +140,7 @@ class APITestValidator {
 
       try {
         const collection = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-        
+
         // Basic validation
         if (!collection.info || !collection.info.name) {
           this.errors.push(`Invalid collection structure: ${filePath}`);
@@ -153,7 +154,6 @@ class APITestValidator {
         } else {
           console.log(`  ✅ ${name} (${requestCount} requests)`);
         }
-
       } catch (error) {
         this.errors.push(`Invalid collection JSON '${name}': ${error.message}`);
       }
@@ -171,7 +171,7 @@ class APITestValidator {
 
     Object.entries(config.environments).forEach(([name, filePath]) => {
       const fullPath = path.resolve(filePath);
-      
+
       if (!fs.existsSync(fullPath)) {
         this.errors.push(`Environment file not found: ${filePath}`);
         return;
@@ -179,7 +179,7 @@ class APITestValidator {
 
       try {
         const environment = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-        
+
         // Basic validation
         if (!environment.name || !environment.values) {
           this.errors.push(`Invalid environment structure: ${filePath}`);
@@ -187,16 +187,16 @@ class APITestValidator {
         }
 
         // Check for base URL
-        const hasBaseUrl = environment.values.some(v => 
-          v.key && (v.key.toLowerCase().includes('url') || v.key.toLowerCase().includes('host'))
+        const hasBaseUrl = environment.values.some(
+          (v) =>
+            v.key && (v.key.toLowerCase().includes('url') || v.key.toLowerCase().includes('host'))
         );
-        
+
         if (!hasBaseUrl) {
           this.warnings.push(`Environment '${name}' may be missing base URL variable`);
         }
 
         console.log(`  ✅ ${name} (${environment.values.length} variables)`);
-
       } catch (error) {
         this.errors.push(`Invalid environment JSON '${name}': ${error.message}`);
       }
@@ -217,7 +217,7 @@ class APITestValidator {
 
     Object.entries(config.data).forEach(([name, filePath]) => {
       const fullPath = path.resolve(filePath);
-      
+
       if (!fs.existsSync(fullPath)) {
         this.errors.push(`Data file not found: ${filePath}`);
         return;
@@ -225,14 +225,13 @@ class APITestValidator {
 
       try {
         const content = fs.readFileSync(fullPath, 'utf8');
-        const lines = content.split('\n').filter(line => line.trim());
-        
+        const lines = content.split('\n').filter((line) => line.trim());
+
         if (lines.length < 2) {
           this.warnings.push(`Data file '${name}' appears to be empty or has no data rows`);
         } else {
           console.log(`  ✅ ${name} (${lines.length - 1} data rows)`);
         }
-
       } catch (error) {
         this.errors.push(`Cannot read data file '${name}': ${error.message}`);
       }
@@ -279,17 +278,16 @@ class APITestValidator {
         'test:api:staging',
         'test:api:users',
         'test:api:products',
-        'test:api:orders'
+        'test:api:orders',
       ];
 
-      expectedScripts.forEach(script => {
+      expectedScripts.forEach((script) => {
         if (scripts[script]) {
           console.log(`  ✅ ${script}`);
         } else {
           this.warnings.push(`Missing npm script: ${script}`);
         }
       });
-
     } catch (error) {
       this.errors.push(`Cannot validate npm scripts: ${error.message}`);
     }
@@ -314,7 +312,7 @@ class APITestValidator {
    */
   countRequests(collection, count = 0) {
     if (collection.item) {
-      collection.item.forEach(item => {
+      collection.item.forEach((item) => {
         if (item.request) {
           count++;
         } else if (item.item) {
@@ -366,13 +364,16 @@ class APITestValidator {
 // CLI Interface
 if (require.main === module) {
   const validator = new APITestValidator();
-  
-  validator.validate().then(success => {
-    process.exit(success ? 0 : 1);
-  }).catch(error => {
-    console.error('Validation failed:', error);
-    process.exit(1);
-  });
+
+  validator
+    .validate()
+    .then((success) => {
+      process.exit(success ? 0 : 1);
+    })
+    .catch((error) => {
+      console.error('Validation failed:', error);
+      process.exit(1);
+    });
 }
 
 module.exports = APITestValidator;

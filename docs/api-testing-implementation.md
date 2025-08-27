@@ -34,6 +34,7 @@ Automated authentication setup and cleanup workflows ensure proper test isolatio
 **File**: `config/postman/collections/user-management.postman_collection.json`
 
 **Test Scenarios**:
+
 - ✅ User Registration with validation
 - ✅ User Login/Logout with token management
 - ✅ Token Refresh mechanism
@@ -43,6 +44,7 @@ Automated authentication setup and cleanup workflows ensure proper test isolatio
 - ✅ Account deletion
 
 **Key Features**:
+
 ```javascript
 // Dynamic email generation for unique registrations
 const timestamp = Date.now();
@@ -52,13 +54,14 @@ pm.environment.set('unique_email', uniqueEmail);
 
 // Automatic token storage and management
 if (pm.response.code === 200) {
-    const responseJson = pm.response.json();
-    pm.environment.set('auth_token', responseJson.token);
-    pm.environment.set('current_user_id', responseJson.user.id);
+  const responseJson = pm.response.json();
+  pm.environment.set('auth_token', responseJson.token);
+  pm.environment.set('current_user_id', responseJson.user.id);
 }
 ```
 
 **Validation Tests**:
+
 - Status code validation (200, 201, 400, 401, etc.)
 - Response structure validation
 - Data type and format validation
@@ -70,6 +73,7 @@ if (pm.response.code === 200) {
 **File**: `config/postman/collections/product-catalog.postman_collection.json`
 
 **Test Scenarios**:
+
 - ✅ Product CRUD operations
 - ✅ Product search with filters
 - ✅ Category management
@@ -78,24 +82,25 @@ if (pm.response.code === 200) {
 - ✅ Pagination testing
 
 **Advanced Features**:
+
 ```javascript
 // Search parameter validation
 pm.test('Search results match criteria', function () {
-    const responseJson = pm.response.json();
-    const searchTerm = pm.environment.get('search_term');
-    
-    responseJson.products.forEach(product => {
-        pm.expect(product.name.toLowerCase()).to.include(searchTerm.toLowerCase());
-    });
+  const responseJson = pm.response.json();
+  const searchTerm = pm.environment.get('search_term');
+
+  responseJson.products.forEach((product) => {
+    pm.expect(product.name.toLowerCase()).to.include(searchTerm.toLowerCase());
+  });
 });
 
 // Pagination validation
 pm.test('Pagination metadata is correct', function () {
-    const responseJson = pm.response.json();
-    pm.expect(responseJson).to.have.property('pagination');
-    pm.expect(responseJson.pagination).to.have.property('page');
-    pm.expect(responseJson.pagination).to.have.property('limit');
-    pm.expect(responseJson.pagination).to.have.property('total');
+  const responseJson = pm.response.json();
+  pm.expect(responseJson).to.have.property('pagination');
+  pm.expect(responseJson.pagination).to.have.property('page');
+  pm.expect(responseJson.pagination).to.have.property('limit');
+  pm.expect(responseJson.pagination).to.have.property('total');
 });
 ```
 
@@ -104,6 +109,7 @@ pm.test('Pagination metadata is correct', function () {
 **File**: `config/postman/collections/order-processing.postman_collection.json`
 
 **Test Scenarios**:
+
 - ✅ Shopping cart operations (add, remove, update)
 - ✅ Cart calculations and totals
 - ✅ Checkout process
@@ -112,24 +118,25 @@ pm.test('Pagination metadata is correct', function () {
 - ✅ Order history retrieval
 
 **Complex Workflows**:
+
 ```javascript
 // Cart total calculation validation
 pm.test('Cart total is calculated correctly', function () {
-    const responseJson = pm.response.json();
-    let expectedTotal = 0;
-    
-    responseJson.items.forEach(item => {
-        expectedTotal += item.price * item.quantity;
-    });
-    
-    pm.expect(responseJson.subtotal).to.equal(expectedTotal);
+  const responseJson = pm.response.json();
+  let expectedTotal = 0;
+
+  responseJson.items.forEach((item) => {
+    expectedTotal += item.price * item.quantity;
+  });
+
+  pm.expect(responseJson.subtotal).to.equal(expectedTotal);
 });
 
 // Order status workflow validation
 pm.test('Order status progression is valid', function () {
-    const responseJson = pm.response.json();
-    const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
-    pm.expect(validStatuses).to.include(responseJson.status);
+  const responseJson = pm.response.json();
+  const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+  pm.expect(validStatuses).to.include(responseJson.status);
 });
 ```
 
@@ -138,32 +145,36 @@ pm.test('Order status progression is valid', function () {
 **File**: `config/postman/workflows/authentication-workflow.postman_collection.json`
 
 **Setup Process**:
+
 1. **Register Test User** - Creates unique test user with generated data
 2. **Login Test User** - Authenticates and stores auth token
 3. **Setup Admin User** - Configures admin access (environment-specific)
 4. **Verify Authentication** - Validates token functionality
 
 **Cleanup Process**:
+
 1. **Logout User** - Invalidates authentication tokens
 2. **Delete Test User** - Removes test data (development only)
 
 **Environment-Specific Logic**:
+
 ```javascript
 // Environment-specific admin setup
 const environment = pm.environment.name.toLowerCase();
 
 if (environment.includes('development')) {
-    pm.environment.set('admin_email', 'admin@localhost.com');
-    pm.environment.set('admin_password', 'AdminPassword123!');
+  pm.environment.set('admin_email', 'admin@localhost.com');
+  pm.environment.set('admin_password', 'AdminPassword123!');
 } else if (environment.includes('production')) {
-    // Skip admin setup in production for security
-    pm.execution.skipRequest();
+  // Skip admin setup in production for security
+  pm.execution.skipRequest();
 }
 ```
 
 ## Environment Configurations
 
 ### Development Environment
+
 ```json
 {
   "base_url": "http://localhost:3000",
@@ -175,12 +186,14 @@ if (environment.includes('development')) {
 ```
 
 **Features**:
+
 - Debug mode enabled for detailed logging
 - Lower timeouts for faster feedback
 - Test data cleanup enabled
 - Admin operations allowed
 
 ### Staging Environment
+
 ```json
 {
   "base_url": "https://staging.ecommerce-app.com",
@@ -192,12 +205,14 @@ if (environment.includes('development')) {
 ```
 
 **Features**:
+
 - Production-like configuration
 - SSL verification enforced
 - Moderate timeouts
 - Limited admin access
 
 ### Production Environment
+
 ```json
 {
   "base_url": "https://ecommerce-app.com",
@@ -209,6 +224,7 @@ if (environment.includes('development')) {
 ```
 
 **Features**:
+
 - Maximum security settings
 - Read-only operations only
 - No test data creation
@@ -219,6 +235,7 @@ if (environment.includes('development')) {
 ### CSV Data Files
 
 **Users Data** (`config/postman/data/users.csv`):
+
 ```csv
 firstName,lastName,email,password,phone,street,city,state,zipCode,country
 John,Doe,john.doe.test@example.com,TestPassword123!,+1-555-0101,123 Main St,New York,NY,10001,United States
@@ -226,6 +243,7 @@ Jane,Smith,jane.smith.test@example.com,TestPassword456@,+1-555-0102,456 Oak Ave,
 ```
 
 **Products Data** (`config/postman/data/products.csv`):
+
 ```csv
 name,description,price,category,sku,brand,inStock,weight,dimensions
 Wireless Headphones,Premium noise-canceling wireless headphones,199.99,Electronics,WH001,AudioTech,true,0.5,8x6x3
@@ -233,6 +251,7 @@ Gaming Laptop,High-performance gaming laptop with RTX graphics,1299.99,Electroni
 ```
 
 **Orders Data** (`config/postman/data/orders.csv`):
+
 ```csv
 productSku,quantity,shippingAddress,paymentMethod,couponCode,expectedTotal
 WH001,1,123 Main St New York NY 10001,credit_card,SAVE10,179.99
@@ -244,14 +263,14 @@ GL001,1,456 Oak Ave Los Angeles CA 90210,paypal,,1299.99
 ```javascript
 // Using CSV data in tests
 pm.test('User registration with CSV data', function () {
-    const firstName = pm.iterationData.get('firstName');
-    const lastName = pm.iterationData.get('lastName');
-    const email = pm.iterationData.get('email');
-    
-    const responseJson = pm.response.json();
-    pm.expect(responseJson.user.firstName).to.equal(firstName);
-    pm.expect(responseJson.user.lastName).to.equal(lastName);
-    pm.expect(responseJson.user.email).to.equal(email);
+  const firstName = pm.iterationData.get('firstName');
+  const lastName = pm.iterationData.get('lastName');
+  const email = pm.iterationData.get('email');
+
+  const responseJson = pm.response.json();
+  pm.expect(responseJson.user.firstName).to.equal(firstName);
+  pm.expect(responseJson.user.lastName).to.equal(lastName);
+  pm.expect(responseJson.user.email).to.equal(email);
 });
 ```
 
@@ -262,6 +281,7 @@ pm.test('User registration with CSV data', function () {
 **File**: `scripts/api-tests/run-newman.js`
 
 **Features**:
+
 - Configuration-driven test execution
 - Multiple reporter support (CLI, HTML, JSON)
 - Data-driven testing support
@@ -269,6 +289,7 @@ pm.test('User registration with CSV data', function () {
 - Error handling and reporting
 
 **Usage Examples**:
+
 ```bash
 # Run specific collection
 node scripts/api-tests/run-newman.js run user-management development
@@ -300,6 +321,7 @@ node scripts/api-tests/run-newman.js run complete-suite staging --timeout 15000 
 ### HTML Reports
 
 Newman generates comprehensive HTML reports with:
+
 - ✅ Test execution summary with pass/fail statistics
 - ✅ Request/response details with headers and bodies
 - ✅ Performance metrics and response times
@@ -310,6 +332,7 @@ Newman generates comprehensive HTML reports with:
 ### JSON Reports
 
 Machine-readable reports for CI/CD integration:
+
 ```json
 {
   "run": {
@@ -329,14 +352,12 @@ Machine-readable reports for CI/CD integration:
 ```javascript
 // Response time validation
 pm.test('Response time is acceptable', function () {
-    pm.expect(pm.response.responseTime).to.be.below(2000);
+  pm.expect(pm.response.responseTime).to.be.below(2000);
 });
 
 // Performance benchmarking
 const responseTime = pm.response.responseTime;
-pm.globals.set('avg_response_time', 
-    (pm.globals.get('avg_response_time') + responseTime) / 2
-);
+pm.globals.set('avg_response_time', (pm.globals.get('avg_response_time') + responseTime) / 2);
 ```
 
 ## Error Handling and Validation
@@ -344,36 +365,40 @@ pm.globals.set('avg_response_time',
 ### Comprehensive Test Patterns
 
 1. **Status Code Validation**:
+
 ```javascript
 pm.test('Status code is 200', function () {
-    pm.response.to.have.status(200);
+  pm.response.to.have.status(200);
 });
 ```
 
 2. **Response Structure Validation**:
+
 ```javascript
 pm.test('Response has required fields', function () {
-    const responseJson = pm.response.json();
-    pm.expect(responseJson).to.have.property('id');
-    pm.expect(responseJson).to.have.property('email');
-    pm.expect(responseJson.email).to.be.a('string');
+  const responseJson = pm.response.json();
+  pm.expect(responseJson).to.have.property('id');
+  pm.expect(responseJson).to.have.property('email');
+  pm.expect(responseJson.email).to.be.a('string');
 });
 ```
 
 3. **Business Logic Validation**:
+
 ```javascript
 pm.test('Email format is valid', function () {
-    const responseJson = pm.response.json();
-    pm.expect(responseJson.email).to.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+  const responseJson = pm.response.json();
+  pm.expect(responseJson.email).to.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 });
 ```
 
 4. **Negative Testing**:
+
 ```javascript
 pm.test('Invalid credentials return 401', function () {
-    pm.response.to.have.status(401);
-    const responseJson = pm.response.json();
-    pm.expect(responseJson).to.have.property('error');
+  pm.response.to.have.status(401);
+  const responseJson = pm.response.json();
+  pm.expect(responseJson).to.have.property('error');
 });
 ```
 
@@ -382,13 +407,13 @@ pm.test('Invalid credentials return 401', function () {
 ```javascript
 // Global error detection
 pm.test('No server errors', function () {
-    pm.expect(pm.response.code).to.be.below(500);
+  pm.expect(pm.response.code).to.be.below(500);
 });
 
 // Automatic token refresh on 401
 if (pm.response.code === 401) {
-    // Trigger token refresh workflow
-    pm.execution.setNextRequest('Refresh Token');
+  // Trigger token refresh workflow
+  pm.execution.setNextRequest('Refresh Token');
 }
 ```
 
@@ -400,7 +425,7 @@ if (pm.response.code === 401) {
 - name: Run API Tests
   run: |
     npm run test:api:staging
-    
+
 - name: Upload API Test Reports
   uses: actions/upload-artifact@v3
   if: always()
@@ -422,36 +447,42 @@ newman run collection.json -e environment.json \
 ## Best Practices Implemented
 
 ### 1. Test Organization
+
 - ✅ Logical grouping by functional areas
 - ✅ Descriptive test and request names
 - ✅ Comprehensive documentation
 - ✅ Consistent naming conventions
 
 ### 2. Data Management
+
 - ✅ Dynamic data generation for uniqueness
 - ✅ Environment variable management
 - ✅ Test data cleanup procedures
 - ✅ Data-driven testing with CSV files
 
 ### 3. Authentication Management
+
 - ✅ Automatic token storage and retrieval
 - ✅ Token refresh mechanisms
 - ✅ Environment-specific authentication
 - ✅ Secure credential handling
 
 ### 4. Error Handling
+
 - ✅ Comprehensive status code validation
 - ✅ Response structure validation
 - ✅ Business logic validation
 - ✅ Negative testing scenarios
 
 ### 5. Performance Testing
+
 - ✅ Response time monitoring
 - ✅ Performance benchmarking
 - ✅ Timeout configuration
 - ✅ Rate limiting compliance
 
 ### 6. Reporting and Monitoring
+
 - ✅ Multiple report formats
 - ✅ Detailed failure analysis
 - ✅ Performance metrics
@@ -484,6 +515,7 @@ newman run collection.json -e environment.json \
 ### Debug Mode
 
 Enable detailed logging:
+
 ```bash
 node scripts/api-tests/run-newman.js run collection environment --verbose
 ```
@@ -493,13 +525,17 @@ node scripts/api-tests/run-newman.js run collection environment --verbose
 The API testing implementation provides a comprehensive, maintainable, and scalable framework for testing the e-commerce application's API endpoints. With organized collections, environment-specific configurations, data-driven testing capabilities, and automated execution through Newman, the framework supports both manual testing in Postman and automated testing in CI/CD pipelines.
 
 The implementation follows industry best practices for API testing, including proper authentication management, comprehensive validation, error handling, and performance monitoring, ensuring reliable and thorough testing coverage of all API functionality.
+
 ## Enh
+
 anced Test Runners (Task 4.2 Implementation)
 
 ### Advanced API Test Runner (`api-test-runner.js`)
+
 The enhanced test runner provides advanced capabilities beyond the basic Newman runner:
 
 #### Key Features:
+
 - **Multiple collection execution** with consolidated reporting
 - **Data-driven testing** with automatic iteration detection
 - **Enhanced reporting** with HTML dashboard generation
@@ -508,6 +544,7 @@ The enhanced test runner provides advanced capabilities beyond the basic Newman 
 - **Performance metrics** tracking and analysis
 
 #### Usage Examples:
+
 ```bash
 # Run single collection with enhanced features
 node scripts/api-tests/api-test-runner.js single user-management development
@@ -523,9 +560,11 @@ node scripts/api-tests/api-test-runner.js all production
 ```
 
 ### Setup Validator (`validate-setup.js`)
+
 Comprehensive validation utility that ensures your API test setup is correct:
 
 #### Validation Features:
+
 - **Configuration validation** for all Newman settings
 - **File existence checks** for collections, environments, and data
 - **Dependency verification** for required npm packages
@@ -533,6 +572,7 @@ Comprehensive validation utility that ensures your API test setup is correct:
 - **Script validation** for npm test commands
 
 #### Usage:
+
 ```bash
 # Validate complete setup
 npm run test:api:validate
@@ -542,6 +582,7 @@ node scripts/api-tests/validate-setup.js
 ```
 
 ### Enhanced NPM Scripts
+
 New npm scripts added for advanced API testing:
 
 ```bash
@@ -558,6 +599,7 @@ npm run test:api:validate          # Validate API test setup
 ## Data-Driven Testing Implementation
 
 ### Automatic Iteration Detection
+
 The enhanced runner can automatically detect the number of iterations needed based on CSV data:
 
 ```bash
@@ -569,6 +611,7 @@ node scripts/api-tests/api-test-runner.js data-driven user-management developmen
 ```
 
 ### CSV Data Integration
+
 - **Automatic CSV parsing** to determine iteration counts
 - **Dynamic data injection** into test requests
 - **Data validation** before test execution
@@ -577,6 +620,7 @@ node scripts/api-tests/api-test-runner.js data-driven user-management developmen
 ## Advanced Reporting Features
 
 ### Consolidated Reports
+
 The enhanced runner generates consolidated reports when running multiple collections:
 
 - **Cross-collection metrics** aggregation
@@ -585,6 +629,7 @@ The enhanced runner generates consolidated reports when running multiple collect
 - **Executive summary** with key findings
 
 ### HTML Dashboard Generation
+
 Enhanced HTML reports include:
 
 - **Interactive charts** and performance visualizations
@@ -593,6 +638,7 @@ Enhanced HTML reports include:
 - **Historical trend tracking** for regression detection
 
 ### JSON Result Processing
+
 Structured JSON output for:
 
 - **CI/CD integration** with detailed exit codes
@@ -603,6 +649,7 @@ Structured JSON output for:
 ## CI/CD Integration Enhancements
 
 ### GitHub Actions Integration
+
 ```yaml
 - name: Validate API Test Setup
   run: npm run test:api:validate
@@ -626,6 +673,7 @@ Structured JSON output for:
 ```
 
 ### Performance Regression Detection
+
 - **Baseline performance** tracking across test runs
 - **Automated alerts** for performance degradation
 - **Trend analysis** for long-term performance monitoring
@@ -643,14 +691,16 @@ Structured JSON output for:
 ✅ **Performance Tracking**: Built-in performance metrics and regression detection
 
 The API test automation with Newman is now fully implemented with advanced features that go beyond basic collection execution, providing a robust foundation for comprehensive API testing across all environments.##
- Task 4.3 Implementation: Comprehensive API Test Scenarios
+Task 4.3 Implementation: Comprehensive API Test Scenarios
 
 ### Enhanced Test Collections
 
 #### 1. Enhanced User Management API Tests
+
 **File**: `config/postman/collections/enhanced-user-management.postman_collection.json`
 
 **Comprehensive Test Scenarios**:
+
 - **Authentication Tests**:
   - User registration with valid data (positive)
   - User registration with invalid email (negative)
@@ -677,9 +727,11 @@ The API test automation with Newman is now fully implemented with advanced featu
   - Authentication bypass prevention
 
 #### 2. Enhanced Product Catalog API Tests
+
 **File**: `config/postman/collections/enhanced-product-catalog.postman_collection.json`
 
 **Comprehensive Test Scenarios**:
+
 - **Product Listing Tests**:
   - Get all products with default pagination
   - Custom pagination parameter validation
@@ -710,9 +762,11 @@ The API test automation with Newman is now fully implemented with advanced featu
   - Authorization checks for admin operations
 
 #### 3. Enhanced Order Processing API Tests
+
 **File**: `config/postman/collections/enhanced-order-processing.postman_collection.json`
 
 **Comprehensive Test Scenarios**:
+
 - **Shopping Cart Tests**:
   - Create cart for authenticated user
   - Add items to cart (valid/invalid products)
@@ -740,9 +794,11 @@ The API test automation with Newman is now fully implemented with advanced featu
 ### Advanced Testing Features
 
 #### 1. Comprehensive Test Runner
+
 **File**: `scripts/api-tests/comprehensive-test-runner.js`
 
 **Features**:
+
 - **Multi-phase Testing**: Basic → Enhanced → Security → Performance
 - **Security Analysis**: Vulnerability detection and scoring
 - **Performance Analysis**: Response time and throughput metrics
@@ -750,6 +806,7 @@ The API test automation with Newman is now fully implemented with advanced featu
 - **Consolidated Reporting**: Cross-suite result aggregation
 
 **Usage Examples**:
+
 ```bash
 # Run complete comprehensive test suite
 npm run test:api:comprehensive
@@ -768,9 +825,11 @@ npm run test:api:coverage
 ```
 
 #### 2. Negative Testing Data
+
 **File**: `config/postman/data/negative-test-data.csv`
 
 **Test Cases**:
+
 - Invalid email formats
 - Weak password validation
 - Missing required fields
@@ -779,9 +838,11 @@ npm run test:api:coverage
 - Input length validation
 
 #### 3. Performance Testing Data
+
 **File**: `config/postman/data/performance-test-data.csv`
 
 **Scenarios**:
+
 - High-volume user operations
 - Product search and filtering
 - Cart and order processing
@@ -790,18 +851,21 @@ npm run test:api:coverage
 ### Test Execution Strategies
 
 #### 1. Positive Testing
+
 - **Valid data scenarios**: Successful API operations
 - **Happy path validation**: Complete user journeys
 - **Data integrity checks**: Response structure validation
 - **Business logic verification**: Calculation accuracy
 
 #### 2. Negative Testing
+
 - **Invalid input handling**: Malformed requests
 - **Boundary value testing**: Edge cases and limits
 - **Error response validation**: Proper error messages
 - **Data validation**: Input sanitization checks
 
 #### 3. Security Testing
+
 - **Injection attacks**: SQL injection, XSS prevention
 - **Authentication bypass**: Unauthorized access attempts
 - **Authorization checks**: Role-based access control
@@ -809,6 +873,7 @@ npm run test:api:coverage
 - **Data exposure**: Sensitive information protection
 
 #### 4. Performance Testing
+
 - **Response time validation**: Acceptable performance thresholds
 - **Load testing**: Multiple concurrent requests
 - **Throughput measurement**: Requests per second
@@ -837,18 +902,21 @@ npm run test:api:multiple                   # Multiple collection execution
 ### Test Result Analysis
 
 #### 1. Security Analysis
+
 - **Vulnerability Detection**: Automatic identification of security issues
 - **Security Scoring**: 0-100 security score based on test results
 - **Risk Assessment**: Severity classification (Critical/High/Medium/Low)
 - **Recommendations**: Actionable security improvements
 
 #### 2. Performance Analysis
+
 - **Response Time Metrics**: Average, min, max response times
 - **Throughput Calculation**: Requests per second measurement
 - **Performance Scoring**: 0-100 performance score
 - **Optimization Recommendations**: Performance improvement suggestions
 
 #### 3. Coverage Analysis
+
 - **Endpoint Coverage**: Number of API endpoints tested
 - **HTTP Method Coverage**: GET, POST, PUT, DELETE operations
 - **Status Code Coverage**: Success and error response codes
@@ -857,6 +925,7 @@ npm run test:api:multiple                   # Multiple collection execution
 ### Integration with CI/CD
 
 #### Enhanced GitHub Actions Integration
+
 ```yaml
 - name: Validate API Test Setup
   run: npm run test:api:validate
@@ -886,24 +955,28 @@ npm run test:api:multiple                   # Multiple collection execution
 ### Best Practices for Comprehensive Testing
 
 #### 1. Test Data Management
+
 - **Isolated Test Data**: Separate data for each test scenario
 - **Dynamic Data Generation**: Timestamp-based unique identifiers
 - **Data Cleanup**: Proper cleanup after test execution
 - **Realistic Test Data**: Production-like data scenarios
 
 #### 2. Test Organization
+
 - **Logical Grouping**: Tests organized by functionality
 - **Clear Naming**: Descriptive test and request names
 - **Comprehensive Coverage**: Positive, negative, edge cases
 - **Maintainable Structure**: Easy to update and extend
 
 #### 3. Error Handling
+
 - **Graceful Failures**: Continue testing on individual failures
 - **Detailed Logging**: Comprehensive error information
 - **Retry Mechanisms**: Automatic retry for transient failures
 - **Timeout Management**: Appropriate timeout values
 
 #### 4. Security Considerations
+
 - **No Sensitive Data**: Avoid real credentials in tests
 - **Environment Isolation**: Separate test environments
 - **Access Control**: Proper authentication for test execution

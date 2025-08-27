@@ -2,9 +2,9 @@ name: Comprehensive QA Testing Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     # Run full test suite daily at 2 AM UTC
     - cron: '0 2 * * *'
@@ -16,24 +16,24 @@ on:
         default: 'regression'
         type: choice
         options:
-        - smoke
-        - regression
-        - full
-        - performance
-        - security
+          - smoke
+          - regression
+          - full
+          - performance
+          - security
       environment:
         description: 'Target environment'
         required: true
         default: 'staging'
         type: choice
         options:
-        - development
-        - staging
-        - production
+          - development
+          - staging
+          - production
 
 env:
   NODE_VERSION: '18'
-  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/ms-playwright
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/ms-playwright
 
 jobs:
   # Job 1: Setup and Validation
@@ -59,6 +59,15 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run CI health check
@@ -72,38 +81,38 @@ jobs:
       - name: Validate project structure
         run: |
           echo "Validating project structure..."
-          
+
           # Check required files
           if [ ! -f package.json ]; then
             echo "package.json not found"
             exit 1
           fi
-          
+
           if [ ! -d automated-tests ]; then
             echo "automated-tests directory not found"
             exit 1
           fi
-          
+
           if [ ! -d scripts ]; then
             echo "scripts directory not found"
             exit 1
           fi
-          
+
           # Check configuration files
           if [ ! -f .eslintrc.js ]; then
             echo "ESLint configuration not found"
           fi
-          
+
           if [ ! -f tsconfig.json ]; then
             echo "TypeScript configuration not found"
           fi
-          
+
           echo "Project structure validated"
 
       - name: Run code quality checks
         run: |
           echo "Running code quality checks..."
-          
+
           # Linting
           if npm run lint:check; then
             echo "Linting passed"
@@ -111,17 +120,17 @@ jobs:
             echo "Linting issues found"
             npm run lint || echo "Auto-fix failed"
           fi
-          
+
           # Type checking
           if npm run type-check; then
             echo "Type checking passed"
           else
             echo "Type checking failed"
           fi
-          
+
           # Security audit
-          echo "Running security audit..."
-          npm audit --audit-level=moderate || echo "Security vulnerabilities found"
+          echo "Running security audit (high/critical will fail the job)..."
+          npm audit --audit-level=high
 
       - name: Determine test suite
         id: determine-suite
@@ -135,11 +144,11 @@ jobs:
           else
             SUITE="smoke"
           fi
-          
+
           echo "suite=$SUITE" >> $GITHUB_OUTPUT
           echo "performance=$([[ "$SUITE" == "full" || "$SUITE" == "performance" ]] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
           echo "security=$([[ "$SUITE" == "full" || "$SUITE" == "security" ]] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
-          
+
           echo "Test suite determined: $SUITE"
 
   # Job 2: Build and Compile
@@ -159,6 +168,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Build TypeScript
         run: |
@@ -173,7 +189,7 @@ jobs:
       - name: Validate test configurations
         run: |
           echo "Validating test configurations..."
-          
+
           # Check Playwright config
           if [ -f config/playwright.config.js ]; then
             echo "Playwright configuration found"
@@ -181,14 +197,14 @@ jobs:
             echo "Playwright configuration missing"
             exit 1
           fi
-          
+
           # Check Postman collections
           if [ -d config/postman/collections ]; then
             echo "Postman collections found"
           else
             echo "Postman collections not found"
           fi
-          
+
           # Validate npm scripts
           echo "Validating npm scripts..."
           npm run --silent 2>/dev/null | grep -E "(test:|lint|build)" || echo "Some test scripts may be missing"
@@ -224,15 +240,24 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run smoke tests
         run: |
           echo "🧪 Running smoke tests with ${{ matrix.browser }}..."
-          
+
           # Create reports directory
           mkdir -p reports/smoke-tests
-          
+
           # Run smoke tests with error handling
           if npm run test:ci:smoke; then
             echo "Smoke tests passed"
@@ -244,6 +269,16 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           CI: true
           PLAYWRIGHT_HTML_REPORT: reports/smoke-tests/playwright-report
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-smoke-${{ matrix.browser }}
+          path: |
+            test-results/
+            reports/test-execution/**/playwright-report/
+          retention-days: 7
 
       - name: Upload smoke test results
         uses: actions/upload-artifact@v4
@@ -279,19 +314,28 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run UI tests
         run: |
           echo "🧪 Running UI tests with ${{ matrix.browser }}..."
-          
+
           # Create reports directory
           mkdir -p reports/ui-tests/${{ matrix.browser }}
-          
+
           # Run UI tests with retry logic
           RETRY_COUNT=0
           MAX_RETRIES=2
-          
+
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             if npm run test:ui -- --project=${{ matrix.browser }}; then
               echo "UI tests passed on attempt $((RETRY_COUNT + 1))"
@@ -311,6 +355,16 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           CI: true
           PLAYWRIGHT_HTML_REPORT: reports/ui-tests/${{ matrix.browser }}/playwright-report
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-ui-${{ matrix.browser }}
+          path: |
+            test-results/
+            reports/test-execution/**/playwright-report/
+          retention-days: 7
 
       - name: Upload UI test results
         uses: actions/upload-artifact@v4
@@ -341,21 +395,28 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Run API tests
         run: |
           echo "🧪 Running comprehensive API tests..."
-          
+
           # Create reports directory
           mkdir -p reports/api-tests
-          
+
           # Validate API test setup
           if npm run test:api:validate; then
             echo "API test setup validated"
           else
             echo "API test setup validation failed, continuing anyway..."
           fi
-          
+
           # Run API tests
           if npm run test:api:comprehensive; then
             echo "API tests passed"
@@ -402,9 +463,26 @@ jobs:
           tar -xzf apache-jmeter-5.6.2.tgz
           echo "${{ github.workspace }}/apache-jmeter-5.6.2/bin" >> $GITHUB_PATH
 
-      - name: Run performance tests
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 smoke performance (SLO-gated)
         run: |
-          npm run test:performance:advanced
+          mkdir -p reports/load-tests/k6
+          npm run test:load:k6:smoke
+        env:
+          CI: true
+          BASE_URL: https://www.saucedemo.com
+
+      - name: Aggregate k6 JUnit results
+        if: always()
+        run: |
+          npm run report:k6:junit:aggregate || true
+        shell: bash
+
+      - name: Run JMeter performance (SLO-gated)
+        run: |
+          node automated-tests/performance-tests/scripts/jmeter-runner.js --users 20 --ramp-up 30 --loops 2
         env:
           CI: true
           JMETER_HOME: ${{ github.workspace }}/apache-jmeter-5.6.2
@@ -416,8 +494,27 @@ jobs:
           name: performance-test-results
           path: |
             reports/performance-tests/
+            reports/load-tests/
             automated-tests/performance-tests/jmeter/results/
           retention-days: 7
+
+      - name: Add performance summary to Job Summary
+        if: always()
+        run: |
+          echo "## Performance SLO Summary" >> $GITHUB_STEP_SUMMARY
+          if [ -f reports/load-tests/k6/smoke-summary.json ]; then
+            echo "### k6" >> $GITHUB_STEP_SUMMARY
+            cat reports/load-tests/k6/smoke-summary.json | jq -r '"- Status: \(.status)\n- Total Requests: \(.metrics.total_requests)\n- Error Rate: \(.metrics.error_rate)\n- p95: \(.metrics.http_req_duration.p95) ms\n- p99: \(.metrics.http_req_duration.p99) ms"' >> $GITHUB_STEP_SUMMARY || true
+          fi
+          if [ -d reports/performance-tests/summaries ]; then
+            for f in reports/performance-tests/summaries/*-summary.json; do
+              [ -e "$f" ] || continue
+              NAME=$(basename "$f" | sed 's/-summary.json//')
+              echo "### JMeter - ${NAME}" >> $GITHUB_STEP_SUMMARY
+              cat "$f" | jq -r '"- Status: \(.status)\n- Samples: \(.totals.samples)\n- Error %: \(.totals.error_percentage)%\n- p95: \(.latency_ms.p95) ms\n- p99: \(.latency_ms.p99) ms"' >> $GITHUB_STEP_SUMMARY || true
+            done
+          fi
+        shell: bash
 
   # Job 6: Security Tests
   security-tests:
@@ -438,6 +535,15 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run security tests
@@ -445,6 +551,16 @@ jobs:
           npm run test:security
         env:
           CI: true
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-security
+          path: |
+            test-results/
+            reports/test-execution/**/playwright-report/
+          retention-days: 7
 
       - name: Upload security test results
         uses: actions/upload-artifact@v4
@@ -474,6 +590,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -497,7 +620,7 @@ jobs:
           echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Add job status summary
           echo "## Job Status" >> $GITHUB_STEP_SUMMARY
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
@@ -517,4 +640,3 @@ jobs:
             reports/
             artifacts/
           retention-days: 30
-

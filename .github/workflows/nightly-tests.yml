@@ -12,8 +12,8 @@ on:
         default: 'staging'
         type: choice
         options:
-        - staging
-        - production
+          - staging
+          - production
       include_performance:
         description: 'Include performance tests'
         required: true
@@ -27,6 +27,7 @@ on:
 
 env:
   NODE_VERSION: '18'
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/ms-playwright
 
 jobs:
   nightly-full-suite:
@@ -50,6 +51,15 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run comprehensive UI tests
@@ -60,6 +70,16 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           CI: true
           NIGHTLY: true
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-nightly-${{ matrix.browser }}
+          path: |
+            test-results/
+            reports/test-execution/**/playwright-report/
+          retention-days: 14
 
       - name: Run API regression tests
         run: |
@@ -101,6 +121,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Setup JMeter
         run: |
@@ -108,13 +135,30 @@ jobs:
           tar -xzf apache-jmeter-5.6.2.tgz
           echo "${{ github.workspace }}/apache-jmeter-5.6.2/bin" >> $GITHUB_PATH
 
-      - name: Run performance tests
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 load (SLO-gated)
         run: |
-          npm run test:performance:nightly
+          mkdir -p reports/load-tests/k6
+          npm run test:load:k6:load
         env:
           CI: true
           JMETER_HOME: ${{ github.workspace }}/apache-jmeter-5.6.2
           TEST_ENV: ${{ github.event.inputs.environment || 'staging' }}
+          BASE_URL: https://www.saucedemo.com
+
+      - name: Aggregate k6 JUnit results
+        if: always()
+        run: |
+          npm run report:k6:junit:aggregate || true
+        shell: bash
+
+      - name: Run JMeter performance (SLO-gated)
+        run: |
+          node automated-tests/performance-tests/scripts/jmeter-runner.js --users 50 --ramp-up 60 --loops 3
+        env:
+          CI: true
 
       - name: Upload performance results
         uses: actions/upload-artifact@v4
@@ -123,6 +167,7 @@ jobs:
           name: nightly-performance-results
           path: |
             reports/performance-tests/
+            reports/load-tests/
             automated-tests/performance-tests/jmeter/results/
           retention-days: 14
 
@@ -143,6 +188,15 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
           npx playwright install --with-deps
 
       - name: Run security tests
@@ -201,8 +255,6 @@ jobs:
             reports/nightly/
             nightly-artifacts/
           retention-days: 30
-
-
 
       - name: Send notification on failure
         if: failure()

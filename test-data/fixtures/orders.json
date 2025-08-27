@@ -17,7 +17,7 @@
         }
       ],
       "subtotal": 199.97,
-      "tax": 16.00,
+      "tax": 16.0,
       "shipping": 9.99,
       "total": 225.96,
       "shippingAddress": {
@@ -68,11 +68,11 @@
     },
     "invalidCheckout": {
       "missingShipping": {
-        "items": [{"productId": "prod001", "quantity": 1}],
+        "items": [{ "productId": "prod001", "quantity": 1 }],
         "expectedError": "Shipping address is required"
       },
       "invalidPayment": {
-        "items": [{"productId": "prod001", "quantity": 1}],
+        "items": [{ "productId": "prod001", "quantity": 1 }],
         "shippingAddress": {
           "street": "123 Test Street",
           "city": "Test City",
@@ -89,19 +89,6 @@
       }
     }
   },
-  "orderStatuses": [
-    "pending",
-    "processing",
-    "shipped",
-    "delivered",
-    "cancelled",
-    "refunded"
-  ],
-  "paymentMethods": [
-    "credit_card",
-    "debit_card",
-    "paypal",
-    "apple_pay",
-    "google_pay"
-  ]
+  "orderStatuses": ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"],
+  "paymentMethods": ["credit_card", "debit_card", "paypal", "apple_pay", "google_pay"]
 }

@@ -14,7 +14,7 @@ class NewmanRunner {
     this.configPath = path.join(process.cwd(), 'config/postman/newman.config.json');
     this.config = this.loadConfig();
     this.reportsDir = path.join(process.cwd(), 'reports');
-    
+
     this.ensureReportsDirectory();
   }
 
@@ -29,7 +29,7 @@ class NewmanRunner {
     } catch (error) {
       console.error('Failed to load Newman config:', error.message);
     }
-    
+
     return this.getDefaultConfig();
   }
 
@@ -41,20 +41,21 @@ class NewmanRunner {
       environments: {
         development: 'config/postman/environments/development.postman_environment.json',
         staging: 'config/postman/environments/staging.postman_environment.json',
-        production: 'config/postman/environments/production.postman_environment.json'
+        production: 'config/postman/environments/production.postman_environment.json',
       },
       collections: {
         'user-management': 'config/postman/collections/user-management.postman_collection.json',
         'product-catalog': 'config/postman/collections/product-catalog.postman_collection.json',
         'order-processing': 'config/postman/collections/order-processing.postman_collection.json',
-        'complete-suite': 'config/postman/collections/ecommerce-api-complete.postman_collection.json',
-        'auth-workflow': 'config/postman/workflows/authentication-workflow.postman_collection.json'
+        'complete-suite':
+          'config/postman/collections/ecommerce-api-complete.postman_collection.json',
+        'auth-workflow': 'config/postman/workflows/authentication-workflow.postman_collection.json',
       },
       defaultOptions: {
         reporters: ['cli', 'htmlextra'],
         timeout: 10000,
-        delayRequest: 100
-      }
+        delayRequest: 100,
+      },
     };
   }
 
@@ -73,11 +74,11 @@ class NewmanRunner {
   async runCollection(collectionName, environmentName = 'development', options = {}) {
     const collection = this.config.collections[collectionName];
     const environment = this.config.environments[environmentName];
-    
+
     if (!collection) {
       throw new Error(`Collection '${collectionName}' not found in config`);
     }
-    
+
     if (!environment) {
       throw new Error(`Environment '${environmentName}' not found in config`);
     }
@@ -88,7 +89,7 @@ class NewmanRunner {
       reporters: this.config.defaultOptions.reporters,
       timeout: this.config.defaultOptions.timeout,
       delayRequest: this.config.defaultOptions.delayRequest,
-      ...options
+      ...options,
     };
 
     // Set up HTML reporter
@@ -101,8 +102,8 @@ class NewmanRunner {
           logs: true,
           browserTitle: `${collectionName} API Test Report`,
           title: `${collectionName} Test Results - ${environmentName}`,
-          displayProgressBar: true
-        }
+          displayProgressBar: true,
+        },
       };
     }
 
@@ -112,15 +113,15 @@ class NewmanRunner {
       newmanOptions.reporter = {
         ...newmanOptions.reporter,
         json: {
-          export: path.join(this.reportsDir, jsonReportName)
-        }
+          export: path.join(this.reportsDir, jsonReportName),
+        },
       };
     }
 
     console.log(`🚀 Running ${collectionName} collection on ${environmentName} environment...`);
     console.log(`📁 Collection: ${collection}`);
     console.log(`🌍 Environment: ${environment}`);
-    
+
     if (options.iterationData) {
       console.log(`📊 Data file: ${options.iterationData}`);
     }
@@ -175,14 +176,14 @@ class NewmanRunner {
    */
   async runScript(scriptName) {
     const script = this.config.scripts?.[scriptName];
-    
+
     if (!script) {
       throw new Error(`Script '${scriptName}' not found in config`);
     }
 
     const options = {
       ...script.options,
-      iterationData: script.data ? path.resolve(this.config.data[script.data]) : undefined
+      iterationData: script.data ? path.resolve(this.config.data[script.data]) : undefined,
     };
 
     return this.runCollection(script.collection, script.environment, options);
@@ -193,18 +194,18 @@ class NewmanRunner {
    */
   listOptions() {
     console.log('📚 Available Collections:');
-    Object.keys(this.config.collections).forEach(name => {
+    Object.keys(this.config.collections).forEach((name) => {
       console.log(`   - ${name}`);
     });
 
     console.log('\n🌍 Available Environments:');
-    Object.keys(this.config.environments).forEach(name => {
+    Object.keys(this.config.environments).forEach((name) => {
       console.log(`   - ${name}`);
     });
 
     if (this.config.scripts) {
       console.log('\n🎯 Available Scripts:');
-      Object.keys(this.config.scripts).forEach(name => {
+      Object.keys(this.config.scripts).forEach((name) => {
         console.log(`   - ${name}`);
       });
     }
@@ -252,7 +253,7 @@ Environment Variables:
 async function main() {
   const runner = new NewmanRunner();
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0 || args[0] === 'help') {
     runner.showHelp();
     return;
@@ -265,7 +266,7 @@ async function main() {
       case 'run': {
         const collection = args[1];
         const environment = args[2] || process.env.NEWMAN_ENVIRONMENT || 'development';
-        
+
         if (!collection) {
           console.error('❌ Collection name is required');
           runner.showHelp();
@@ -277,7 +278,7 @@ async function main() {
         for (let i = 3; i < args.length; i++) {
           const arg = args[i];
           const nextArg = args[i + 1];
-          
+
           switch (arg) {
             case '--data':
               if (nextArg) {
@@ -325,7 +326,7 @@ async function main() {
 
       case 'script': {
         const scriptName = args[1];
-        
+
         if (!scriptName) {
           console.error('❌ Script name is required');
           runner.showHelp();
@@ -354,7 +355,7 @@ async function main() {
 
 // Run if called directly
 if (require.main === module) {
-  main().catch(error => {
+  main().catch((error) => {
     console.error('Fatal error:', error);
     process.exit(1);
   });

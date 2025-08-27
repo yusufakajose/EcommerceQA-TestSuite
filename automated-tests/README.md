@@ -3,16 +3,19 @@
 ## Quick Start
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Install Playwright browsers:
+
    ```bash
    npm run install:browsers
    ```
 
 3. Set up test environment:
+
    ```bash
    npm run setup:test-env
    ```

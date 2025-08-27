@@ -14,7 +14,7 @@ class DashboardGenerator {
     this.reportsDir = path.join(this.baseDir, 'reports');
     this.dashboardDir = path.join(this.reportsDir, 'dashboard');
     this.dataDir = path.join(this.dashboardDir, 'data');
-    
+
     this.ensureDirectories();
   }
 
@@ -22,7 +22,7 @@ class DashboardGenerator {
    * Ensure required directories exist
    */
   ensureDirectories() {
-    [this.reportsDir, this.dashboardDir, this.dataDir].forEach(dir => {
+    [this.reportsDir, this.dashboardDir, this.dataDir].forEach((dir) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -40,12 +40,12 @@ class DashboardGenerator {
       accessibility: await this.collectAccessibilityTestResults(),
       security: await this.collectSecurityTestResults(),
       timestamp: new Date().toISOString(),
-      summary: {}
+      summary: {},
     };
 
     // Calculate overall summary
     results.summary = this.calculateOverallSummary(results);
-    
+
     return results;
   }
 
@@ -61,7 +61,7 @@ class DashboardGenerator {
       duration: 0,
       browsers: {},
       testFiles: [],
-      lastRun: null
+      lastRun: null,
     };
 
     try {
@@ -70,7 +70,7 @@ class DashboardGenerator {
         'reports/test-execution/development/playwright-report',
         'reports/test-execution/staging/playwright-report',
         'reports/test-execution/production/playwright-report',
-        'test-results'
+        'test-results',
       ];
 
       for (const reportDir of playwrightReportDirs) {
@@ -83,9 +83,9 @@ class DashboardGenerator {
             uiResults.failed += reportData.failed || 0;
             uiResults.skipped += reportData.skipped || 0;
             uiResults.duration += reportData.duration || 0;
-            
+
             if (reportData.browsers) {
-              Object.keys(reportData.browsers).forEach(browser => {
+              Object.keys(reportData.browsers).forEach((browser) => {
                 if (!uiResults.browsers[browser]) {
                   uiResults.browsers[browser] = { passed: 0, failed: 0, total: 0 };
                 }
@@ -94,17 +94,21 @@ class DashboardGenerator {
                 uiResults.browsers[browser].total += reportData.browsers[browser].total || 0;
               });
             }
-            
-            if (reportData.lastRun && (!uiResults.lastRun || new Date(reportData.lastRun) > new Date(uiResults.lastRun))) {
+
+            if (
+              reportData.lastRun &&
+              (!uiResults.lastRun || new Date(reportData.lastRun) > new Date(uiResults.lastRun))
+            ) {
               uiResults.lastRun = reportData.lastRun;
             }
           }
         }
       }
 
-      uiResults.passRate = uiResults.total > 0 ? Math.round((uiResults.passed / uiResults.total) * 100) : 0;
-      uiResults.failRate = uiResults.total > 0 ? Math.round((uiResults.failed / uiResults.total) * 100) : 0;
-      
+      uiResults.passRate =
+        uiResults.total > 0 ? Math.round((uiResults.passed / uiResults.total) * 100) : 0;
+      uiResults.failRate =
+        uiResults.total > 0 ? Math.round((uiResults.failed / uiResults.total) * 100) : 0;
     } catch (error) {
       console.warn('Error collecting UI test results:', error.message);
     }
@@ -120,7 +124,7 @@ class DashboardGenerator {
       // Look for report.json or index.html
       const reportJsonPath = path.join(reportDir, 'report.json');
       const indexHtmlPath = path.join(reportDir, 'index.html');
-      
+
       if (fs.existsSync(reportJsonPath)) {
         const reportData = JSON.parse(fs.readFileSync(reportJsonPath, 'utf8'));
         return this.parsePlaywrightJsonReport(reportData);
@@ -132,7 +136,7 @@ class DashboardGenerator {
     } catch (error) {
       console.warn(`Error parsing Playwright results from ${reportDir}:`, error.message);
     }
-    
+
     return null;
   }
 
@@ -147,11 +151,11 @@ class DashboardGenerator {
       skipped: 0,
       duration: 0,
       browsers: {},
-      lastRun: new Date().toISOString()
+      lastRun: new Date().toISOString(),
     };
 
     if (reportData.suites) {
-      reportData.suites.forEach(suite => {
+      reportData.suites.forEach((suite) => {
         this.processSuite(suite, results);
       });
     }
@@ -164,13 +168,13 @@ class DashboardGenerator {
    */
   processSuite(suite, results) {
     if (suite.tests) {
-      suite.tests.forEach(test => {
+      suite.tests.forEach((test) => {
         results.total++;
-        
+
         if (test.results && test.results.length > 0) {
           const result = test.results[0];
           results.duration += result.duration || 0;
-          
+
           switch (result.status) {
             case 'passed':
               results.passed++;
@@ -203,7 +207,7 @@ class DashboardGenerator {
     }
 
     if (suite.suites) {
-      suite.suites.forEach(subSuite => {
+      suite.suites.forEach((subSuite) => {
         this.processSuite(subSuite, results);
       });
     }
@@ -233,7 +237,7 @@ class DashboardGenerator {
       skipped: 0,
       duration: 0,
       browsers: {},
-      lastRun: new Date().toISOString()
+      lastRun: new Date().toISOString(),
     };
 
     // Extract basic stats from HTML using regex
@@ -261,20 +265,17 @@ class DashboardGenerator {
       duration: 0,
       collections: {},
       environments: {},
-      lastRun: null
+      lastRun: null,
     };
 
     try {
-      const newmanReportDirs = [
-        'reports/api-tests',
-        'reports/newman'
-      ];
+      const newmanReportDirs = ['reports/api-tests', 'reports/newman'];
 
       for (const reportDir of newmanReportDirs) {
         const fullPath = path.join(this.baseDir, reportDir);
         if (fs.existsSync(fullPath)) {
           const files = fs.readdirSync(fullPath);
-          
+
           for (const file of files) {
             if (file.endsWith('.json')) {
               const filePath = path.join(fullPath, file);
@@ -284,12 +285,16 @@ class DashboardGenerator {
                 apiResults.passed += reportData.passed || 0;
                 apiResults.failed += reportData.failed || 0;
                 apiResults.duration += reportData.duration || 0;
-                
+
                 if (reportData.collection) {
                   apiResults.collections[reportData.collection] = reportData;
                 }
-                
-                if (reportData.lastRun && (!apiResults.lastRun || new Date(reportData.lastRun) > new Date(apiResults.lastRun))) {
+
+                if (
+                  reportData.lastRun &&
+                  (!apiResults.lastRun ||
+                    new Date(reportData.lastRun) > new Date(apiResults.lastRun))
+                ) {
                   apiResults.lastRun = reportData.lastRun;
                 }
               }
@@ -298,9 +303,10 @@ class DashboardGenerator {
         }
       }
 
-      apiResults.passRate = apiResults.total > 0 ? Math.round((apiResults.passed / apiResults.total) * 100) : 0;
-      apiResults.failRate = apiResults.total > 0 ? Math.round((apiResults.failed / apiResults.total) * 100) : 0;
-      
+      apiResults.passRate =
+        apiResults.total > 0 ? Math.round((apiResults.passed / apiResults.total) * 100) : 0;
+      apiResults.failRate =
+        apiResults.total > 0 ? Math.round((apiResults.failed / apiResults.total) * 100) : 0;
     } catch (error) {
       console.warn('Error collecting API test results:', error.message);
     }
@@ -314,11 +320,11 @@ class DashboardGenerator {
   async parseNewmanResults(filePath) {
     try {
       const reportData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      
+
       if (reportData.run) {
         const run = reportData.run;
         const stats = run.stats || {};
-        
+
         return {
           collection: run.collection?.info?.name || 'Unknown',
           total: stats.tests?.total || 0,
@@ -327,19 +333,19 @@ class DashboardGenerator {
           duration: run.timings?.completed || 0,
           assertions: {
             total: stats.assertions?.total || 0,
-            failed: stats.assertions?.failed || 0
+            failed: stats.assertions?.failed || 0,
           },
           requests: {
             total: stats.requests?.total || 0,
-            failed: stats.requests?.failed || 0
+            failed: stats.requests?.failed || 0,
           },
-          lastRun: new Date().toISOString()
+          lastRun: new Date().toISOString(),
         };
       }
     } catch (error) {
       console.warn(`Error parsing Newman results from ${filePath}:`, error.message);
     }
-    
+
     return null;
   }
 
@@ -357,35 +363,39 @@ class DashboardGenerator {
         p90ResponseTime: 0,
         p95ResponseTime: 0,
         throughput: 0,
-        errorRate: 0
+        errorRate: 0,
       },
-      lastRun: null
+      lastRun: null,
     };
 
     try {
       const perfReportDirs = [
         'reports/performance-tests',
-        'automated-tests/performance-tests/jmeter/results'
+        'automated-tests/performance-tests/jmeter/results',
       ];
 
       for (const reportDir of perfReportDirs) {
         const fullPath = path.join(this.baseDir, reportDir);
         if (fs.existsSync(fullPath)) {
           const files = fs.readdirSync(fullPath);
-          
+
           for (const file of files) {
             if (file.endsWith('.json')) {
               const filePath = path.join(fullPath, file);
               const reportData = await this.parseJMeterResults(filePath);
               if (reportData) {
                 perfResults.scenarios[reportData.scenario || file] = reportData;
-                
+
                 // Aggregate summary data
                 perfResults.summary.totalRequests += reportData.totalRequests || 0;
                 perfResults.summary.successfulRequests += reportData.successfulRequests || 0;
                 perfResults.summary.failedRequests += reportData.failedRequests || 0;
-                
-                if (reportData.lastRun && (!perfResults.lastRun || new Date(reportData.lastRun) > new Date(perfResults.lastRun))) {
+
+                if (
+                  reportData.lastRun &&
+                  (!perfResults.lastRun ||
+                    new Date(reportData.lastRun) > new Date(perfResults.lastRun))
+                ) {
                   perfResults.lastRun = reportData.lastRun;
                 }
               }
@@ -396,9 +406,10 @@ class DashboardGenerator {
 
       // Calculate aggregated metrics
       if (perfResults.summary.totalRequests > 0) {
-        perfResults.summary.errorRate = Math.round((perfResults.summary.failedRequests / perfResults.summary.totalRequests) * 100);
+        perfResults.summary.errorRate = Math.round(
+          (perfResults.summary.failedRequests / perfResults.summary.totalRequests) * 100
+        );
       }
-      
     } catch (error) {
       console.warn('Error collecting performance test results:', error.message);
     }
@@ -412,7 +423,7 @@ class DashboardGenerator {
   async parseJMeterResults(filePath) {
     try {
       const reportData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      
+
       // Handle different JMeter report formats
       if (reportData.scenario) {
         return {
@@ -424,13 +435,13 @@ class DashboardGenerator {
           p90ResponseTime: reportData.summary?.p90ResponseTime || 0,
           throughput: reportData.summary?.throughput || 0,
           errorRate: reportData.summary?.errorRate || 0,
-          lastRun: reportData.timestamp || new Date().toISOString()
+          lastRun: reportData.timestamp || new Date().toISOString(),
         };
       }
     } catch (error) {
       console.warn(`Error parsing JMeter results from ${filePath}:`, error.message);
     }
-    
+
     return null;
   }
 
@@ -446,22 +457,19 @@ class DashboardGenerator {
         critical: 0,
         serious: 0,
         moderate: 0,
-        minor: 0
+        minor: 0,
       },
       wcagCompliance: {
-        'wcag2a': 0,
-        'wcag2aa': 0,
-        'wcag21aa': 0
+        wcag2a: 0,
+        wcag2aa: 0,
+        wcag21aa: 0,
       },
-      lastRun: null
+      lastRun: null,
     };
 
     try {
       // Look for accessibility test results in Playwright reports
-      const a11yReportDirs = [
-        'reports/accessibility-tests',
-        'test-results'
-      ];
+      const a11yReportDirs = ['reports/accessibility-tests', 'test-results'];
 
       for (const reportDir of a11yReportDirs) {
         const fullPath = path.join(this.baseDir, reportDir);
@@ -472,21 +480,24 @@ class DashboardGenerator {
             a11yResults.total += reportData.total || 0;
             a11yResults.passed += reportData.passed || 0;
             a11yResults.failed += reportData.failed || 0;
-            
-            Object.keys(reportData.violations || {}).forEach(severity => {
+
+            Object.keys(reportData.violations || {}).forEach((severity) => {
               a11yResults.violations[severity] += reportData.violations[severity] || 0;
             });
-            
-            if (reportData.lastRun && (!a11yResults.lastRun || new Date(reportData.lastRun) > new Date(a11yResults.lastRun))) {
+
+            if (
+              reportData.lastRun &&
+              (!a11yResults.lastRun || new Date(reportData.lastRun) > new Date(a11yResults.lastRun))
+            ) {
               a11yResults.lastRun = reportData.lastRun;
             }
           }
         }
       }
 
-      a11yResults.passRate = a11yResults.total > 0 ? Math.round((a11yResults.passed / a11yResults.total) * 100) : 0;
+      a11yResults.passRate =
+        a11yResults.total > 0 ? Math.round((a11yResults.passed / a11yResults.total) * 100) : 0;
       a11yResults.complianceScore = this.calculateAccessibilityScore(a11yResults.violations);
-      
     } catch (error) {
       console.warn('Error collecting accessibility test results:', error.message);
     }
@@ -508,9 +519,9 @@ class DashboardGenerator {
         critical: 0,
         serious: 0,
         moderate: 0,
-        minor: 0
+        minor: 0,
       },
-      lastRun: new Date().toISOString()
+      lastRun: new Date().toISOString(),
     };
   }
 
@@ -520,9 +531,9 @@ class DashboardGenerator {
   calculateAccessibilityScore(violations) {
     const weights = { critical: 10, serious: 7, moderate: 4, minor: 1 };
     const totalViolations = Object.keys(violations).reduce((sum, severity) => {
-      return sum + (violations[severity] * weights[severity]);
+      return sum + violations[severity] * weights[severity];
     }, 0);
-    
+
     return Math.max(0, 100 - totalViolations);
   }
 
@@ -538,7 +549,7 @@ class DashboardGenerator {
         critical: 0,
         high: 0,
         medium: 0,
-        low: 0
+        low: 0,
       },
       categories: {
         xss: { tests: 0, issues: 0 },
@@ -546,18 +557,15 @@ class DashboardGenerator {
         authentication: { tests: 0, issues: 0 },
         authorization: { tests: 0, issues: 0 },
         sessionManagement: { tests: 0, issues: 0 },
-        encryption: { tests: 0, issues: 0 }
+        encryption: { tests: 0, issues: 0 },
       },
       securityScore: 0,
-      lastRun: null
+      lastRun: null,
     };
 
     try {
       // Look for security test results
-      const securityReportDirs = [
-        'reports/security-tests',
-        'test-results'
-      ];
+      const securityReportDirs = ['reports/security-tests', 'test-results'];
 
       for (const reportDir of securityReportDirs) {
         const fullPath = path.join(this.baseDir, reportDir);
@@ -567,21 +575,28 @@ class DashboardGenerator {
             securityResults.total += reportData.total || 0;
             securityResults.passed += reportData.passed || 0;
             securityResults.failed += reportData.failed || 0;
-            
-            Object.keys(reportData.vulnerabilities || {}).forEach(severity => {
-              securityResults.vulnerabilities[severity] += reportData.vulnerabilities[severity] || 0;
+
+            Object.keys(reportData.vulnerabilities || {}).forEach((severity) => {
+              securityResults.vulnerabilities[severity] +=
+                reportData.vulnerabilities[severity] || 0;
             });
-            
-            if (reportData.lastRun && (!securityResults.lastRun || new Date(reportData.lastRun) > new Date(securityResults.lastRun))) {
+
+            if (
+              reportData.lastRun &&
+              (!securityResults.lastRun ||
+                new Date(reportData.lastRun) > new Date(securityResults.lastRun))
+            ) {
               securityResults.lastRun = reportData.lastRun;
             }
           }
         }
       }
 
-      securityResults.passRate = securityResults.total > 0 ? Math.round((securityResults.passed / securityResults.total) * 100) : 0;
+      securityResults.passRate =
+        securityResults.total > 0
+          ? Math.round((securityResults.passed / securityResults.total) * 100)
+          : 0;
       securityResults.securityScore = this.calculateSecurityScore(securityResults.vulnerabilities);
-      
     } catch (error) {
       console.warn('Error collecting security test results:', error.message);
     }
@@ -603,9 +618,9 @@ class DashboardGenerator {
         critical: 0,
         high: 0,
         medium: 0,
-        low: 0
+        low: 0,
       },
-      lastRun: new Date().toISOString()
+      lastRun: new Date().toISOString(),
     };
   }
 
@@ -615,9 +630,9 @@ class DashboardGenerator {
   calculateSecurityScore(vulnerabilities) {
     const weights = { critical: 10, high: 7, medium: 4, low: 1 };
     const totalIssues = Object.keys(vulnerabilities).reduce((sum, severity) => {
-      return sum + (vulnerabilities[severity] * weights[severity]);
+      return sum + vulnerabilities[severity] * weights[severity];
     }, 0);
-    
+
     return Math.max(0, 100 - totalIssues);
   }
 
@@ -635,25 +650,34 @@ class DashboardGenerator {
         api: { status: 'unknown', passRate: 0, lastRun: null },
         performance: { status: 'unknown', score: 0, lastRun: null },
         accessibility: { status: 'unknown', score: 0, lastRun: null },
-        security: { status: 'unknown', score: 0, lastRun: null }
+        security: { status: 'unknown', score: 0, lastRun: null },
       },
       qualityScore: 0,
-      recommendations: []
+      recommendations: [],
     };
 
     // Aggregate test counts
-    summary.totalTests = (results.ui.total || 0) + (results.api.total || 0) + 
-                        (results.accessibility.total || 0) + (results.security.total || 0);
-    
-    summary.passedTests = (results.ui.passed || 0) + (results.api.passed || 0) + 
-                         (results.accessibility.passed || 0) + (results.security.passed || 0);
-    
-    summary.failedTests = (results.ui.failed || 0) + (results.api.failed || 0) + 
-                         (results.accessibility.failed || 0) + (results.security.failed || 0);
+    summary.totalTests =
+      (results.ui.total || 0) +
+      (results.api.total || 0) +
+      (results.accessibility.total || 0) +
+      (results.security.total || 0);
+
+    summary.passedTests =
+      (results.ui.passed || 0) +
+      (results.api.passed || 0) +
+      (results.accessibility.passed || 0) +
+      (results.security.passed || 0);
+
+    summary.failedTests =
+      (results.ui.failed || 0) +
+      (results.api.failed || 0) +
+      (results.accessibility.failed || 0) +
+      (results.security.failed || 0);
 
     // Calculate overall pass rate
-    summary.overallPassRate = summary.totalTests > 0 ? 
-      Math.round((summary.passedTests / summary.totalTests) * 100) : 0;
+    summary.overallPassRate =
+      summary.totalTests > 0 ? Math.round((summary.passedTests / summary.totalTests) * 100) : 0;
 
     // Set test type statuses
     summary.testTypes.ui.status = this.getTestStatus(results.ui.passRate);
@@ -668,7 +692,9 @@ class DashboardGenerator {
     summary.testTypes.performance.score = this.calculatePerformanceScore(results.performance);
     summary.testTypes.performance.lastRun = results.performance.lastRun;
 
-    summary.testTypes.accessibility.status = this.getAccessibilityStatus(results.accessibility.complianceScore);
+    summary.testTypes.accessibility.status = this.getAccessibilityStatus(
+      results.accessibility.complianceScore
+    );
     summary.testTypes.accessibility.score = results.accessibility.complianceScore || 0;
     summary.testTypes.accessibility.lastRun = results.accessibility.lastRun;
 
@@ -711,7 +737,7 @@ class DashboardGenerator {
    */
   calculatePerformanceScore(perfResults) {
     const errorRate = perfResults.summary?.errorRate || 0;
-    return Math.max(0, 100 - (errorRate * 10));
+    return Math.max(0, 100 - errorRate * 10);
   }
 
   /**
@@ -743,13 +769,13 @@ class DashboardGenerator {
       api: 0.25,
       performance: 0.2,
       accessibility: 0.15,
-      security: 0.15
+      security: 0.15,
     };
 
     let totalScore = 0;
     let totalWeight = 0;
 
-    Object.keys(weights).forEach(testType => {
+    Object.keys(weights).forEach((testType) => {
       const typeData = summary.testTypes[testType];
       if (typeData.status !== 'unknown') {
         const score = typeData.passRate || typeData.score || 0;
@@ -773,7 +799,7 @@ class DashboardGenerator {
         type: 'ui',
         priority: 'high',
         message: 'UI test pass rate is below 80%. Review and fix failing UI tests.',
-        action: 'Fix failing UI tests'
+        action: 'Fix failing UI tests',
       });
     }
 
@@ -783,7 +809,7 @@ class DashboardGenerator {
         type: 'api',
         priority: 'high',
         message: 'API test pass rate is below 80%. Review API test failures.',
-        action: 'Fix failing API tests'
+        action: 'Fix failing API tests',
       });
     }
 
@@ -793,7 +819,7 @@ class DashboardGenerator {
         type: 'performance',
         priority: 'critical',
         message: 'Performance error rate exceeds 5%. Investigate performance issues.',
-        action: 'Optimize application performance'
+        action: 'Optimize application performance',
       });
     }
 
@@ -803,7 +829,7 @@ class DashboardGenerator {
         type: 'accessibility',
         priority: 'medium',
         message: 'Accessibility compliance score is below 80%. Address accessibility violations.',
-        action: 'Fix accessibility issues'
+        action: 'Fix accessibility issues',
       });
     }
 
@@ -813,7 +839,7 @@ class DashboardGenerator {
         type: 'security',
         priority: 'critical',
         message: 'Security score is below 80%. Address security vulnerabilities immediately.',
-        action: 'Fix security vulnerabilities'
+        action: 'Fix security vulnerabilities',
       });
     }
 
@@ -823,7 +849,7 @@ class DashboardGenerator {
         type: 'overall',
         priority: 'high',
         message: 'Overall quality score is below 70%. Comprehensive quality improvement needed.',
-        action: 'Implement quality improvement plan'
+        action: 'Implement quality improvement plan',
       });
     }
 
@@ -836,13 +862,13 @@ class DashboardGenerator {
   async generateDashboard(results) {
     const dashboardHtml = this.createDashboardHTML(results);
     const dashboardPath = path.join(this.dashboardDir, 'index.html');
-    
+
     fs.writeFileSync(dashboardPath, dashboardHtml);
-    
+
     // Save raw data for API access
     const dataPath = path.join(this.dataDir, 'dashboard-data.json');
     fs.writeFileSync(dataPath, JSON.stringify(results, null, 2));
-    
+
     console.log(`Dashboard generated: ${dashboardPath}`);
     return dashboardPath;
   }
@@ -852,7 +878,7 @@ class DashboardGenerator {
    */
   createDashboardHTML(results) {
     const { summary } = results;
-    
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1174,19 +1200,27 @@ class DashboardGenerator {
         </div>
         
         <!-- Recommendations -->
-        ${summary.recommendations.length > 0 ? `
+        ${
+          summary.recommendations.length > 0
+            ? `
         <div class="recommendations">
             <h2 class="chart-title">Recommendations</h2>
-            ${summary.recommendations.map(rec => `
+            ${summary.recommendations
+              .map(
+                (rec) => `
                 <div class="recommendation-item priority-${rec.priority}">
                     <div>
                         <strong>${rec.type.toUpperCase()}</strong>: ${rec.message}
                         <br><em>Action: ${rec.action}</em>
                     </div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
-        ` : ''}
+        `
+            : ''
+        }
         
         <!-- Detailed Test Results -->
         <div class="test-details">
@@ -1429,17 +1463,17 @@ class DashboardGenerator {
   async run() {
     console.log('Collecting test results...');
     const results = await this.collectTestResults();
-    
+
     console.log('Generating dashboard...');
     const dashboardPath = await this.generateDashboard(results);
-    
+
     console.log('Dashboard generation completed!');
     console.log(`Dashboard available at: ${dashboardPath}`);
-    
+
     return {
       dashboardPath,
       results,
-      summary: results.summary
+      summary: results.summary,
     };
   }
 }
@@ -1447,25 +1481,26 @@ class DashboardGenerator {
 // CLI Interface
 if (require.main === module) {
   const generator = new DashboardGenerator();
-  
-  generator.run()
+
+  generator
+    .run()
     .then(({ dashboardPath, summary }) => {
       console.log('\n=== Dashboard Generation Summary ===');
       console.log(`Quality Score: ${summary.qualityScore}%`);
       console.log(`Total Tests: ${summary.totalTests}`);
       console.log(`Pass Rate: ${summary.overallPassRate}%`);
       console.log(`Dashboard: ${dashboardPath}`);
-      
+
       if (summary.recommendations.length > 0) {
         console.log('\nRecommendations:');
         summary.recommendations.forEach((rec, index) => {
           console.log(`${index + 1}. [${rec.priority.toUpperCase()}] ${rec.message}`);
         });
       }
-      
+
       process.exit(0);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Dashboard generation failed:', error);
       process.exit(1);
     });

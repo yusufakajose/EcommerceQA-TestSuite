@@ -5,6 +5,7 @@ This directory contains JMeter performance test plans and execution scripts for 
 ## Overview
 
 The performance testing framework includes:
+
 - JMeter test plans for different application modules
 - Automated test execution scripts
 - Data-driven testing capabilities
@@ -27,24 +28,29 @@ automated-tests/performance-tests/
 ## Test Plans
 
 ### 1. User Authentication Load Test
+
 **File**: `user-authentication-load-test.jmx`
 
 **Scenarios**:
+
 - User registration with unique data generation
 - User login with credential validation
 - User profile retrieval with authentication
 - Response time and throughput validation
 
 **Key Features**:
+
 - Dynamic user data generation using thread numbers and timestamps
 - Authentication token extraction and reuse
 - Response time assertions (< 2000ms for login)
 - Realistic think times between requests
 
 ### 2. Product Catalog Load Test
+
 **File**: `product-catalog-load-test.jmx`
 
 **Scenarios**:
+
 - Product listing with pagination
 - Product search with various terms
 - Product filtering by category and price
@@ -52,15 +58,18 @@ automated-tests/performance-tests/
 - Sorting and advanced filtering
 
 **Key Features**:
+
 - CSV data-driven search terms and filters
 - Random pagination and sorting parameters
 - Response time assertions (< 1500ms for listing, < 2000ms for search)
 - Product ID extraction for subsequent requests
 
 ### 3. Shopping Cart and Checkout Load Test
+
 **File**: `shopping-cart-checkout-load-test.jmx`
 
 **Scenarios**:
+
 - Shopping cart creation and management
 - Adding/removing items from cart
 - Cart quantity updates
@@ -68,6 +77,7 @@ automated-tests/performance-tests/
 - Order creation and confirmation
 
 **Key Features**:
+
 - CSV data-driven product and payment data
 - Cart state management across requests
 - Extended timeouts for checkout operations (< 45s)
@@ -78,6 +88,7 @@ automated-tests/performance-tests/
 ### JMeter Installation
 
 1. **Download JMeter**:
+
    ```bash
    # Download from Apache JMeter website
    wget https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.6.2.tgz
@@ -85,6 +96,7 @@ automated-tests/performance-tests/
    ```
 
 2. **Add to PATH**:
+
    ```bash
    export PATH=$PATH:/path/to/apache-jmeter-5.6.2/bin
    ```
@@ -95,6 +107,7 @@ automated-tests/performance-tests/
    ```
 
 ### System Requirements
+
 - Java 8 or higher
 - Minimum 4GB RAM for load testing
 - Sufficient disk space for results and reports
@@ -158,22 +171,24 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 
 ### Parameters
 
-| Parameter | Description | Default | Range |
-|-----------|-------------|---------|-------|
-| `users` | Number of concurrent users | 50 | 1-1000 |
-| `ramp_up` | Ramp-up period in seconds | 60 | 10-600 |
-| `loops` | Number of iterations per user | 5 | 1-100 |
-| `base_url` | Target application URL | http://localhost:3000 | Any valid URL |
+| Parameter  | Description                   | Default               | Range         |
+| ---------- | ----------------------------- | --------------------- | ------------- |
+| `users`    | Number of concurrent users    | 50                    | 1-1000        |
+| `ramp_up`  | Ramp-up period in seconds     | 60                    | 10-600        |
+| `loops`    | Number of iterations per user | 5                     | 1-100         |
+| `base_url` | Target application URL        | http://localhost:3000 | Any valid URL |
 
 ### Test Data
 
 #### Search Terms (`search-terms.csv`)
+
 - Product search queries
 - Category filters
 - Price range filters
 - Used for product catalog testing
 
 #### Cart Test Data (`cart-test-data.csv`)
+
 - Product IDs for cart operations
 - Quantity variations
 - Payment method options
@@ -182,16 +197,19 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 ## Results and Reporting
 
 ### Result Files
+
 - **JTL Files**: Raw test results in JMeter format
 - **Log Files**: JMeter execution logs
 - **HTML Reports**: Interactive dashboard reports
 
 ### Report Locations
+
 - Individual test reports: `reports/performance-tests/{test-name}-report/`
 - Consolidated report: `reports/performance-tests/consolidated-performance-report.html`
 - Raw results: `automated-tests/performance-tests/jmeter/results/`
 
 ### Key Metrics
+
 - **Response Time**: Average, median, 90th percentile
 - **Throughput**: Requests per second
 - **Error Rate**: Percentage of failed requests
@@ -200,6 +218,7 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 ## Performance Thresholds
 
 ### Response Time Targets
+
 - **User Authentication**: < 2000ms
 - **Product Listing**: < 1500ms
 - **Product Search**: < 2000ms
@@ -208,11 +227,13 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 - **Checkout Process**: < 5000ms
 
 ### Throughput Targets
+
 - **Minimum**: 10 requests/second
 - **Target**: 50 requests/second
 - **Optimal**: 100+ requests/second
 
 ### Error Rate Targets
+
 - **Acceptable**: < 1%
 - **Warning**: 1-5%
 - **Critical**: > 5%
@@ -222,6 +243,7 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 ### Common Issues
 
 1. **JMeter Not Found**
+
    ```bash
    # Verify JMeter installation
    which jmeter
@@ -229,6 +251,7 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
    ```
 
 2. **Out of Memory Errors**
+
    ```bash
    # Increase JMeter heap size
    export JVM_ARGS="-Xms1g -Xmx4g"
@@ -261,18 +284,21 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 ## Best Practices
 
 ### Test Design
+
 1. **Realistic User Behavior**: Include appropriate think times
 2. **Data Variation**: Use CSV data sets for realistic scenarios
 3. **Gradual Load**: Implement proper ramp-up patterns
 4. **Error Handling**: Include assertions and error validation
 
 ### Test Execution
+
 1. **Baseline Testing**: Establish performance baselines
 2. **Incremental Load**: Gradually increase load to find limits
 3. **Monitoring**: Monitor both client and server metrics
 4. **Repeatability**: Ensure consistent test conditions
 
 ### Result Analysis
+
 1. **Trend Analysis**: Compare results over time
 2. **Bottleneck Identification**: Analyze response time patterns
 3. **Capacity Planning**: Use results for scaling decisions
@@ -281,6 +307,7 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 ## Integration with CI/CD
 
 ### GitHub Actions Example
+
 ```yaml
 - name: Run Performance Tests
   run: |
@@ -296,6 +323,7 @@ chmod +x automated-tests/performance-tests/scripts/run-jmeter-tests.sh
 ```
 
 ### Jenkins Pipeline Example
+
 ```groovy
 stage('Performance Tests') {
     steps {

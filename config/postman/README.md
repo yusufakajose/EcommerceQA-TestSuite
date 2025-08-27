@@ -9,6 +9,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
 ### Main Collections
 
 #### 1. User Management API (`user-management.postman_collection.json`)
+
 - **Authentication**: Registration, login, logout, token refresh
 - **Profile Management**: Get profile, update profile, change password, delete account
 - **Password Reset**: Request reset, reset password workflow
@@ -16,6 +17,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
 **Endpoints Covered**: 8 endpoints with comprehensive test scenarios
 
 #### 2. Product Catalog API (`product-catalog.postman_collection.json`)
+
 - **Products**: CRUD operations, product listing with pagination
 - **Search**: Product search by name, filtering, sorting
 - **Categories**: Category management and product categorization
@@ -24,6 +26,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
 **Endpoints Covered**: 12 endpoints with search and filtering capabilities
 
 #### 3. Order Processing API (`order-processing.postman_collection.json`)
+
 - **Shopping Cart**: Add/remove items, update quantities, cart calculations
 - **Checkout Process**: Order creation, payment processing
 - **Order Management**: Order tracking, status updates, order history
@@ -31,6 +34,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
 **Endpoints Covered**: 10 endpoints covering complete order workflow
 
 #### 4. Complete API Suite (`ecommerce-api-complete.postman_collection.json`)
+
 - **Health Checks**: API status, database connectivity, version information
 - **Global Scripts**: Pre-request and test scripts for all collections
 - **Error Handling**: Comprehensive error validation and logging
@@ -40,6 +44,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
 ### Workflow Collections
 
 #### Authentication Workflow (`workflows/authentication-workflow.postman_collection.json`)
+
 - **Setup Authentication**: Complete user registration and login workflow
 - **Admin Setup**: Admin user authentication (environment-specific)
 - **Verification**: Authentication token validation
@@ -50,18 +55,21 @@ This directory contains comprehensive Postman collections for testing the e-comm
 ## Environment Configurations
 
 ### Development Environment (`environments/development.postman_environment.json`)
+
 - **Base URL**: `http://localhost:3000`
 - **API URL**: `http://localhost:3001/api`
 - **Features**: Debug mode enabled, lower timeouts, test data cleanup
 - **Security**: Relaxed settings for local development
 
 ### Staging Environment (`environments/staging.postman_environment.json`)
+
 - **Base URL**: `https://staging.ecommerce-app.com`
 - **API URL**: `https://staging-api.ecommerce-app.com/api`
 - **Features**: SSL verification, moderate timeouts, staging-specific test data
 - **Security**: Enhanced security settings, limited admin access
 
 ### Production Environment (`environments/production.postman_environment.json`)
+
 - **Base URL**: `https://ecommerce-app.com`
 - **API URL**: `https://api.ecommerce-app.com/api`
 - **Features**: Strict SSL verification, high timeouts, rate limiting
@@ -70,17 +78,20 @@ This directory contains comprehensive Postman collections for testing the e-comm
 ## Authentication Workflows
 
 ### Standard User Authentication
+
 1. **Register Test User**: Creates unique test user with generated data
 2. **Login**: Authenticates user and stores auth token
 3. **Token Storage**: Automatically stores token for subsequent requests
 4. **Verification**: Validates authentication is working
 
 ### Admin Authentication (Development/Staging Only)
+
 1. **Admin Login**: Authenticates admin user (environment-specific)
 2. **Admin Token Storage**: Stores admin token for privileged operations
 3. **Permission Verification**: Validates admin permissions
 
 ### Token Management
+
 - **Automatic Token Storage**: Tokens stored in environment variables
 - **Token Refresh**: Automatic token refresh when needed
 - **Token Cleanup**: Automatic cleanup on logout or test completion
@@ -90,6 +101,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
 ### Setting Up Collections
 
 1. **Import Collections**:
+
    ```bash
    # Import all collections into Postman
    - user-management.postman_collection.json
@@ -99,6 +111,7 @@ This directory contains comprehensive Postman collections for testing the e-comm
    ```
 
 2. **Import Environments**:
+
    ```bash
    # Import environment configurations
    - development.postman_environment.json
@@ -111,12 +124,14 @@ This directory contains comprehensive Postman collections for testing the e-comm
 ### Running Tests
 
 #### Manual Execution
+
 1. **Setup Authentication**: Run authentication workflow first
 2. **Run Collections**: Execute collections in any order
 3. **Review Results**: Check test results and response data
 4. **Cleanup**: Run cleanup workflow when finished
 
 #### Automated Execution (Newman)
+
 ```bash
 # Run complete test suite
 newman run ecommerce-api-complete.postman_collection.json \
@@ -137,16 +152,19 @@ newman run product-catalog.postman_collection.json \
 ## Test Data Management
 
 ### Dynamic Data Generation
+
 - **Unique Emails**: Automatically generated using timestamps
 - **Random Data**: Uses Postman's built-in random data generators
 - **Environment Variables**: Stores generated data for reuse across requests
 
 ### Static Test Data
+
 - **Product IDs**: Pre-configured product IDs for consistent testing
 - **Category IDs**: Standard category IDs across environments
 - **Test Credentials**: Environment-specific test user credentials
 
 ### Data Cleanup
+
 - **Automatic Cleanup**: Test data cleaned up after test completion
 - **Environment-Specific**: Different cleanup strategies per environment
 - **Manual Cleanup**: Manual cleanup options for development
@@ -154,16 +172,19 @@ newman run product-catalog.postman_collection.json \
 ## Security Considerations
 
 ### Development Environment
+
 - **Relaxed Security**: Allows test data creation and deletion
 - **Debug Mode**: Detailed logging and error information
 - **Admin Access**: Full admin operations available
 
 ### Staging Environment
+
 - **Moderate Security**: Limited admin operations
 - **SSL Verification**: Enforced SSL certificate validation
 - **Test Data Isolation**: Separate test data from production-like data
 
 ### Production Environment
+
 - **Maximum Security**: Read-only operations only
 - **No Admin Operations**: Admin endpoints disabled for safety
 - **Rate Limiting**: Enforced delays between requests
@@ -172,12 +193,14 @@ newman run product-catalog.postman_collection.json \
 ## Error Handling
 
 ### Global Error Handling
+
 - **Status Code Validation**: Automatic validation of expected status codes
 - **Response Time Monitoring**: Alerts for slow responses
 - **Server Error Detection**: Automatic detection of 5xx errors
 - **JSON Validation**: Validates response structure
 
 ### Request-Specific Handling
+
 - **Authentication Errors**: Automatic token refresh on 401 errors
 - **Rate Limiting**: Automatic retry with backoff on 429 errors
 - **Network Errors**: Graceful handling of network failures
@@ -186,18 +209,21 @@ newman run product-catalog.postman_collection.json \
 ## Best Practices
 
 ### Collection Organization
+
 1. **Logical Grouping**: Collections organized by functional areas
 2. **Descriptive Names**: Clear, descriptive names for all requests
 3. **Comprehensive Documentation**: Detailed descriptions for all endpoints
 4. **Consistent Structure**: Standardized request/response patterns
 
 ### Test Script Guidelines
+
 1. **Comprehensive Validation**: Test status codes, response structure, and business logic
 2. **Data Validation**: Validate data types, formats, and constraints
 3. **Error Scenarios**: Include negative test cases
 4. **Performance Testing**: Monitor response times and performance
 
 ### Environment Management
+
 1. **Environment Isolation**: Separate configurations for each environment
 2. **Security Awareness**: Different security levels per environment
 3. **Data Management**: Appropriate data handling for each environment
@@ -230,6 +256,7 @@ newman run product-catalog.postman_collection.json \
 ### Debug Mode
 
 Enable debug mode in environment variables:
+
 ```json
 {
   "key": "debug_mode",
@@ -238,6 +265,7 @@ Enable debug mode in environment variables:
 ```
 
 This will provide detailed logging of:
+
 - Request/response details
 - Authentication token status
 - Environment variable values

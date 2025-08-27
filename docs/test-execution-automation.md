@@ -329,9 +329,9 @@ name: Comprehensive Testing
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   smoke-tests:
@@ -372,14 +372,14 @@ jobs:
 ```groovy
 pipeline {
     agent any
-    
+
     stages {
         stage('Smoke Tests') {
             steps {
                 sh 'npm run test:ci:smoke'
             }
         }
-        
+
         stage('Regression Tests') {
             when {
                 changeRequest()
@@ -388,7 +388,7 @@ pipeline {
                 sh 'npm run test:ci:regression'
             }
         }
-        
+
         stage('Full Tests') {
             when {
                 branch 'main'
@@ -398,7 +398,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             publishHTML([
@@ -437,14 +437,14 @@ The CI runner automatically generates GitHub Actions job summaries:
 ```markdown
 ## ✅ Test Execution Summary
 
-| Metric | Value |
-|--------|-------|
-| **Total Tests** | 150 |
-| **Passed** | 148 ✅ |
-| **Failed** | 2 ❌ |
-| **Pass Rate** | 98.7% |
-| **Duration** | 12m 34s |
-| **Quality Gate** | PASSED |
+| Metric           | Value   |
+| ---------------- | ------- |
+| **Total Tests**  | 150     |
+| **Passed**       | 148 ✅  |
+| **Failed**       | 2 ❌    |
+| **Pass Rate**    | 98.7%   |
+| **Duration**     | 12m 34s |
+| **Quality Gate** | PASSED  |
 ```
 
 ## Error Handling and Recovery

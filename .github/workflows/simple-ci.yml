@@ -2,9 +2,9 @@ name: Simple CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
@@ -15,7 +15,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,8 +28,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
-          npx playwright install chromium
+          npm ci
+          npx playwright install --with-deps
 
       - name: Create test directories
         run: |
@@ -38,8 +38,18 @@ jobs:
 
       - name: Run smoke tests
         run: |
-          npx playwright test smoke.spec.js --config=config/playwright.config.js --project="Desktop Chrome" --workers=1 --retries=1 || echo "Tests completed with some issues"
+          npx playwright test automated-tests/ui-tests/smoke.spec.js --config=config/playwright.config.js --project=chromium --workers=1 --retries=1 || echo "Tests completed with some issues"
         continue-on-error: true
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-simple-ci
+          path: |
+            test-results/
+            reports/test-execution/**/playwright-report/
+          retention-days: 3
 
       - name: Generate test report
         run: |
@@ -52,7 +62,7 @@ jobs:
             "failed": 0,
             "skipped": 0
           }' > reports/test-status.json
-          
+
           # Create a simple JUnit XML for test reporting
           cat > reports/junit-results.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>

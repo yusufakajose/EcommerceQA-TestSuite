@@ -20,9 +20,9 @@ class ApiPerformanceReportGenerator {
         deleteOperation: 400,
         largeDataset: 1000,
         concurrentLoad: 1000,
-        errorHandling: 300
+        errorHandling: 300,
       },
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -31,20 +31,20 @@ class ApiPerformanceReportGenerator {
    */
   async generateReport() {
     console.log('🚀 Generating API Performance Report...');
-    
+
     // Generate mock API performance data
     this.generateMockApiData();
-    
+
     // Calculate backend metrics
     this.calculateBackendMetrics();
-    
+
     // Generate recommendations
     this.generateApiRecommendations();
-    
+
     // Generate reports
     await this.generateHTMLReport();
     await this.generateApiJSON();
-    
+
     console.log('✅ API Performance Report Generated Successfully!');
     console.log(`📄 HTML Report: reports/api-performance-report.html`);
     console.log(`📊 API Data: reports/api-performance-data.json`);
@@ -65,7 +65,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 15420,
             threshold: 500,
             passed: true,
-            category: 'READ_MULTIPLE'
+            category: 'READ_MULTIPLE',
           },
           {
             name: 'GET /users',
@@ -74,7 +74,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 5240,
             threshold: 500,
             passed: true,
-            category: 'READ_MULTIPLE'
+            category: 'READ_MULTIPLE',
           },
           {
             name: 'POST /posts',
@@ -83,7 +83,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 156,
             threshold: 600,
             passed: true,
-            category: 'CREATE'
+            category: 'CREATE',
           },
           {
             name: 'PUT /posts/1',
@@ -92,7 +92,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 142,
             threshold: 600,
             passed: true,
-            category: 'UPDATE'
+            category: 'UPDATE',
           },
           {
             name: 'DELETE /posts/1',
@@ -101,9 +101,9 @@ class ApiPerformanceReportGenerator {
             responseSize: 0,
             threshold: 400,
             passed: true,
-            category: 'DELETE'
-          }
-        ]
+            category: 'DELETE',
+          },
+        ],
       },
       {
         testSuite: 'Backend Monitoring Tests',
@@ -115,7 +115,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 292,
             threshold: 300,
             passed: true,
-            category: 'HEALTH_CHECK'
+            category: 'HEALTH_CHECK',
           },
           {
             name: 'Load Test - 10 Concurrent Users',
@@ -124,7 +124,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 45600,
             threshold: 1000,
             passed: true,
-            category: 'LOAD_TEST'
+            category: 'LOAD_TEST',
           },
           {
             name: 'Error Handling - 404',
@@ -133,7 +133,7 @@ class ApiPerformanceReportGenerator {
             responseSize: 0,
             threshold: 300,
             passed: true,
-            category: 'ERROR_HANDLING'
+            category: 'ERROR_HANDLING',
           },
           {
             name: 'Large Dataset - Comments',
@@ -142,10 +142,10 @@ class ApiPerformanceReportGenerator {
             responseSize: 125000,
             threshold: 1000,
             passed: true,
-            category: 'LARGE_DATASET'
-          }
-        ]
-      }
+            category: 'LARGE_DATASET',
+          },
+        ],
+      },
     ];
   }
 
@@ -153,11 +153,11 @@ class ApiPerformanceReportGenerator {
    * Calculate backend performance metrics
    */
   calculateBackendMetrics() {
-    const allTests = this.reportData.apiTests.flatMap(suite => suite.tests);
-    
+    const allTests = this.reportData.apiTests.flatMap((suite) => suite.tests);
+
     // Group by category
     const categories = {};
-    allTests.forEach(test => {
+    allTests.forEach((test) => {
       if (!categories[test.category]) {
         categories[test.category] = [];
       }
@@ -167,7 +167,7 @@ class ApiPerformanceReportGenerator {
     // Calculate metrics for each category
     this.reportData.backendMetrics = {
       overall: this.calculateMetricsForTests(allTests),
-      byCategory: {}
+      byCategory: {},
     };
 
     Object.entries(categories).forEach(([category, tests]) => {
@@ -184,9 +184,9 @@ class ApiPerformanceReportGenerator {
    * Calculate metrics for a set of tests
    */
   calculateMetricsForTests(tests) {
-    const durations = tests.map(t => t.duration);
-    const responseSizes = tests.map(t => t.responseSize);
-    
+    const durations = tests.map((t) => t.duration);
+    const responseSizes = tests.map((t) => t.responseSize);
+
     return {
       count: tests.length,
       averageDuration: Math.round(durations.reduce((a, b) => a + b, 0) / durations.length),
@@ -194,9 +194,11 @@ class ApiPerformanceReportGenerator {
       maxDuration: Math.max(...durations),
       p95Duration: this.calculatePercentile(durations, 95),
       p99Duration: this.calculatePercentile(durations, 99),
-      successRate: (tests.filter(t => t.passed).length / tests.length * 100).toFixed(1),
-      averageResponseSize: Math.round(responseSizes.reduce((a, b) => a + b, 0) / responseSizes.length),
-      totalDataTransferred: responseSizes.reduce((a, b) => a + b, 0)
+      successRate: ((tests.filter((t) => t.passed).length / tests.length) * 100).toFixed(1),
+      averageResponseSize: Math.round(
+        responseSizes.reduce((a, b) => a + b, 0) / responseSizes.length
+      ),
+      totalDataTransferred: responseSizes.reduce((a, b) => a + b, 0),
     };
   }
 
@@ -211,7 +213,7 @@ class ApiPerformanceReportGenerator {
     return {
       requestsPerSecond: Math.round((totalRequests / totalDuration) * 1000),
       bytesPerSecond: Math.round((totalDataTransferred / totalDuration) * 1000),
-      averageRequestsPerSecond: Math.round(totalRequests / (totalDuration / 1000))
+      averageRequestsPerSecond: Math.round(totalRequests / (totalDuration / 1000)),
     };
   }
 
@@ -219,15 +221,15 @@ class ApiPerformanceReportGenerator {
    * Calculate reliability metrics
    */
   calculateReliability(tests) {
-    const successfulTests = tests.filter(t => t.passed);
-    const errorTests = tests.filter(t => t.status >= 400 && t.status < 500);
-    const serverErrorTests = tests.filter(t => t.status >= 500);
+    const successfulTests = tests.filter((t) => t.passed);
+    const errorTests = tests.filter((t) => t.status >= 400 && t.status < 500);
+    const serverErrorTests = tests.filter((t) => t.status >= 500);
 
     return {
-      successRate: (successfulTests.length / tests.length * 100).toFixed(2),
-      errorRate: (errorTests.length / tests.length * 100).toFixed(2),
-      serverErrorRate: (serverErrorTests.length / tests.length * 100).toFixed(2),
-      availability: ((tests.length - serverErrorTests.length) / tests.length * 100).toFixed(2)
+      successRate: ((successfulTests.length / tests.length) * 100).toFixed(2),
+      errorRate: ((errorTests.length / tests.length) * 100).toFixed(2),
+      serverErrorRate: ((serverErrorTests.length / tests.length) * 100).toFixed(2),
+      availability: (((tests.length - serverErrorTests.length) / tests.length) * 100).toFixed(2),
     };
   }
 
@@ -235,14 +237,16 @@ class ApiPerformanceReportGenerator {
    * Calculate efficiency metrics
    */
   calculateEfficiency(tests) {
-    const validTests = tests.filter(t => t.responseSize > 0);
-    const efficiencyScores = validTests.map(t => t.responseSize / t.duration);
+    const validTests = tests.filter((t) => t.responseSize > 0);
+    const efficiencyScores = validTests.map((t) => t.responseSize / t.duration);
 
     return {
-      averageBytesPerMs: Math.round(efficiencyScores.reduce((a, b) => a + b, 0) / efficiencyScores.length),
+      averageBytesPerMs: Math.round(
+        efficiencyScores.reduce((a, b) => a + b, 0) / efficiencyScores.length
+      ),
       bestEfficiency: Math.round(Math.max(...efficiencyScores)),
       worstEfficiency: Math.round(Math.min(...efficiencyScores)),
-      efficiencyVariance: this.calculateVariance(efficiencyScores)
+      efficiencyVariance: this.calculateVariance(efficiencyScores),
     };
   }
 
@@ -259,7 +263,7 @@ class ApiPerformanceReportGenerator {
         category: 'Reliability',
         issue: `API success rate is ${metrics.successRate}% (below 95% threshold)`,
         recommendation: 'Investigate failing API endpoints and implement proper error handling',
-        impact: 'Critical impact on user experience and system reliability'
+        impact: 'Critical impact on user experience and system reliability',
       });
     }
 
@@ -268,8 +272,9 @@ class ApiPerformanceReportGenerator {
         priority: 'MEDIUM',
         category: 'Performance',
         issue: `95th percentile response time is ${metrics.p95Duration}ms`,
-        recommendation: 'Optimize slow API endpoints, consider caching, and review database queries',
-        impact: 'Performance degradation affecting user experience'
+        recommendation:
+          'Optimize slow API endpoints, consider caching, and review database queries',
+        impact: 'Performance degradation affecting user experience',
       });
     }
 
@@ -278,24 +283,27 @@ class ApiPerformanceReportGenerator {
         priority: 'MEDIUM',
         category: 'Scalability',
         issue: `Low throughput: ${this.reportData.backendMetrics.throughput.requestsPerSecond} requests/second`,
-        recommendation: 'Consider implementing connection pooling, load balancing, or horizontal scaling',
-        impact: 'Limited system capacity under load'
+        recommendation:
+          'Consider implementing connection pooling, load balancing, or horizontal scaling',
+        impact: 'Limited system capacity under load',
       });
     }
 
     // Category-specific recommendations
-    Object.entries(this.reportData.backendMetrics.byCategory).forEach(([category, categoryMetrics]) => {
-      const baseline = this.getCategoryBaseline(category);
-      if (baseline && categoryMetrics.averageDuration > baseline) {
-        recommendations.push({
-          priority: 'LOW',
-          category: 'Category Performance',
-          issue: `${category} operations averaging ${categoryMetrics.averageDuration}ms (baseline: ${baseline}ms)`,
-          recommendation: `Optimize ${category.toLowerCase()} operations specifically`,
-          impact: 'Category-specific performance improvement opportunity'
-        });
+    Object.entries(this.reportData.backendMetrics.byCategory).forEach(
+      ([category, categoryMetrics]) => {
+        const baseline = this.getCategoryBaseline(category);
+        if (baseline && categoryMetrics.averageDuration > baseline) {
+          recommendations.push({
+            priority: 'LOW',
+            category: 'Category Performance',
+            issue: `${category} operations averaging ${categoryMetrics.averageDuration}ms (baseline: ${baseline}ms)`,
+            recommendation: `Optimize ${category.toLowerCase()} operations specifically`,
+            impact: 'Category-specific performance improvement opportunity',
+          });
+        }
       }
-    });
+    );
 
     if (recommendations.length === 0) {
       recommendations.push({
@@ -303,7 +311,7 @@ class ApiPerformanceReportGenerator {
         category: 'General',
         issue: 'All API performance metrics are within acceptable ranges',
         recommendation: 'Continue monitoring and maintain current performance levels',
-        impact: 'Excellent API performance maintained'
+        impact: 'Excellent API performance maintained',
       });
     }
 
@@ -315,14 +323,14 @@ class ApiPerformanceReportGenerator {
    */
   getCategoryBaseline(category) {
     const baselines = {
-      'READ_MULTIPLE': 500,
-      'CREATE': 600,
-      'UPDATE': 600,
-      'DELETE': 400,
-      'HEALTH_CHECK': 300,
-      'LOAD_TEST': 1000,
-      'ERROR_HANDLING': 300,
-      'LARGE_DATASET': 1000
+      READ_MULTIPLE: 500,
+      CREATE: 600,
+      UPDATE: 600,
+      DELETE: 400,
+      HEALTH_CHECK: 300,
+      LOAD_TEST: 1000,
+      ERROR_HANDLING: 300,
+      LARGE_DATASET: 1000,
     };
     return baselines[category];
   }
@@ -333,7 +341,7 @@ class ApiPerformanceReportGenerator {
   async generateHTMLReport() {
     const html = this.generateApiHTML();
     const reportPath = path.join('reports', 'api-performance-report.html');
-    
+
     await fs.promises.mkdir('reports', { recursive: true });
     await fs.promises.writeFile(reportPath, html);
   }
@@ -440,10 +448,14 @@ class ApiPerformanceReportGenerator {
 
         <div class="test-results">
             <h2>🧪 Test Results</h2>
-            ${data.apiTests.map(suite => `
+            ${data.apiTests
+              .map(
+                (suite) => `
                 <div class="test-suite">
                     <h3>${suite.testSuite}</h3>
-                    ${suite.tests.map(test => `
+                    ${suite.tests
+                      .map(
+                        (test) => `
                         <div class="test-item ${test.passed ? '' : 'failed'}">
                             <div class="test-name">${test.name}</div>
                             <div class="test-metrics">
@@ -453,21 +465,29 @@ class ApiPerformanceReportGenerator {
                                 <span>${test.passed ? '✅' : '❌'}</span>
                             </div>
                         </div>
-                    `).join('')}
+                    `
+                      )
+                      .join('')}
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
 
         <div class="recommendations">
             <h2>💡 Performance Recommendations</h2>
-            ${data.recommendations.map(rec => `
+            ${data.recommendations
+              .map(
+                (rec) => `
                 <div class="recommendation ${rec.priority.toLowerCase()}">
                     <div class="rec-priority ${rec.priority.toLowerCase()}">${rec.priority}</div>
                     <div><strong>${rec.category}:</strong> ${rec.issue}</div>
                     <div><strong>Recommendation:</strong> ${rec.recommendation}</div>
                     <div><strong>Impact:</strong> ${rec.impact}</div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
     </div>
 
@@ -496,9 +516,13 @@ class ApiPerformanceReportGenerator {
         new Chart(categoryCtx, {
             type: 'doughnut',
             data: {
-                labels: [${Object.keys(data.backendMetrics.byCategory).map(k => `'${k}'`).join(', ')}],
+                labels: [${Object.keys(data.backendMetrics.byCategory)
+                  .map((k) => `'${k}'`)
+                  .join(', ')}],
                 datasets: [{
-                    data: [${Object.values(data.backendMetrics.byCategory).map(v => v.averageDuration).join(', ')}],
+                    data: [${Object.values(data.backendMetrics.byCategory)
+                      .map((v) => v.averageDuration)
+                      .join(', ')}],
                     backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#7c3aed', '#06b6d4', '#84cc16']
                 }]
             },
@@ -536,7 +560,8 @@ class ApiPerformanceReportGenerator {
    */
   calculateVariance(values) {
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    const variance = values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / values.length;
+    const variance =
+      values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / values.length;
     return Math.round(variance);
   }
 }

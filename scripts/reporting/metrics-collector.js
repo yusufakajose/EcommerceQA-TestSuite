@@ -14,7 +14,7 @@ class MetricsCollector {
     this.baseDir = process.cwd();
     this.metricsDir = path.join(this.baseDir, 'reports', 'metrics');
     this.historicalDataFile = path.join(this.metricsDir, 'historical-data.json');
-    
+
     this.ensureDirectories();
   }
 
@@ -32,7 +32,7 @@ class MetricsCollector {
    */
   async collectMetrics() {
     const timestamp = new Date().toISOString();
-    
+
     const metrics = {
       timestamp,
       testExecution: await this.collectTestExecutionMetrics(),
@@ -41,15 +41,15 @@ class MetricsCollector {
       performance: await this.collectPerformanceMetrics(),
       defects: await this.collectDefectMetrics(),
       trends: await this.calculateTrends(),
-      environment: this.collectEnvironmentInfo()
+      environment: this.collectEnvironmentInfo(),
     };
 
     // Save current metrics
     await this.saveMetrics(metrics);
-    
+
     // Update historical data
     await this.updateHistoricalData(metrics);
-    
+
     return metrics;
   }
 
@@ -67,7 +67,7 @@ class MetricsCollector {
         passRate: 0,
         avgDuration: 0,
         browsers: {},
-        environments: {}
+        environments: {},
       },
       api: {
         total: 0,
@@ -76,7 +76,7 @@ class MetricsCollector {
         duration: 0,
         passRate: 0,
         collections: {},
-        environments: {}
+        environments: {},
       },
       performance: {
         scenarios: 0,
@@ -85,7 +85,7 @@ class MetricsCollector {
         avgResponseTime: 0,
         p95ResponseTime: 0,
         throughput: 0,
-        errorRate: 0
+        errorRate: 0,
       },
       accessibility: {
         total: 0,
@@ -94,9 +94,9 @@ class MetricsCollector {
           critical: 0,
           serious: 0,
           moderate: 0,
-          minor: 0
+          minor: 0,
         },
-        wcagCompliance: 0
+        wcagCompliance: 0,
       },
       security: {
         total: 0,
@@ -105,10 +105,10 @@ class MetricsCollector {
           critical: 0,
           high: 0,
           medium: 0,
-          low: 0
+          low: 0,
         },
-        securityScore: 0
-      }
+        securityScore: 0,
+      },
     };
 
     // Collect UI test metrics
@@ -165,7 +165,7 @@ class MetricsCollector {
       skipped: 0,
       duration: 0,
       browsers: {},
-      environments: {}
+      environments: {},
     };
 
     // Look for Playwright results
@@ -173,7 +173,7 @@ class MetricsCollector {
       'test-results',
       'reports/test-execution/development/playwright-report',
       'reports/test-execution/staging/playwright-report',
-      'reports/test-execution/production/playwright-report'
+      'reports/test-execution/production/playwright-report',
     ];
 
     for (const dir of playwrightDirs) {
@@ -187,9 +187,9 @@ class MetricsCollector {
             metrics.failed += results.failed || 0;
             metrics.skipped += results.skipped || 0;
             metrics.duration += results.duration || 0;
-            
+
             // Merge browser results
-            Object.keys(results.browsers || {}).forEach(browser => {
+            Object.keys(results.browsers || {}).forEach((browser) => {
               if (!metrics.browsers[browser]) {
                 metrics.browsers[browser] = { total: 0, passed: 0, failed: 0 };
               }
@@ -222,7 +222,7 @@ class MetricsCollector {
       failed: 0,
       skipped: 0,
       duration: 0,
-      browsers: {}
+      browsers: {},
     };
   }
 
@@ -236,20 +236,17 @@ class MetricsCollector {
       failed: 0,
       duration: 0,
       collections: {},
-      environments: {}
+      environments: {},
     };
 
-    const newmanDirs = [
-      'reports/api-tests',
-      'reports/newman'
-    ];
+    const newmanDirs = ['reports/api-tests', 'reports/newman'];
 
     for (const dir of newmanDirs) {
       const fullPath = path.join(this.baseDir, dir);
       if (fs.existsSync(fullPath)) {
         try {
           const files = fs.readdirSync(fullPath);
-          
+
           for (const file of files) {
             if (file.endsWith('.json')) {
               const filePath = path.join(fullPath, file);
@@ -259,7 +256,7 @@ class MetricsCollector {
                 metrics.passed += results.passed || 0;
                 metrics.failed += results.failed || 0;
                 metrics.duration += results.duration || 0;
-                
+
                 if (results.collection) {
                   metrics.collections[results.collection] = results;
                 }
@@ -283,7 +280,7 @@ class MetricsCollector {
   async parseNewmanResults(filePath) {
     try {
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      
+
       if (data.run && data.run.stats) {
         const stats = data.run.stats;
         return {
@@ -291,13 +288,13 @@ class MetricsCollector {
           total: stats.tests?.total || 0,
           passed: (stats.tests?.total || 0) - (stats.tests?.failed || 0),
           failed: stats.tests?.failed || 0,
-          duration: data.run.timings?.completed || 0
+          duration: data.run.timings?.completed || 0,
         };
       }
     } catch (error) {
       console.warn(`Error parsing Newman file ${filePath}:`, error.message);
     }
-    
+
     return null;
   }
 
@@ -312,12 +309,12 @@ class MetricsCollector {
       avgResponseTime: 0,
       p95ResponseTime: 0,
       throughput: 0,
-      errorRate: 0
+      errorRate: 0,
     };
 
     const perfDirs = [
       'reports/performance-tests',
-      'automated-tests/performance-tests/jmeter/results'
+      'automated-tests/performance-tests/jmeter/results',
     ];
 
     for (const dir of perfDirs) {
@@ -325,7 +322,7 @@ class MetricsCollector {
       if (fs.existsSync(fullPath)) {
         try {
           const files = fs.readdirSync(fullPath);
-          
+
           for (const file of files) {
             if (file.endsWith('.json')) {
               const filePath = path.join(fullPath, file);
@@ -334,13 +331,16 @@ class MetricsCollector {
                 metrics.scenarios++;
                 metrics.totalRequests += results.totalRequests || 0;
                 metrics.successfulRequests += results.successfulRequests || 0;
-                
+
                 // Calculate weighted averages
                 if (results.avgResponseTime) {
                   metrics.avgResponseTime = (metrics.avgResponseTime + results.avgResponseTime) / 2;
                 }
                 if (results.p95ResponseTime) {
-                  metrics.p95ResponseTime = Math.max(metrics.p95ResponseTime, results.p95ResponseTime);
+                  metrics.p95ResponseTime = Math.max(
+                    metrics.p95ResponseTime,
+                    results.p95ResponseTime
+                  );
                 }
               }
             }
@@ -352,7 +352,9 @@ class MetricsCollector {
     }
 
     if (metrics.totalRequests > 0) {
-      metrics.errorRate = Math.round(((metrics.totalRequests - metrics.successfulRequests) / metrics.totalRequests) * 100);
+      metrics.errorRate = Math.round(
+        ((metrics.totalRequests - metrics.successfulRequests) / metrics.totalRequests) * 100
+      );
     }
 
     return metrics;
@@ -364,20 +366,20 @@ class MetricsCollector {
   async parseJMeterResults(filePath) {
     try {
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      
+
       if (data.summary) {
         return {
           totalRequests: data.summary.totalRequests || 0,
           successfulRequests: data.summary.successfulRequests || 0,
           avgResponseTime: data.summary.averageResponseTime || 0,
           p95ResponseTime: data.summary.p95ResponseTime || 0,
-          throughput: data.summary.throughput || 0
+          throughput: data.summary.throughput || 0,
         };
       }
     } catch (error) {
       console.warn(`Error parsing JMeter file ${filePath}:`, error.message);
     }
-    
+
     return null;
   }
 
@@ -392,9 +394,9 @@ class MetricsCollector {
         critical: 0,
         serious: 0,
         moderate: 0,
-        minor: 0
+        minor: 0,
       },
-      wcagCompliance: 0
+      wcagCompliance: 0,
     };
   }
 
@@ -409,9 +411,9 @@ class MetricsCollector {
         critical: 0,
         high: 0,
         medium: 0,
-        low: 0
+        low: 0,
       },
-      securityScore: 0
+      securityScore: 0,
     };
   }
 
@@ -423,38 +425,37 @@ class MetricsCollector {
       linting: {
         errors: 0,
         warnings: 0,
-        files: 0
+        files: 0,
       },
       complexity: {
         average: 0,
         max: 0,
-        files: 0
+        files: 0,
       },
       duplication: {
         percentage: 0,
-        lines: 0
+        lines: 0,
       },
       maintainability: {
         score: 0,
-        grade: 'A'
-      }
+        grade: 'A',
+      },
     };
 
     try {
       // Run ESLint to get linting metrics
-      const eslintResult = execSync('npx eslint . --format json', { 
+      const eslintResult = execSync('npx eslint . --format json', {
         encoding: 'utf8',
-        cwd: this.baseDir 
+        cwd: this.baseDir,
       });
-      
+
       const eslintData = JSON.parse(eslintResult);
       metrics.linting.files = eslintData.length;
-      
-      eslintData.forEach(file => {
+
+      eslintData.forEach((file) => {
         metrics.linting.errors += file.errorCount || 0;
         metrics.linting.warnings += file.warningCount || 0;
       });
-      
     } catch (error) {
       console.warn('Error collecting ESLint metrics:', error.message);
     }
@@ -470,49 +471,49 @@ class MetricsCollector {
       statements: {
         total: 0,
         covered: 0,
-        percentage: 0
+        percentage: 0,
       },
       branches: {
         total: 0,
         covered: 0,
-        percentage: 0
+        percentage: 0,
       },
       functions: {
         total: 0,
         covered: 0,
-        percentage: 0
+        percentage: 0,
       },
       lines: {
         total: 0,
         covered: 0,
-        percentage: 0
+        percentage: 0,
       },
       files: {
         total: 0,
         covered: 0,
-        percentage: 0
-      }
+        percentage: 0,
+      },
     };
 
     try {
       // Look for coverage reports
       const coverageFiles = [
         'coverage/coverage-summary.json',
-        'reports/coverage/coverage-summary.json'
+        'reports/coverage/coverage-summary.json',
       ];
 
       for (const file of coverageFiles) {
         const filePath = path.join(this.baseDir, file);
         if (fs.existsSync(filePath)) {
           const coverageData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-          
+
           if (coverageData.total) {
             const total = coverageData.total;
             metrics.statements.percentage = total.statements?.pct || 0;
             metrics.branches.percentage = total.branches?.pct || 0;
             metrics.functions.percentage = total.functions?.pct || 0;
             metrics.lines.percentage = total.lines?.pct || 0;
-            
+
             metrics.statements.total = total.statements?.total || 0;
             metrics.statements.covered = total.statements?.covered || 0;
             metrics.branches.total = total.branches?.total || 0;
@@ -543,18 +544,18 @@ class MetricsCollector {
         avgResponseTime: 0,
         p95ResponseTime: 0,
         errorRate: 0,
-        throughput: 0
+        throughput: 0,
       },
       monitoring: {
         uptime: 100,
         availability: 100,
-        meanTimeToRecover: 0
+        meanTimeToRecover: 0,
       },
       resources: {
         cpuUsage: 0,
         memoryUsage: 0,
-        diskUsage: 0
-      }
+        diskUsage: 0,
+      },
     };
 
     // This would integrate with actual performance monitoring tools
@@ -575,24 +576,24 @@ class MetricsCollector {
         critical: 0,
         high: 0,
         medium: 0,
-        low: 0
+        low: 0,
       },
       type: {
         functional: 0,
         ui: 0,
         performance: 0,
         security: 0,
-        accessibility: 0
+        accessibility: 0,
       },
       resolution: {
         fixed: 0,
         wontFix: 0,
         duplicate: 0,
-        invalid: 0
+        invalid: 0,
       },
       averageResolutionTime: 0,
       defectDensity: 0,
-      escapeRate: 0
+      escapeRate: 0,
     };
 
     // This would integrate with issue tracking systems
@@ -610,42 +611,42 @@ class MetricsCollector {
         passRateTrend: 'stable',
         passRateChange: 0,
         executionTimeTrend: 'stable',
-        executionTimeChange: 0
+        executionTimeChange: 0,
       },
       quality: {
         qualityScoreTrend: 'stable',
         qualityScoreChange: 0,
         defectTrend: 'stable',
-        defectChange: 0
+        defectChange: 0,
       },
       coverage: {
         coverageTrend: 'stable',
-        coverageChange: 0
+        coverageChange: 0,
       },
       performance: {
         responseTimeTrend: 'stable',
         responseTimeChange: 0,
         throughputTrend: 'stable',
-        throughputChange: 0
-      }
+        throughputChange: 0,
+      },
     };
 
     try {
       if (fs.existsSync(this.historicalDataFile)) {
         const historicalData = JSON.parse(fs.readFileSync(this.historicalDataFile, 'utf8'));
-        
+
         if (historicalData.length >= 2) {
           const current = historicalData[historicalData.length - 1];
           const previous = historicalData[historicalData.length - 2];
-          
+
           // Calculate trends
           trends.testExecution.passRateChange = this.calculateChange(
             current.testExecution?.ui?.passRate || 0,
             previous.testExecution?.ui?.passRate || 0
           );
-          
+
           trends.testExecution.passRateTrend = this.getTrend(trends.testExecution.passRateChange);
-          
+
           // Add more trend calculations as needed
         }
       }
@@ -683,7 +684,7 @@ class MetricsCollector {
       arch: process.arch,
       timestamp: new Date().toISOString(),
       ci: process.env.CI === 'true',
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
     };
   }
 
@@ -694,13 +695,13 @@ class MetricsCollector {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `metrics-${timestamp}.json`;
     const filepath = path.join(this.metricsDir, filename);
-    
+
     fs.writeFileSync(filepath, JSON.stringify(metrics, null, 2));
-    
+
     // Also save as latest
     const latestPath = path.join(this.metricsDir, 'latest-metrics.json');
     fs.writeFileSync(latestPath, JSON.stringify(metrics, null, 2));
-    
+
     console.log(`Metrics saved: ${filepath}`);
   }
 
@@ -709,7 +710,7 @@ class MetricsCollector {
    */
   async updateHistoricalData(metrics) {
     let historicalData = [];
-    
+
     if (fs.existsSync(this.historicalDataFile)) {
       try {
         historicalData = JSON.parse(fs.readFileSync(this.historicalDataFile, 'utf8'));
@@ -717,15 +718,15 @@ class MetricsCollector {
         console.warn('Error reading historical data:', error.message);
       }
     }
-    
+
     // Add current metrics
     historicalData.push(metrics);
-    
+
     // Keep only last 30 entries
     if (historicalData.length > 30) {
       historicalData = historicalData.slice(-30);
     }
-    
+
     fs.writeFileSync(this.historicalDataFile, JSON.stringify(historicalData, null, 2));
   }
 
@@ -741,63 +742,66 @@ class MetricsCollector {
         codeQuality: 'A',
         coverage: 0,
         performance: 'good',
-        security: 'good'
+        security: 'good',
       },
       alerts: [],
-      recommendations: []
+      recommendations: [],
     };
 
     // Calculate overall test pass rate
-    const totalTests = (metrics.testExecution.ui.total || 0) + 
-                      (metrics.testExecution.api.total || 0) + 
-                      (metrics.testExecution.accessibility.total || 0) + 
-                      (metrics.testExecution.security.total || 0);
-    
-    const totalPassed = (metrics.testExecution.ui.passed || 0) + 
-                       (metrics.testExecution.api.passed || 0) + 
-                       (metrics.testExecution.accessibility.passed || 0) + 
-                       (metrics.testExecution.security.passed || 0);
-    
-    summary.keyMetrics.testPassRate = totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : 0;
-    
+    const totalTests =
+      (metrics.testExecution.ui.total || 0) +
+      (metrics.testExecution.api.total || 0) +
+      (metrics.testExecution.accessibility.total || 0) +
+      (metrics.testExecution.security.total || 0);
+
+    const totalPassed =
+      (metrics.testExecution.ui.passed || 0) +
+      (metrics.testExecution.api.passed || 0) +
+      (metrics.testExecution.accessibility.passed || 0) +
+      (metrics.testExecution.security.passed || 0);
+
+    summary.keyMetrics.testPassRate =
+      totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : 0;
+
     // Set coverage
     summary.keyMetrics.coverage = metrics.coverage.statements.percentage || 0;
-    
+
     // Generate alerts
     if (summary.keyMetrics.testPassRate < 80) {
       summary.alerts.push({
         type: 'warning',
         message: 'Test pass rate is below 80%',
-        value: summary.keyMetrics.testPassRate
+        value: summary.keyMetrics.testPassRate,
       });
     }
-    
+
     if (summary.keyMetrics.coverage < 70) {
       summary.alerts.push({
         type: 'warning',
         message: 'Code coverage is below 70%',
-        value: summary.keyMetrics.coverage
+        value: summary.keyMetrics.coverage,
       });
     }
-    
+
     // Generate recommendations
     if (metrics.codeQuality.linting.errors > 0) {
       summary.recommendations.push('Fix ESLint errors to improve code quality');
     }
-    
+
     if (summary.keyMetrics.coverage < 80) {
       summary.recommendations.push('Increase test coverage to at least 80%');
     }
-    
+
     // Determine overall health
-    if (summary.alerts.some(alert => alert.type === 'critical')) {
+    if (summary.alerts.some((alert) => alert.type === 'critical')) {
       summary.overallHealth = 'critical';
-    } else if (summary.alerts.some(alert => alert.type === 'warning')) {
+    } else if (summary.alerts.some((alert) => alert.type === 'warning')) {
       summary.overallHealth = 'warning';
     } else {
       summary.overallHealth = 'good';
     }
-    
+
     return summary;
   }
 
@@ -806,29 +810,29 @@ class MetricsCollector {
    */
   async run() {
     console.log('Collecting comprehensive test metrics...');
-    
+
     const metrics = await this.collectMetrics();
     const summary = this.generateSummary(metrics);
-    
+
     console.log('\n=== Metrics Collection Summary ===');
     console.log(`Overall Health: ${summary.overallHealth}`);
     console.log(`Test Pass Rate: ${summary.keyMetrics.testPassRate}%`);
     console.log(`Code Coverage: ${summary.keyMetrics.coverage}%`);
-    
+
     if (summary.alerts.length > 0) {
       console.log('\nAlerts:');
-      summary.alerts.forEach(alert => {
+      summary.alerts.forEach((alert) => {
         console.log(`- ${alert.type.toUpperCase()}: ${alert.message}`);
       });
     }
-    
+
     if (summary.recommendations.length > 0) {
       console.log('\nRecommendations:');
-      summary.recommendations.forEach(rec => {
+      summary.recommendations.forEach((rec) => {
         console.log(`- ${rec}`);
       });
     }
-    
+
     return { metrics, summary };
   }
 }
@@ -836,13 +840,14 @@ class MetricsCollector {
 // CLI Interface
 if (require.main === module) {
   const collector = new MetricsCollector();
-  
-  collector.run()
+
+  collector
+    .run()
     .then(({ metrics, summary }) => {
       console.log('\nMetrics collection completed successfully!');
       process.exit(0);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Metrics collection failed:', error);
       process.exit(1);
     });

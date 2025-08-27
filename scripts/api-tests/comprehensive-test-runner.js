@@ -14,9 +14,17 @@ class ComprehensiveTestRunner extends APITestRunner {
     super();
     this.testSuites = {
       basic: ['user-management', 'product-catalog', 'order-processing'],
-      enhanced: ['enhanced-user-management', 'enhanced-product-catalog', 'enhanced-order-processing'],
-      security: ['enhanced-user-management', 'enhanced-product-catalog', 'enhanced-order-processing'],
-      performance: ['user-management', 'product-catalog', 'order-processing']
+      enhanced: [
+        'enhanced-user-management',
+        'enhanced-product-catalog',
+        'enhanced-order-processing',
+      ],
+      security: [
+        'enhanced-user-management',
+        'enhanced-product-catalog',
+        'enhanced-order-processing',
+      ],
+      performance: ['user-management', 'product-catalog', 'order-processing'],
     };
   }
 
@@ -27,7 +35,7 @@ class ComprehensiveTestRunner extends APITestRunner {
     console.log('🚀 Starting Comprehensive API Test Suite...');
     console.log(`📍 Environment: ${environment}`);
     console.log(`⏰ Started at: ${new Date().toISOString()}`);
-    
+
     const results = {
       environment,
       startTime: new Date().toISOString(),
@@ -38,8 +46,8 @@ class ComprehensiveTestRunner extends APITestRunner {
         failedSuites: 0,
         totalTests: 0,
         passedTests: 0,
-        failedTests: 0
-      }
+        failedTests: 0,
+      },
     };
 
     try {
@@ -47,14 +55,14 @@ class ComprehensiveTestRunner extends APITestRunner {
       console.log('\\n📋 Phase 1: Basic Functionality Tests');
       results.testSuites.basic = await this.runTestSuite('basic', environment, {
         ...options,
-        description: 'Basic API functionality validation'
+        description: 'Basic API functionality validation',
       });
 
       // Run enhanced comprehensive tests
       console.log('\\n🔍 Phase 2: Enhanced Comprehensive Tests');
       results.testSuites.enhanced = await this.runTestSuite('enhanced', environment, {
         ...options,
-        description: 'Comprehensive positive and negative test scenarios'
+        description: 'Comprehensive positive and negative test scenarios',
       });
 
       // Run security tests
@@ -74,13 +82,15 @@ class ComprehensiveTestRunner extends APITestRunner {
 
       // Save comprehensive results
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const resultsPath = path.join(this.resultsDir, `comprehensive-results-${environment}-${timestamp}.json`);
+      const resultsPath = path.join(
+        this.resultsDir,
+        `comprehensive-results-${environment}-${timestamp}.json`
+      );
       fs.writeFileSync(resultsPath, JSON.stringify(results, null, 2));
 
       console.log(`\\n📊 Comprehensive results saved: ${resultsPath}`);
-      
-      return results;
 
+      return results;
     } catch (error) {
       console.error('❌ Comprehensive test execution failed:', error.message);
       results.error = error.message;
@@ -94,21 +104,21 @@ class ComprehensiveTestRunner extends APITestRunner {
    */
   async runTestSuite(suiteName, environment, options = {}) {
     const collections = this.testSuites[suiteName];
-    
+
     if (!collections) {
       throw new Error(`Test suite '${suiteName}' not found`);
     }
 
     console.log(`  📦 Running ${suiteName} test suite (${collections.length} collections)`);
-    
+
     const suiteResults = await this.runMultipleCollections(collections, environment, {
       ...options,
-      collectionDelay: 1000 // 1 second delay between collections
+      collectionDelay: 1000, // 1 second delay between collections
     });
 
     suiteResults.suiteName = suiteName;
     suiteResults.description = options.description || `${suiteName} test suite`;
-    
+
     return suiteResults;
   }
 
@@ -117,24 +127,24 @@ class ComprehensiveTestRunner extends APITestRunner {
    */
   async runSecurityTests(environment, options = {}) {
     console.log('  🔐 Running security test scenarios...');
-    
+
     const securityOptions = {
       ...options,
       reporters: ['cli', 'json'],
       timeout: 15000, // Longer timeout for security tests
-      description: 'Security vulnerability testing'
+      description: 'Security vulnerability testing',
     };
 
     // Run enhanced collections with focus on security test scenarios
     const securityResults = await this.runMultipleCollections(
-      this.testSuites.security, 
-      environment, 
+      this.testSuites.security,
+      environment,
       securityOptions
     );
 
     // Add security-specific analysis
     securityResults.securityAnalysis = this.analyzeSecurityResults(securityResults);
-    
+
     return securityResults;
   }
 
@@ -143,13 +153,13 @@ class ComprehensiveTestRunner extends APITestRunner {
    */
   async runPerformanceTests(environment, options = {}) {
     console.log('  ⚡ Running performance test scenarios...');
-    
+
     const performanceOptions = {
       ...options,
       reporters: ['cli', 'json'],
       timeout: 30000, // Longer timeout for performance tests
       delayRequest: 50, // Reduced delay for performance testing
-      description: 'API performance validation'
+      description: 'API performance validation',
     };
 
     // Run with performance test data
@@ -162,7 +172,7 @@ class ComprehensiveTestRunner extends APITestRunner {
 
     // Add performance-specific analysis
     performanceResults.performanceAnalysis = this.analyzePerformanceResults(performanceResults);
-    
+
     return performanceResults;
   }
 
@@ -173,33 +183,33 @@ class ComprehensiveTestRunner extends APITestRunner {
     const analysis = {
       vulnerabilitiesFound: [],
       securityScore: 0,
-      recommendations: []
+      recommendations: [],
     };
 
     // Analyze failures for security implications
     if (results.failures) {
-      results.failures.forEach(failure => {
+      results.failures.forEach((failure) => {
         if (failure.name.toLowerCase().includes('sql')) {
           analysis.vulnerabilitiesFound.push({
             type: 'SQL Injection',
             severity: 'High',
-            description: failure.message
+            description: failure.message,
           });
         }
-        
+
         if (failure.name.toLowerCase().includes('xss')) {
           analysis.vulnerabilitiesFound.push({
             type: 'Cross-Site Scripting (XSS)',
             severity: 'Medium',
-            description: failure.message
+            description: failure.message,
           });
         }
-        
+
         if (failure.name.toLowerCase().includes('authentication')) {
           analysis.vulnerabilitiesFound.push({
             type: 'Authentication Bypass',
             severity: 'Critical',
-            description: failure.message
+            description: failure.message,
           });
         }
       });
@@ -208,8 +218,13 @@ class ComprehensiveTestRunner extends APITestRunner {
     // Calculate security score (0-100)
     const totalSecurityTests = results.stats ? results.stats.assertions.total : 0;
     const failedSecurityTests = analysis.vulnerabilitiesFound.length;
-    analysis.securityScore = totalSecurityTests > 0 ? 
-      Math.max(0, Math.round(((totalSecurityTests - failedSecurityTests) / totalSecurityTests) * 100)) : 0;
+    analysis.securityScore =
+      totalSecurityTests > 0
+        ? Math.max(
+            0,
+            Math.round(((totalSecurityTests - failedSecurityTests) / totalSecurityTests) * 100)
+          )
+        : 0;
 
     // Generate recommendations
     if (analysis.vulnerabilitiesFound.length > 0) {
@@ -232,13 +247,13 @@ class ComprehensiveTestRunner extends APITestRunner {
       minResponseTime: Infinity,
       throughput: 0,
       performanceScore: 0,
-      recommendations: []
+      recommendations: [],
     };
 
     if (results.requests && results.requests.length > 0) {
       const responseTimes = results.requests
-        .filter(req => req.responseTime)
-        .map(req => req.responseTime);
+        .filter((req) => req.responseTime)
+        .map((req) => req.responseTime);
 
       if (responseTimes.length > 0) {
         analysis.averageResponseTime = Math.round(
@@ -246,11 +261,11 @@ class ComprehensiveTestRunner extends APITestRunner {
         );
         analysis.maxResponseTime = Math.max(...responseTimes);
         analysis.minResponseTime = Math.min(...responseTimes);
-        
+
         // Calculate throughput (requests per second)
         const totalDuration = results.duration || 1000;
         analysis.throughput = Math.round((responseTimes.length / totalDuration) * 1000);
-        
+
         // Calculate performance score based on response times
         if (analysis.averageResponseTime < 500) {
           analysis.performanceScore = 100;
@@ -270,7 +285,7 @@ class ComprehensiveTestRunner extends APITestRunner {
       analysis.recommendations.push('Implement caching for frequently accessed data');
       analysis.recommendations.push('Consider API response compression');
     }
-    
+
     if (analysis.averageResponseTime > 2000) {
       analysis.recommendations.push('Review server resources and scaling options');
       analysis.recommendations.push('Implement connection pooling');
@@ -286,11 +301,11 @@ class ComprehensiveTestRunner extends APITestRunner {
     console.log('\\n' + '='.repeat(80));
     console.log('📊 COMPREHENSIVE TEST RESULTS SUMMARY');
     console.log('='.repeat(80));
-    
+
     console.log(`🌍 Environment: ${results.environment}`);
     console.log(`⏰ Duration: ${Math.round(results.duration / 1000)}s`);
     console.log(`📅 Completed: ${results.endTime}`);
-    
+
     // Calculate overall statistics
     let totalCollections = 0;
     let successfulCollections = 0;
@@ -299,7 +314,7 @@ class ComprehensiveTestRunner extends APITestRunner {
     let totalAssertions = 0;
     let failedAssertions = 0;
 
-    Object.values(results.testSuites).forEach(suite => {
+    Object.values(results.testSuites).forEach((suite) => {
       if (suite.summary) {
         totalCollections += suite.summary.totalCollections;
         successfulCollections += suite.summary.successfulCollections;
@@ -316,17 +331,20 @@ class ComprehensiveTestRunner extends APITestRunner {
     console.log(`   Collections: ${successfulCollections}/${totalCollections} passed`);
     console.log(`   Requests: ${totalRequests - failedRequests}/${totalRequests} successful`);
     console.log(`   Assertions: ${totalAssertions - failedAssertions}/${totalAssertions} passed`);
-    
-    const overallSuccessRate = totalAssertions > 0 ? 
-      Math.round(((totalAssertions - failedAssertions) / totalAssertions) * 100) : 0;
+
+    const overallSuccessRate =
+      totalAssertions > 0
+        ? Math.round(((totalAssertions - failedAssertions) / totalAssertions) * 100)
+        : 0;
     console.log(`   Success Rate: ${overallSuccessRate}%`);
 
     // Test suite breakdown
     console.log('\\n📋 Test Suite Results:');
     Object.entries(results.testSuites).forEach(([suiteName, suite]) => {
       const status = suite.summary?.overallSuccess ? '✅' : '❌';
-      const collections = suite.summary ? 
-        `${suite.summary.successfulCollections}/${suite.summary.totalCollections}` : 'N/A';
+      const collections = suite.summary
+        ? `${suite.summary.successfulCollections}/${suite.summary.totalCollections}`
+        : 'N/A';
       console.log(`   ${status} ${suiteName}: ${collections} collections passed`);
     });
 
@@ -336,10 +354,10 @@ class ComprehensiveTestRunner extends APITestRunner {
       console.log('\\n🔒 Security Analysis:');
       console.log(`   Security Score: ${secAnalysis.securityScore}/100`);
       console.log(`   Vulnerabilities Found: ${secAnalysis.vulnerabilitiesFound.length}`);
-      
+
       if (secAnalysis.vulnerabilitiesFound.length > 0) {
         console.log('   ⚠️  Security Issues:');
-        secAnalysis.vulnerabilitiesFound.forEach(vuln => {
+        secAnalysis.vulnerabilitiesFound.forEach((vuln) => {
           console.log(`      - ${vuln.type} (${vuln.severity})`);
         });
       }
@@ -355,7 +373,7 @@ class ComprehensiveTestRunner extends APITestRunner {
     }
 
     console.log('\\n' + '='.repeat(80));
-    
+
     if (overallSuccessRate >= 90) {
       console.log('🎉 EXCELLENT! All tests passed with high success rate');
     } else if (overallSuccessRate >= 75) {
@@ -372,7 +390,7 @@ class ComprehensiveTestRunner extends APITestRunner {
    */
   async runNegativeTests(environment = 'development') {
     console.log('🔍 Running negative test scenarios...');
-    
+
     return this.runDataDrivenTest(
       'enhanced-user-management',
       environment,
@@ -393,16 +411,16 @@ class ComprehensiveTestRunner extends APITestRunner {
         positive: 0,
         negative: 0,
         security: 0,
-        performance: 0
-      }
+        performance: 0,
+      },
     };
 
     // Analyze test coverage from results
-    Object.values(results.testSuites).forEach(suite => {
+    Object.values(results.testSuites).forEach((suite) => {
       if (suite.results) {
-        suite.results.forEach(result => {
+        suite.results.forEach((result) => {
           if (result.requests) {
-            result.requests.forEach(request => {
+            result.requests.forEach((request) => {
               coverage.endpoints.add(request.url);
               coverage.httpMethods.add(request.method);
               coverage.statusCodes.add(request.status);
@@ -416,7 +434,7 @@ class ComprehensiveTestRunner extends APITestRunner {
       endpointsCovered: coverage.endpoints.size,
       httpMethodsCovered: coverage.httpMethods.size,
       statusCodesCovered: coverage.statusCodes.size,
-      testTypes: coverage.testTypes
+      testTypes: coverage.testTypes,
     };
   }
 }
@@ -427,7 +445,7 @@ module.exports = ComprehensiveTestRunner;
 if (require.main === module) {
   const runner = new ComprehensiveTestRunner();
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
     console.log(`
 Comprehensive API Test Runner
@@ -456,13 +474,13 @@ Examples:
 
   const command = args[0];
   const environment = args[1] || 'development';
-  
+
   // Parse options
   const options = {};
   for (let i = 2; i < args.length; i++) {
     const arg = args[i];
     const nextArg = args[i + 1];
-    
+
     switch (arg) {
       case '--include-performance':
         options.includePerformance = true;
@@ -485,7 +503,7 @@ Examples:
   (async () => {
     try {
       let result;
-      
+
       switch (command) {
         case 'comprehensive':
           result = await runner.runComprehensiveTests(environment, options);

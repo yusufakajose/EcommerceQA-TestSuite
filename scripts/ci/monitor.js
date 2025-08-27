@@ -18,9 +18,25 @@ function ensureDir(p) {
 
 function getGitInfo() {
   const info = { branch: null, commit: null, remote: null };
-  try { info.branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim(); } catch {}
-  try { info.commit = execSync('git rev-parse --short HEAD').toString().trim(); } catch {}
-  try { info.remote = execSync('git config --get remote.origin.url').toString().trim(); } catch {}
+  // Swallow errors in CI environments where git metadata may be unavailable
+  try {
+    info.branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+  } catch (e) {
+    // ignore git metadata errors in CI environment (no-op)
+    void 0;
+  }
+  try {
+    info.commit = execSync('git rev-parse --short HEAD').toString().trim();
+  } catch (e) {
+    // ignore when not in git repository (no-op)
+    void 0;
+  }
+  try {
+    info.remote = execSync('git config --get remote.origin.url').toString().trim();
+  } catch (e) {
+    // best-effort capture only (no-op)
+    void 0;
+  }
   return info;
 }
 
@@ -35,7 +51,8 @@ function init() {
     env: process.env.NODE_ENV || 'ci',
     git: getGitInfo(),
     project: 'EcommerceQA-TestSuite',
-    notes: 'Initialized CI monitor artifacts. Use `npm run ci:monitor run` to execute CI suites and `npm run ci:monitor report` to summarize.'
+    notes:
+      'Initialized CI monitor artifacts. Use `npm run ci:monitor run` to execute CI suites and `npm run ci:monitor report` to summarize.',
   };
 
   const file = path.join(outDir, 'ci-monitor.json');
@@ -50,20 +67,31 @@ function run() {
     ['npm', ['run', 'ci:test']],
   ];
 
-  const procs = tasks.map(([cmd, args]) => new Promise((resolve, reject) => {
-    const p = spawn(cmd, args, { stdio: 'inherit' });
-    p.on('close', (code) => code === 0 ? resolve() : reject(new Error(`${cmd} ${args.join(' ')} exited with code ${code}`)));
-  }));
+  const procs = tasks.map(
+    ([cmd, args]) =>
+      new Promise((resolve, reject) => {
+        const p = spawn(cmd, args, { stdio: 'inherit' });
+        p.on('close', (code) =>
+          code === 0
+            ? resolve()
+            : reject(new Error(`${cmd} ${args.join(' ')} exited with code ${code}`))
+        );
+      })
+  );
 
   return Promise.allSettled(procs).then((results) => {
     const summary = {
       finishedAt: new Date().toISOString(),
-      results: results.map((r, i) => ({ task: tasks[i][1].join(' '), status: r.status, reason: r.status === 'rejected' ? String(r.reason) : undefined }))
+      results: results.map((r, i) => ({
+        task: tasks[i][1].join(' '),
+        status: r.status,
+        reason: r.status === 'rejected' ? String(r.reason) : undefined,
+      })),
     };
     const out = path.resolve(process.cwd(), 'reports', 'ci');
     ensureDir(out);
     fs.writeFileSync(path.join(out, 'ci-run-summary.json'), JSON.stringify(summary, null, 2));
-    const failed = results.some(r => r.status === 'rejected');
+    const failed = results.some((r) => r.status === 'rejected');
     if (failed) process.exit(1);
   });
 }
@@ -77,13 +105,16 @@ function report() {
     path.resolve(process.cwd(), 'reports', 'test-metrics.json'),
     path.resolve(process.cwd(), 'reports', 'performance-data.json'),
     path.resolve(process.cwd(), 'reports', 'api-performance-data.json'),
-    path.resolve(process.cwd(), 'reports', 'load-test-data.json')
+    path.resolve(process.cwd(), 'reports', 'load-test-data.json'),
   ];
 
   for (const file of candidates) {
     if (fs.existsSync(file)) {
-      try { aggregate.sources[path.basename(file)] = JSON.parse(fs.readFileSync(file, 'utf8')); }
-      catch (e) { aggregate.notes.push(`Failed to parse ${file}: ${e.message}`); }
+      try {
+        aggregate.sources[path.basename(file)] = JSON.parse(fs.readFileSync(file, 'utf8'));
+      } catch (e) {
+        aggregate.notes.push(`Failed to parse ${file}: ${e.message}`);
+      }
     }
   }
 

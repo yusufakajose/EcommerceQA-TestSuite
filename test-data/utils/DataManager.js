@@ -14,7 +14,7 @@ class DataManager {
     this.tempDataPath = path.join(__dirname, '..', 'temp');
     this.loadedFixtures = new Map();
     this.createdTempFiles = new Set();
-    
+
     // Ensure temp directory exists
     this.ensureTempDirectory();
   }
@@ -39,7 +39,7 @@ class DataManager {
     }
 
     const fixturePath = path.join(this.fixturesPath, `${fixtureName}.json`);
-    
+
     if (!fs.existsSync(fixturePath)) {
       throw new Error(`Fixture file not found: ${fixturePath}`);
     }
@@ -61,14 +61,14 @@ class DataManager {
    */
   getTestData(fixtureName, dataKey = null) {
     const fixture = this.loadFixture(fixtureName);
-    
+
     if (dataKey) {
       if (!fixture.hasOwnProperty(dataKey)) {
         throw new Error(`Data key '${dataKey}' not found in fixture '${fixtureName}'`);
       }
       return fixture[dataKey];
     }
-    
+
     return fixture;
   }
 
@@ -80,15 +80,15 @@ class DataManager {
    */
   getRandomTestData(fixtureName, dataKey) {
     const data = this.getTestData(fixtureName, dataKey);
-    
+
     if (!Array.isArray(data)) {
       throw new Error(`Data at '${dataKey}' in fixture '${fixtureName}' is not an array`);
     }
-    
+
     if (data.length === 0) {
       throw new Error(`Data array at '${dataKey}' in fixture '${fixtureName}' is empty`);
     }
-    
+
     return data[Math.floor(Math.random() * data.length)];
   }
 
@@ -103,10 +103,10 @@ class DataManager {
   generateTempData(fileName, dataType, count = 1, overrides = {}) {
     const data = this.dataGenerator.generateBulk(dataType, count, overrides);
     const tempFilePath = path.join(this.tempDataPath, `${fileName}.json`);
-    
+
     fs.writeFileSync(tempFilePath, JSON.stringify(data, null, 2));
     this.createdTempFiles.add(tempFilePath);
-    
+
     return tempFilePath;
   }
 
@@ -118,16 +118,16 @@ class DataManager {
    * @returns {string} Path to the created file
    */
   createTestDataFile(fileName, data, isTemp = true) {
-    const filePath = isTemp ? 
-      path.join(this.tempDataPath, `${fileName}.json`) :
-      path.join(this.fixturesPath, `${fileName}.json`);
-    
+    const filePath = isTemp
+      ? path.join(this.tempDataPath, `${fileName}.json`)
+      : path.join(this.fixturesPath, `${fileName}.json`);
+
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    
+
     if (isTemp) {
       this.createdTempFiles.add(filePath);
     }
-    
+
     return filePath;
   }
 
@@ -138,12 +138,12 @@ class DataManager {
    */
   mergeFixtures(fixtureNames) {
     const mergedData = {};
-    
-    fixtureNames.forEach(fixtureName => {
+
+    fixtureNames.forEach((fixtureName) => {
       const fixture = this.loadFixture(fixtureName);
       Object.assign(mergedData, fixture);
     });
-    
+
     return mergedData;
   }
 
@@ -154,10 +154,10 @@ class DataManager {
    */
   createScenarioData(scenario) {
     const scenarioData = {};
-    
+
     // Load fixture data
     if (scenario.fixtures) {
-      scenario.fixtures.forEach(fixture => {
+      scenario.fixtures.forEach((fixture) => {
         const fixtureData = this.loadFixture(fixture.name);
         if (fixture.key) {
           scenarioData[fixture.key] = fixtureData[fixture.dataKey || fixture.key];
@@ -166,14 +166,14 @@ class DataManager {
         }
       });
     }
-    
+
     // Generate dynamic data
     if (scenario.generated) {
-      scenario.generated.forEach(gen => {
+      scenario.generated.forEach((gen) => {
         if (gen.type === 'bulk') {
           scenarioData[gen.key] = this.dataGenerator.generateBulk(
-            gen.dataType, 
-            gen.count, 
+            gen.dataType,
+            gen.count,
             gen.overrides || {}
           );
         } else {
@@ -193,7 +193,7 @@ class DataManager {
         }
       });
     }
-    
+
     return scenarioData;
   }
 
@@ -201,7 +201,7 @@ class DataManager {
    * Clean up all temporary files
    */
   cleanupTempFiles() {
-    this.createdTempFiles.forEach(filePath => {
+    this.createdTempFiles.forEach((filePath) => {
       try {
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
@@ -210,7 +210,7 @@ class DataManager {
         console.warn(`Warning: Could not delete temp file ${filePath}: ${error.message}`);
       }
     });
-    
+
     this.createdTempFiles.clear();
   }
 
@@ -232,40 +232,40 @@ class DataManager {
   validateData(data, schema) {
     const errors = [];
     const warnings = [];
-    
+
     // Basic validation logic
-    Object.keys(schema).forEach(key => {
+    Object.keys(schema).forEach((key) => {
       const rule = schema[key];
       const value = data[key];
-      
+
       if (rule.required && (value === undefined || value === null || value === '')) {
         errors.push(`${key} is required`);
       }
-      
+
       if (value !== undefined && rule.type) {
         const actualType = Array.isArray(value) ? 'array' : typeof value;
         if (actualType !== rule.type) {
           errors.push(`${key} should be of type ${rule.type}, got ${actualType}`);
         }
       }
-      
+
       if (value !== undefined && rule.minLength && value.length < rule.minLength) {
         errors.push(`${key} should have minimum length of ${rule.minLength}`);
       }
-      
+
       if (value !== undefined && rule.maxLength && value.length > rule.maxLength) {
         warnings.push(`${key} exceeds maximum length of ${rule.maxLength}`);
       }
-      
+
       if (value !== undefined && rule.pattern && !rule.pattern.test(value)) {
         errors.push(`${key} does not match required pattern`);
       }
     });
-    
+
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -280,20 +280,20 @@ class DataManager {
       fixtureName,
       totalKeys: Object.keys(fixture).length,
       dataTypes: {},
-      arraySizes: {}
+      arraySizes: {},
     };
-    
-    Object.keys(fixture).forEach(key => {
+
+    Object.keys(fixture).forEach((key) => {
       const value = fixture[key];
       const type = Array.isArray(value) ? 'array' : typeof value;
-      
+
       stats.dataTypes[key] = type;
-      
+
       if (Array.isArray(value)) {
         stats.arraySizes[key] = value.length;
       }
     });
-    
+
     return stats;
   }
 
@@ -305,23 +305,24 @@ class DataManager {
   exportAllFixtures(outputPath = null) {
     const exportPath = outputPath || path.join(this.tempDataPath, 'all-fixtures-export.json');
     const allFixtures = {};
-    
+
     // Get all fixture files
-    const fixtureFiles = fs.readdirSync(this.fixturesPath)
-      .filter(file => file.endsWith('.json'))
-      .map(file => file.replace('.json', ''));
-    
+    const fixtureFiles = fs
+      .readdirSync(this.fixturesPath)
+      .filter((file) => file.endsWith('.json'))
+      .map((file) => file.replace('.json', ''));
+
     // Load all fixtures
-    fixtureFiles.forEach(fixtureName => {
+    fixtureFiles.forEach((fixtureName) => {
       allFixtures[fixtureName] = this.loadFixture(fixtureName);
     });
-    
+
     fs.writeFileSync(exportPath, JSON.stringify(allFixtures, null, 2));
-    
+
     if (outputPath === null) {
       this.createdTempFiles.add(exportPath);
     }
-    
+
     return exportPath;
   }
 }

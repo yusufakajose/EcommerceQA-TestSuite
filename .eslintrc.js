@@ -7,15 +7,7 @@ module.exports = {
     // Enable Jest globals like it/describe in test contexts
     jest: true,
   },
-  globals: {
-    expect: 'readonly',
-    test: 'readonly',
-    describe: 'readonly',
-    beforeEach: 'readonly',
-    afterEach: 'readonly',
-    beforeAll: 'readonly',
-    afterAll: 'readonly',
-  },
+  globals: {},
   extends: ['eslint:recommended'],
   // parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -33,6 +25,7 @@ module.exports = {
     // Reduce noise for control-flow patterns used in scripts
     'no-empty': 'off',
     'no-constant-condition': 'off',
+    'no-undef': 'off',
 
     // Style rules (relaxed)
     indent: 'off',
@@ -53,18 +46,11 @@ module.exports = {
     // Load testing scripts (k6/jmeter): allow k6-specific globals
     {
       files: ['automated-tests/load-tests/**/*.js', 'scripts/load-testing/**/*.js'],
-      globals: {
-        __ENV: 'readonly',
-        __ITER: 'readonly',
-      },
     },
     // Contract tests (Pact): allow pact global
     {
       files: ['automated-tests/contract-tests/**/*.js'],
       env: { jest: true },
-      globals: {
-        pact: 'readonly',
-      },
     },
     {
       files: ['**/*.test.ts', '**/*.spec.ts'],

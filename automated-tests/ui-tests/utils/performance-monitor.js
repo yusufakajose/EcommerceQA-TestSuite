@@ -8,10 +8,10 @@ class PerformanceMonitor {
     this.page = page;
     this.metrics = {};
     this.thresholds = {
-      pageLoad: 3000,      // 3 seconds
-      navigation: 2000,    // 2 seconds
-      interaction: 1000,   // 1 second
-      apiResponse: 500     // 500ms
+      pageLoad: 3000, // 3 seconds
+      navigation: 2000, // 2 seconds
+      interaction: 1000, // 1 second
+      apiResponse: 500, // 500ms
     };
   }
 
@@ -21,7 +21,7 @@ class PerformanceMonitor {
   async startMeasurement(label) {
     this.metrics[label] = {
       startTime: Date.now(),
-      startNavigationTime: await this.page.evaluate(() => performance.now())
+      startNavigationTime: await this.page.evaluate(() => performance.now()),
     };
   }
 
@@ -35,7 +35,7 @@ class PerformanceMonitor {
 
     const endTime = Date.now();
     const endNavigationTime = await this.page.evaluate(() => performance.now());
-    
+
     const duration = endTime - this.metrics[label].startTime;
     const navigationDuration = endNavigationTime - this.metrics[label].startNavigationTime;
 
@@ -43,7 +43,7 @@ class PerformanceMonitor {
       ...this.metrics[label],
       endTime,
       duration,
-      navigationDuration
+      navigationDuration,
     };
 
     return duration;
@@ -56,13 +56,15 @@ class PerformanceMonitor {
     const performanceMetrics = await this.page.evaluate(() => {
       const navigation = performance.getEntriesByType('navigation')[0];
       const paint = performance.getEntriesByType('paint');
-      
+
       return {
-        domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+        domContentLoaded:
+          navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
         loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-        firstPaint: paint.find(p => p.name === 'first-paint')?.startTime || 0,
-        firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0,
-        totalLoadTime: navigation.loadEventEnd - navigation.fetchStart
+        firstPaint: paint.find((p) => p.name === 'first-paint')?.startTime || 0,
+        firstContentfulPaint:
+          paint.find((p) => p.name === 'first-contentful-paint')?.startTime || 0,
+        totalLoadTime: navigation.loadEventEnd - navigation.fetchStart,
       };
     });
 
@@ -78,8 +80,9 @@ class PerformanceMonitor {
     }
 
     const duration = this.metrics[label].duration;
-    const message = customMessage || `${label} should complete within ${threshold}ms (actual: ${duration}ms)`;
-    
+    const message =
+      customMessage || `${label} should complete within ${threshold}ms (actual: ${duration}ms)`;
+
     if (duration > threshold) {
       console.warn(`⚠️ Performance Warning: ${message}`);
       // In a real scenario, you might want to fail the test
@@ -97,7 +100,7 @@ class PerformanceMonitor {
   async assertPageLoadPerformance(threshold = this.thresholds.pageLoad) {
     const metrics = await this.measurePageLoad();
     const message = `Page load should complete within ${threshold}ms (actual: ${metrics.totalLoadTime}ms)`;
-    
+
     if (metrics.totalLoadTime > threshold) {
       console.warn(`⚠️ Page Load Warning: ${message}`);
     } else {
@@ -114,7 +117,7 @@ class PerformanceMonitor {
 
     return {
       passed: metrics.totalLoadTime <= threshold,
-      metrics
+      metrics,
     };
   }
 
@@ -125,7 +128,7 @@ class PerformanceMonitor {
     await this.startMeasurement('navigation');
     await navigationAction();
     const duration = await this.endMeasurement('navigation');
-    
+
     await this.assertPerformance('navigation', threshold);
     return duration;
   }
@@ -133,11 +136,15 @@ class PerformanceMonitor {
   /**
    * Measure and assert interaction performance
    */
-  async measureInteraction(interactionAction, label = 'interaction', threshold = this.thresholds.interaction) {
+  async measureInteraction(
+    interactionAction,
+    label = 'interaction',
+    threshold = this.thresholds.interaction
+  ) {
     await this.startMeasurement(label);
     await interactionAction();
     const duration = await this.endMeasurement(label);
-    
+
     await this.assertPerformance(label, threshold);
     return duration;
   }
@@ -161,8 +168,8 @@ class PerformanceMonitor {
         totalMeasurements: Object.keys(this.metrics).length,
         averageDuration: this.calculateAverageDuration(),
         slowestOperation: this.getSlowestOperation(),
-        fastestOperation: this.getFastestOperation()
-      }
+        fastestOperation: this.getFastestOperation(),
+      },
     };
 
     return report;
@@ -172,8 +179,12 @@ class PerformanceMonitor {
    * Calculate average duration across all measurements
    */
   calculateAverageDuration() {
-    const durations = Object.values(this.metrics).map(m => m.duration).filter(d => d);
-    return durations.length > 0 ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
+    const durations = Object.values(this.metrics)
+      .map((m) => m.duration)
+      .filter((d) => d);
+    return durations.length > 0
+      ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+      : 0;
   }
 
   /**

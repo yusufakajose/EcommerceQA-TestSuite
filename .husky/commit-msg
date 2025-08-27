@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# Lint commit message using commitlint (Husky v10-safe hook)
+npx commitlint --edit "$1"

@@ -8,14 +8,14 @@ if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 const summary = {
   generatedAt: new Date().toISOString(),
   env: process.env.TEST_ENV || 'development',
-  artifacts: []
+  artifacts: [],
 };
 
 const candidates = [
   'reports/test-execution.json',
   'reports/performance-data.json',
   'reports/api-performance-data.json',
-  'reports/load-test-data.json'
+  'reports/load-test-data.json',
 ];
 
 for (const file of candidates) {
@@ -23,7 +23,7 @@ for (const file of candidates) {
     try {
       summary.artifacts.push({
         name: path.basename(file),
-        data: JSON.parse(fs.readFileSync(file, 'utf8'))
+        data: JSON.parse(fs.readFileSync(file, 'utf8')),
       });
     } catch (e) {
       summary.artifacts.push({ name: path.basename(file), error: e.message });

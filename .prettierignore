@@ -1,0 +1,18 @@
+# Build artifacts
+node_modules/
+dist/
+.playwright/
+playwright-report/
+reports/
+coverage/
+
+# Generated test results
+**/test-results/
+
+# Logs
+logs/
+*.log
+
+# Ignore snapshots and large assets
+**/__snapshots__/
+**/assets/

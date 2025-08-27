@@ -1,0 +1,17 @@
+name: 'EcommerceQA CodeQL config'
+
+# Run the broader security and quality suite in addition to defaults
+queries:
+  - uses: security-and-quality
+
+# Exclude generated artifacts and non-source content from analysis
+paths-ignore:
+  - dist/**
+  - node_modules/**
+  - reports/**
+  - playwright-report/**
+  - logs/**
+  - test-results/**
+  - manual-tests/**
+  - '**/*.md'
+  - '**/*.yml'

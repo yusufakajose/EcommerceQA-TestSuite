@@ -16,7 +16,10 @@ class DataGenerator {
    * @param {string} charset - Character set to use
    * @returns {string} Random string
    */
-  generateRandomString(length = 10, charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') {
+  generateRandomString(
+    length = 10,
+    charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  ) {
     let result = '';
     for (let i = 0; i < length; i++) {
       result += charset.charAt(Math.floor(Math.random() * charset.length));
@@ -32,11 +35,12 @@ class DataGenerator {
   generateUniqueEmail(domain = 'testdomain.com') {
     let email;
     do {
-      const username = this.generateRandomString(8, 'abcdefghijklmnopqrstuvwxyz') + 
-                      Math.floor(Math.random() * 1000);
+      const username =
+        this.generateRandomString(8, 'abcdefghijklmnopqrstuvwxyz') +
+        Math.floor(Math.random() * 1000);
       email = `${username}@${domain}`;
     } while (this.usedEmails.has(email));
-    
+
     this.usedEmails.add(email);
     return email;
   }
@@ -47,10 +51,36 @@ class DataGenerator {
    */
   generateFirstName() {
     const firstNames = [
-      'John', 'Jane', 'Michael', 'Sarah', 'David', 'Emily', 'Robert', 'Jessica',
-      'William', 'Ashley', 'James', 'Amanda', 'Christopher', 'Stephanie', 'Daniel',
-      'Melissa', 'Matthew', 'Nicole', 'Anthony', 'Elizabeth', 'Mark', 'Helen',
-      'Donald', 'Deborah', 'Steven', 'Rachel', 'Paul', 'Carolyn', 'Andrew', 'Janet'
+      'John',
+      'Jane',
+      'Michael',
+      'Sarah',
+      'David',
+      'Emily',
+      'Robert',
+      'Jessica',
+      'William',
+      'Ashley',
+      'James',
+      'Amanda',
+      'Christopher',
+      'Stephanie',
+      'Daniel',
+      'Melissa',
+      'Matthew',
+      'Nicole',
+      'Anthony',
+      'Elizabeth',
+      'Mark',
+      'Helen',
+      'Donald',
+      'Deborah',
+      'Steven',
+      'Rachel',
+      'Paul',
+      'Carolyn',
+      'Andrew',
+      'Janet',
     ];
     return firstNames[Math.floor(Math.random() * firstNames.length)];
   }
@@ -61,10 +91,36 @@ class DataGenerator {
    */
   generateLastName() {
     const lastNames = [
-      'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
-      'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
-      'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson',
-      'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'
+      'Smith',
+      'Johnson',
+      'Williams',
+      'Brown',
+      'Jones',
+      'Garcia',
+      'Miller',
+      'Davis',
+      'Rodriguez',
+      'Martinez',
+      'Hernandez',
+      'Lopez',
+      'Gonzalez',
+      'Wilson',
+      'Anderson',
+      'Thomas',
+      'Taylor',
+      'Moore',
+      'Jackson',
+      'Martin',
+      'Lee',
+      'Perez',
+      'Thompson',
+      'White',
+      'Harris',
+      'Sanchez',
+      'Clark',
+      'Ramirez',
+      'Lewis',
+      'Robinson',
     ];
     return lastNames[Math.floor(Math.random() * lastNames.length)];
   }
@@ -79,23 +135,26 @@ class DataGenerator {
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
     const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-    
+
     let password = '';
-    
+
     // Ensure at least one character from each category
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += numbers[Math.floor(Math.random() * numbers.length)];
     password += symbols[Math.floor(Math.random() * symbols.length)];
-    
+
     // Fill the rest randomly
     const allChars = lowercase + uppercase + numbers + symbols;
     for (let i = 4; i < length; i++) {
       password += allChars[Math.floor(Math.random() * allChars.length)];
     }
-    
+
     // Shuffle the password
-    return password.split('').sort(() => Math.random() - 0.5).join('');
+    return password
+      .split('')
+      .sort(() => Math.random() - 0.5)
+      .join('');
   }
 
   /**
@@ -109,7 +168,9 @@ class DataGenerator {
       if (format === 'US') {
         const areaCode = Math.floor(Math.random() * 800) + 200; // 200-999
         const exchange = Math.floor(Math.random() * 800) + 200; // 200-999
-        const number = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        const number = Math.floor(Math.random() * 10000)
+          .toString()
+          .padStart(4, '0');
         phoneNumber = `+1-${areaCode}-${exchange}-${number}`;
       } else {
         // International format
@@ -118,7 +179,7 @@ class DataGenerator {
         phoneNumber = `+${countryCode}-${number}`;
       }
     } while (this.usedPhoneNumbers.has(phoneNumber));
-    
+
     this.usedPhoneNumbers.add(phoneNumber);
     return phoneNumber;
   }
@@ -133,10 +194,10 @@ class DataGenerator {
     const today = new Date();
     const minDate = new Date(today.getFullYear() - maxAge, today.getMonth(), today.getDate());
     const maxDate = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate());
-    
+
     const randomTime = minDate.getTime() + Math.random() * (maxDate.getTime() - minDate.getTime());
     const randomDate = new Date(randomTime);
-    
+
     return randomDate.toISOString().split('T')[0];
   }
 
@@ -146,34 +207,78 @@ class DataGenerator {
    */
   generateAddress() {
     const streets = [
-      'Main Street', 'Oak Avenue', 'Pine Road', 'Elm Street', 'Maple Drive',
-      'Cedar Lane', 'Park Avenue', 'First Street', 'Second Street', 'Broadway',
-      'Washington Street', 'Lincoln Avenue', 'Jefferson Road', 'Madison Drive'
+      'Main Street',
+      'Oak Avenue',
+      'Pine Road',
+      'Elm Street',
+      'Maple Drive',
+      'Cedar Lane',
+      'Park Avenue',
+      'First Street',
+      'Second Street',
+      'Broadway',
+      'Washington Street',
+      'Lincoln Avenue',
+      'Jefferson Road',
+      'Madison Drive',
     ];
-    
+
     const cities = [
-      'Springfield', 'Riverside', 'Franklin', 'Georgetown', 'Clinton', 'Madison',
-      'Washington', 'Arlington', 'Centerville', 'Lebanon', 'Kingston', 'Salem',
-      'Fairview', 'Greenville', 'Bristol', 'Oxford', 'Ashland', 'Burlington'
+      'Springfield',
+      'Riverside',
+      'Franklin',
+      'Georgetown',
+      'Clinton',
+      'Madison',
+      'Washington',
+      'Arlington',
+      'Centerville',
+      'Lebanon',
+      'Kingston',
+      'Salem',
+      'Fairview',
+      'Greenville',
+      'Bristol',
+      'Oxford',
+      'Ashland',
+      'Burlington',
     ];
-    
+
     const states = [
-      'CA', 'NY', 'TX', 'FL', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI',
-      'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI'
+      'CA',
+      'NY',
+      'TX',
+      'FL',
+      'PA',
+      'IL',
+      'OH',
+      'GA',
+      'NC',
+      'MI',
+      'NJ',
+      'VA',
+      'WA',
+      'AZ',
+      'MA',
+      'TN',
+      'IN',
+      'MO',
+      'MD',
+      'WI',
     ];
-    
+
     const streetNumber = Math.floor(Math.random() * 9999) + 1;
     const street = streets[Math.floor(Math.random() * streets.length)];
     const city = cities[Math.floor(Math.random() * cities.length)];
     const state = states[Math.floor(Math.random() * states.length)];
     const zipCode = Math.floor(Math.random() * 90000) + 10000;
-    
+
     return {
       street: `${streetNumber} ${street}`,
       city: city,
       state: state,
       zipCode: zipCode.toString(),
-      country: 'United States'
+      country: 'United States',
     };
   }
 
@@ -190,7 +295,7 @@ class DataGenerator {
     const phone = this.generatePhoneNumber();
     const dateOfBirth = this.generateDateOfBirth();
     const address = this.generateAddress();
-    
+
     return {
       id: `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       firstName,
@@ -202,9 +307,9 @@ class DataGenerator {
       address,
       preferences: {
         newsletter: Math.random() > 0.5,
-        notifications: Math.random() > 0.5
+        notifications: Math.random() > 0.5,
       },
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -217,35 +322,39 @@ class DataGenerator {
     const cardData = {
       visa: {
         prefix: '4111111111111',
-        length: 16
+        length: 16,
       },
       mastercard: {
         prefix: '555555555555',
-        length: 16
+        length: 16,
       },
       amex: {
         prefix: '37828224631000',
-        length: 15
-      }
+        length: 15,
+      },
     };
-    
+
     const card = cardData[type] || cardData.visa;
-    const cardNumber = card.prefix + Math.floor(Math.random() * Math.pow(10, card.length - card.prefix.length))
-      .toString().padStart(card.length - card.prefix.length, '0');
-    
+    const cardNumber =
+      card.prefix +
+      Math.floor(Math.random() * Math.pow(10, card.length - card.prefix.length))
+        .toString()
+        .padStart(card.length - card.prefix.length, '0');
+
     const currentYear = new Date().getFullYear();
     const expiryYear = currentYear + Math.floor(Math.random() * 5) + 1; // 1-5 years from now
     const expiryMonth = Math.floor(Math.random() * 12) + 1;
-    
+
     return {
       type: 'credit_card',
       cardNumber: cardNumber,
       expiryMonth: expiryMonth.toString().padStart(2, '0'),
       expiryYear: expiryYear.toString(),
-      cvv: type === 'amex' ? 
-        Math.floor(Math.random() * 9000 + 1000).toString() : // 4 digits for Amex
-        Math.floor(Math.random() * 900 + 100).toString(),    // 3 digits for others
-      cardholderName: `${this.generateFirstName()} ${this.generateLastName()}`
+      cvv:
+        type === 'amex'
+          ? Math.floor(Math.random() * 9000 + 1000).toString() // 4 digits for Amex
+          : Math.floor(Math.random() * 900 + 100).toString(), // 3 digits for others
+      cardholderName: `${this.generateFirstName()} ${this.generateLastName()}`,
     };
   }
 
@@ -257,11 +366,11 @@ class DataGenerator {
   generateProduct(overrides = {}) {
     const categories = ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports', 'Toys'];
     const brands = ['TechCorp', 'StyleBrand', 'QualityMaker', 'Innovation Inc', 'Premium Co'];
-    
+
     const basePrice = Math.floor(Math.random() * 500) + 10; // $10-$510
     const discount = Math.floor(Math.random() * 50); // 0-50% discount
     const salePrice = basePrice * (1 - discount / 100);
-    
+
     return {
       id: `prod_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       name: `Test Product ${Math.floor(Math.random() * 1000)}`,
@@ -275,7 +384,7 @@ class DataGenerator {
       stockQuantity: Math.floor(Math.random() * 200) + 1,
       description: `This is a test product description for testing purposes.`,
       brand: brands[Math.floor(Math.random() * brands.length)],
-      ...overrides
+      ...overrides,
     };
   }
 

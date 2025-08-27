@@ -1,0 +1,506 @@
+[
+  {
+    "timestamp": "2025-08-27T15:42:03.758Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T15:44:13.327Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T15:56:46.916Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T15:58:39.930Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:02:20.207Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:07:02.847Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:08:31.720Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:11:21.620Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:14:48.276Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:22:53.348Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:29:58.346Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:34:25.577Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T16:49:13.934Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  },
+  {
+    "timestamp": "2025-08-27T17:48:28.696Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": "3.47"
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
+  }
+]

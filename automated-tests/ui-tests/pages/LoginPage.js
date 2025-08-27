@@ -12,10 +12,10 @@ class LoginPage extends BasePage {
     super(page);
     this.form = new FormComponent(page);
     this.navigation = new NavigationComponent(page);
-    
+
     // Page URL - Magento login page
     this.url = '/customer/account/login';
-    
+
     // Page selectors - Magento actual elements
     this.selectors = {
       // Form elements
@@ -23,22 +23,22 @@ class LoginPage extends BasePage {
       passwordInput: '#pass',
       loginButton: '#send2',
       rememberMeCheckbox: '#remember_me',
-      
+
       // Links
       forgotPasswordLink: '.action.remind',
       registerLink: '.action.create.primary',
-      
+
       // Messages
       loginError: '.message-error',
       loginSuccess: '.message-success',
-      
+
       // Social login (if available)
       googleLoginButton: '[data-testid="google-login"]',
       facebookLoginButton: '[data-testid="facebook-login"]',
-      
+
       // Page elements
       pageTitle: '.page-title',
-      loginForm: '#login-form'
+      loginForm: '#login-form',
     };
   }
 
@@ -59,11 +59,11 @@ class LoginPage extends BasePage {
   async login(email, password, rememberMe = false) {
     await this.fillInput(this.selectors.emailInput, email);
     await this.fillInput(this.selectors.passwordInput, password);
-    
+
     if (rememberMe) {
       await this.form.setCheckbox(this.selectors.rememberMeCheckbox, true);
     }
-    
+
     await this.clickElement(this.selectors.loginButton);
     await this.waitForNetworkIdle();
   }
@@ -75,9 +75,9 @@ class LoginPage extends BasePage {
   async loginWithValidCredentials(userData) {
     const user = userData.validUsers?.[0] || {
       email: 'test@example.com',
-      password: 'password123'
+      password: 'password123',
     };
-    
+
     await this.login(user.email, user.password);
   }
 
@@ -162,7 +162,7 @@ class LoginPage extends BasePage {
     // Check if redirected to dashboard/home page
     const currentUrl = await this.getCurrentUrl();
     expect(currentUrl).not.toContain('/login');
-    
+
     // Validate user is logged in via navigation
     await this.navigation.validateUserLoggedIn();
   }
@@ -174,11 +174,11 @@ class LoginPage extends BasePage {
   async validateLoginFailure(expectedError) {
     await this.waitForElement(this.selectors.loginError);
     const actualError = await this.getLoginError();
-    
+
     if (expectedError) {
       expect(actualError).toContain(expectedError);
     }
-    
+
     // Validate still on login page
     const currentUrl = await this.getCurrentUrl();
     expect(currentUrl).toContain('/login');
@@ -210,7 +210,7 @@ class LoginPage extends BasePage {
    */
   async testEmptyFieldsValidation() {
     await this.clickElement(this.selectors.loginButton);
-    
+
     // Validate both email and password errors appear
     await this.validateEmptyEmailError();
     await this.validateEmptyPasswordError();
@@ -223,7 +223,7 @@ class LoginPage extends BasePage {
     await this.fillInput(this.selectors.emailInput, 'invalid-email');
     await this.fillInput(this.selectors.passwordInput, 'password123');
     await this.clickElement(this.selectors.loginButton);
-    
+
     await this.validateInvalidEmailFormatError();
   }
 
@@ -232,7 +232,7 @@ class LoginPage extends BasePage {
    */
   async testRememberMeFunctionality() {
     await this.form.setCheckbox(this.selectors.rememberMeCheckbox, true);
-    
+
     // Validate checkbox is checked
     const isChecked = await this.page.isChecked(this.selectors.rememberMeCheckbox);
     expect(isChecked).toBe(true);
@@ -276,7 +276,7 @@ class LoginPage extends BasePage {
     return {
       email: await this.page.inputValue(this.selectors.emailInput),
       password: await this.page.inputValue(this.selectors.passwordInput),
-      rememberMe: await this.page.isChecked(this.selectors.rememberMeCheckbox)
+      rememberMe: await this.page.isChecked(this.selectors.rememberMeCheckbox),
     };
   }
 
@@ -287,13 +287,19 @@ class LoginPage extends BasePage {
     // Check for proper labels and ARIA attributes
     const emailInput = this.page.locator(this.selectors.emailInput);
     const passwordInput = this.page.locator(this.selectors.passwordInput);
-    
+
     // Validate inputs have labels or aria-label
-    const emailLabel = await emailInput.getAttribute('aria-label') || 
-                      await this.page.locator(`label[for="${await emailInput.getAttribute('id')}"]`).textContent();
-    const passwordLabel = await passwordInput.getAttribute('aria-label') || 
-                         await this.page.locator(`label[for="${await passwordInput.getAttribute('id')}"]`).textContent();
-    
+    const emailLabel =
+      (await emailInput.getAttribute('aria-label')) ||
+      (await this.page
+        .locator(`label[for="${await emailInput.getAttribute('id')}"]`)
+        .textContent());
+    const passwordLabel =
+      (await passwordInput.getAttribute('aria-label')) ||
+      (await this.page
+        .locator(`label[for="${await passwordInput.getAttribute('id')}"]`)
+        .textContent());
+
     expect(emailLabel).toBeTruthy();
     expect(passwordLabel).toBeTruthy();
   }

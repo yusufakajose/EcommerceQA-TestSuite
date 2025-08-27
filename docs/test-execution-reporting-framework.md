@@ -149,7 +149,7 @@ const executor = new TestExecutor({
   environments: ['staging', 'production'],
   browsers: ['chromium', 'firefox'],
   maxParallelWorkers: 8,
-  retries: 3
+  retries: 3,
 });
 
 const results = await executor.executeTests();
@@ -221,18 +221,18 @@ const notificationManager = new NotificationManager({
     secure: true,
     auth: {
       user: 'your-email@gmail.com',
-      pass: 'your-app-password'
-    }
+      pass: 'your-app-password',
+    },
   },
   recipients: {
     summary: ['team@company.com'],
     failures: ['dev-team@company.com'],
-    critical: ['oncall@company.com']
+    critical: ['oncall@company.com'],
   },
   thresholds: {
     criticalFailureRate: 50,
-    warningFailureRate: 20
-  }
+    warningFailureRate: 20,
+  },
 });
 ```
 
@@ -255,12 +255,12 @@ name: Automated Test Execution
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM
-  workflow_dispatch:     # Manual trigger
+    - cron: '0 2 * * *' # Daily at 2 AM
+  workflow_dispatch: # Manual trigger
 ```
 
 ### Workflow Features
@@ -360,7 +360,7 @@ The framework tracks test performance over time:
 const executor = new TestExecutor({
   maxParallelWorkers: 8,
   environments: ['dev', 'staging', 'prod'],
-  browsers: ['chromium', 'firefox', 'webkit']
+  browsers: ['chromium', 'firefox', 'webkit'],
 });
 
 // This will run 3 environments × 3 browsers = 9 parallel executions
@@ -375,9 +375,9 @@ const executor = new TestExecutor({
   customReporters: [
     {
       name: 'slack',
-      config: { webhook: 'https://hooks.slack.com/...' }
-    }
-  ]
+      config: { webhook: 'https://hooks.slack.com/...' },
+    },
+  ],
 });
 ```
 
@@ -395,18 +395,21 @@ node scripts/run-tests.js -p "**/*.regression.spec.js"
 ### Common Issues
 
 1. **SMTP Authentication Errors**
+
    ```bash
    # Use app-specific passwords for Gmail
    # Enable 2FA and generate app password
    ```
 
 2. **Parallel Execution Timeouts**
+
    ```bash
    # Reduce parallel workers or increase timeout
    node scripts/run-tests.js -w 2 -t 600
    ```
 
 3. **Missing Dependencies**
+
    ```bash
    npm install
    npx playwright install
@@ -513,11 +516,11 @@ const executor = new TestExecutor({
   timeout: 600000,
   retries: 3,
   outputDir: './custom-results',
-  reportDir: './custom-reports'
+  reportDir: './custom-reports',
 });
 
 const results = await executor.executeTests({
-  testPattern: '**/*critical*'
+  testPattern: '**/*critical*',
 });
 ```
 
@@ -533,14 +536,14 @@ const notifications = new NotificationManager({
     port: 587,
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
+      pass: process.env.SMTP_PASS,
+    },
   },
   recipients: {
     summary: ['team@company.com'],
     failures: ['dev@company.com'],
-    critical: ['oncall@company.com']
-  }
+    critical: ['oncall@company.com'],
+  },
 });
 
 await notifications.sendSummaryNotification(results);

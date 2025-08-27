@@ -10,17 +10,17 @@ class ShoppingCartPage extends BasePage {
   constructor(page) {
     super(page);
     this.navigation = new NavigationComponent(page);
-    
+
     // Page URL
     this.url = '/cart';
-    
+
     // Page selectors
     this.selectors = {
       // Page elements
       pageTitle: '[data-testid="cart-title"]',
       cartContainer: '[data-testid="cart-container"]',
       emptyCartMessage: '[data-testid="empty-cart-message"]',
-      
+
       // Cart items
       cartItem: '[data-testid="cart-item"]',
       itemImage: '[data-testid="item-image"]',
@@ -28,18 +28,18 @@ class ShoppingCartPage extends BasePage {
       itemPrice: '[data-testid="item-price"]',
       itemQuantity: '[data-testid="item-quantity"]',
       itemSubtotal: '[data-testid="item-subtotal"]',
-      
+
       // Quantity controls
       quantityInput: '[data-testid="quantity-input"]',
       increaseQuantityButton: '[data-testid="increase-quantity"]',
       decreaseQuantityButton: '[data-testid="decrease-quantity"]',
       updateQuantityButton: '[data-testid="update-quantity"]',
-      
+
       // Item actions
       removeItemButton: '[data-testid="remove-item"]',
       saveForLaterButton: '[data-testid="save-for-later"]',
       moveToWishlistButton: '[data-testid="move-to-wishlist"]',
-      
+
       // Cart summary
       cartSummary: '[data-testid="cart-summary"]',
       subtotalAmount: '[data-testid="subtotal-amount"]',
@@ -47,35 +47,35 @@ class ShoppingCartPage extends BasePage {
       shippingAmount: '[data-testid="shipping-amount"]',
       discountAmount: '[data-testid="discount-amount"]',
       totalAmount: '[data-testid="total-amount"]',
-      
+
       // Promo code
       promoCodeInput: '[data-testid="promo-code-input"]',
       applyPromoButton: '[data-testid="apply-promo-button"]',
       removePromoButton: '[data-testid="remove-promo-button"]',
       promoCodeError: '[data-testid="promo-code-error"]',
       promoCodeSuccess: '[data-testid="promo-code-success"]',
-      
+
       // Shipping options
       shippingOptions: '[data-testid="shipping-options"]',
       shippingOption: '[data-testid="shipping-option"]',
-      
+
       // Action buttons
       continueShoppingButton: '[data-testid="continue-shopping"]',
       clearCartButton: '[data-testid="clear-cart"]',
       checkoutButton: '[data-testid="checkout-button"]',
-      
+
       // Saved items
       savedItemsSection: '[data-testid="saved-items"]',
       savedItem: '[data-testid="saved-item"]',
       moveToCartButton: '[data-testid="move-to-cart"]',
-      
+
       // Loading states
       loadingSpinner: '[data-testid="loading-spinner"]',
       updatingCart: '[data-testid="updating-cart"]',
-      
+
       // Messages
       successMessage: '[data-testid="success-message"]',
-      errorMessage: '[data-testid="error-message"]'
+      errorMessage: '[data-testid="error-message"]',
     };
   }
 
@@ -94,7 +94,7 @@ class ShoppingCartPage extends BasePage {
     if (await this.isCartEmpty()) {
       return [];
     }
-    
+
     await this.waitForElement(this.selectors.cartItem);
     return await this.page.locator(this.selectors.cartItem).all();
   }
@@ -123,15 +123,15 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const item = items[index];
-    
+
     return {
       name: await item.locator(this.selectors.itemName).textContent(),
       price: await item.locator(this.selectors.itemPrice).textContent(),
       quantity: await item.locator(this.selectors.quantityInput).inputValue(),
       subtotal: await item.locator(this.selectors.itemSubtotal).textContent(),
-      image: await item.locator(this.selectors.itemImage).getAttribute('src')
+      image: await item.locator(this.selectors.itemImage).getAttribute('src'),
     };
   }
 
@@ -145,16 +145,16 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const quantityInput = items[index].locator(this.selectors.quantityInput);
     await quantityInput.fill(quantity.toString());
-    
+
     // Click update button if it exists, otherwise quantity might update automatically
     const updateButton = items[index].locator(this.selectors.updateQuantityButton);
     if (await updateButton.isVisible()) {
       await updateButton.click();
     }
-    
+
     await this.waitForCartUpdate();
   }
 
@@ -167,7 +167,7 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const increaseButton = items[index].locator(this.selectors.increaseQuantityButton);
     await increaseButton.click();
     await this.waitForCartUpdate();
@@ -182,7 +182,7 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const decreaseButton = items[index].locator(this.selectors.decreaseQuantityButton);
     await decreaseButton.click();
     await this.waitForCartUpdate();
@@ -197,7 +197,7 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const removeButton = items[index].locator(this.selectors.removeItemButton);
     await removeButton.click();
     await this.waitForCartUpdate();
@@ -210,7 +210,7 @@ class ShoppingCartPage extends BasePage {
   async removeCartItemByName(itemName) {
     const itemSelector = `${this.selectors.cartItem}:has(${this.selectors.itemName}:text("${itemName}"))`;
     const removeButton = `${itemSelector} ${this.selectors.removeItemButton}`;
-    
+
     await this.clickElement(removeButton);
     await this.waitForCartUpdate();
   }
@@ -224,7 +224,7 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const saveButton = items[index].locator(this.selectors.saveForLaterButton);
     await saveButton.click();
     await this.waitForCartUpdate();
@@ -239,7 +239,7 @@ class ShoppingCartPage extends BasePage {
     if (index >= items.length) {
       throw new Error(`Cart item index ${index} out of range. Found ${items.length} items.`);
     }
-    
+
     const wishlistButton = items[index].locator(this.selectors.moveToWishlistButton);
     await wishlistButton.click();
     await this.waitForCartUpdate();
@@ -309,10 +309,10 @@ class ShoppingCartPage extends BasePage {
       subtotal: await this.getTextContent(this.selectors.subtotalAmount),
       tax: await this.getTextContent(this.selectors.taxAmount),
       shipping: await this.getTextContent(this.selectors.shippingAmount),
-      discount: await this.isElementVisible(this.selectors.discountAmount) 
-        ? await this.getTextContent(this.selectors.discountAmount) 
+      discount: (await this.isElementVisible(this.selectors.discountAmount))
+        ? await this.getTextContent(this.selectors.discountAmount)
         : '0.00',
-      total: await this.getTextContent(this.selectors.totalAmount)
+      total: await this.getTextContent(this.selectors.totalAmount),
     };
   }
 
@@ -340,7 +340,7 @@ class ShoppingCartPage extends BasePage {
     if (await this.isElementVisible(this.selectors.updatingCart)) {
       await this.waitForElementToDisappear(this.selectors.updatingCart);
     }
-    
+
     await this.waitForNetworkIdle();
   }
 
@@ -363,7 +363,7 @@ class ShoppingCartPage extends BasePage {
     if (index >= savedItems.length) {
       throw new Error(`Saved item index ${index} out of range. Found ${savedItems.length} items.`);
     }
-    
+
     const moveButton = savedItems[index].locator(this.selectors.moveToCartButton);
     await moveButton.click();
     await this.waitForCartUpdate();
@@ -393,7 +393,7 @@ class ShoppingCartPage extends BasePage {
   async validateCartHasItems(expectedCount) {
     const isEmpty = await this.isCartEmpty();
     expect(isEmpty).toBe(false);
-    
+
     if (expectedCount !== undefined) {
       const actualCount = await this.getCartItemCount();
       expect(actualCount).toBe(expectedCount);
@@ -425,7 +425,7 @@ class ShoppingCartPage extends BasePage {
   async validatePromoCodeError(expectedError) {
     await this.validateElementVisible(this.selectors.promoCodeError);
     const actualError = await this.getTextContent(this.selectors.promoCodeError);
-    
+
     if (expectedError) {
       expect(actualError).toContain(expectedError);
     }
@@ -436,13 +436,13 @@ class ShoppingCartPage extends BasePage {
    */
   async validateCartTotalCalculation() {
     const summary = await this.getCartSummary();
-    
+
     const subtotal = parseFloat(summary.subtotal.replace(/[^0-9.]/g, ''));
     const tax = parseFloat(summary.tax.replace(/[^0-9.]/g, ''));
     const shipping = parseFloat(summary.shipping.replace(/[^0-9.]/g, ''));
     const discount = parseFloat(summary.discount.replace(/[^0-9.]/g, ''));
     const total = parseFloat(summary.total.replace(/[^0-9.]/g, ''));
-    
+
     const expectedTotal = subtotal + tax + shipping - discount;
     expect(Math.abs(total - expectedTotal)).toBeLessThan(0.01); // Allow for rounding differences
   }

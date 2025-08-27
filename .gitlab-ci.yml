@@ -12,13 +12,13 @@ stages:
   - deploy
 
 variables:
-  NODE_VERSION: "18"
+  NODE_VERSION: '18'
   PLAYWRIGHT_BROWSERS_PATH: $CI_PROJECT_DIR/ms-playwright
 
 # Cache configuration
 .node_cache: &node_cache
   cache:
-    key: 
+    key:
       files:
         - package-lock.json
     paths:
@@ -43,13 +43,13 @@ validate:
     - test -d automated-tests || exit 1
     - test -d scripts || exit 1
     - echo "Project structure validated"
-    
+
     # Code quality checks
     - echo "Running code quality checks..."
     - npm run lint:check || (echo "Linting issues found" && npm run lint)
     - npm run type-check || echo "Type checking failed"
     - npm run build || echo "Build failed"
-    
+
     # Security audit
     - echo "Running security audit..."
     - npm audit --audit-level=moderate || echo "Security vulnerabilities found"
@@ -231,4 +231,4 @@ nightly-tests:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   variables:
     TEST_ENV: $ENVIRONMENT
-    NIGHTLY: "true"
+    NIGHTLY: 'true'

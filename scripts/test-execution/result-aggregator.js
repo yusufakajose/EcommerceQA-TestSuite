@@ -13,7 +13,7 @@ class ResultAggregator {
     this.baseDir = process.cwd();
     this.resultsDir = path.join(this.baseDir, 'reports', 'test-execution');
     this.aggregatedDir = path.join(this.baseDir, 'reports', 'aggregated');
-    
+
     this.ensureDirectories();
   }
 
@@ -21,7 +21,7 @@ class ResultAggregator {
    * Ensure required directories exist
    */
   ensureDirectories() {
-    [this.resultsDir, this.aggregatedDir].forEach(dir => {
+    [this.resultsDir, this.aggregatedDir].forEach((dir) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -33,7 +33,7 @@ class ResultAggregator {
    */
   async aggregateResults() {
     console.log('Aggregating test results...');
-    
+
     const aggregation = {
       timestamp: new Date().toISOString(),
       summary: {
@@ -42,12 +42,12 @@ class ResultAggregator {
         failedTests: 0,
         skippedTests: 0,
         passRate: 0,
-        totalDuration: 0
+        totalDuration: 0,
       },
       suites: {},
       environments: {},
       browsers: {},
-      trends: await this.calculateTrends()
+      trends: await this.calculateTrends(),
     };
 
     // Collect results from different sources
@@ -70,11 +70,7 @@ class ResultAggregator {
    * Collect Playwright test results
    */
   async collectPlaywrightResults(aggregation) {
-    const playwrightDirs = [
-      'test-results',
-      'playwright-report',
-      'reports/test-execution'
-    ];
+    const playwrightDirs = ['test-results', 'playwright-report', 'reports/test-execution'];
 
     for (const dir of playwrightDirs) {
       const fullPath = path.join(this.baseDir, dir);
@@ -137,7 +133,7 @@ class ResultAggregator {
         passed: 0,
         failed: 0,
         skipped: 0,
-        duration: 0
+        duration: 0,
       };
     }
 
@@ -153,7 +149,7 @@ class ResultAggregator {
    * Calculate final metrics
    */
   calculateFinalMetrics(aggregation) {
-    Object.values(aggregation.suites).forEach(suite => {
+    Object.values(aggregation.suites).forEach((suite) => {
       aggregation.summary.totalTests += suite.total;
       aggregation.summary.passedTests += suite.passed;
       aggregation.summary.failedTests += suite.failed;
@@ -161,8 +157,10 @@ class ResultAggregator {
       aggregation.summary.totalDuration += suite.duration;
     });
 
-    aggregation.summary.passRate = aggregation.summary.totalTests > 0 ?
-      Math.round((aggregation.summary.passedTests / aggregation.summary.totalTests) * 100) : 0;
+    aggregation.summary.passRate =
+      aggregation.summary.totalTests > 0
+        ? Math.round((aggregation.summary.passedTests / aggregation.summary.totalTests) * 100)
+        : 0;
   }
 
   /**
@@ -172,7 +170,7 @@ class ResultAggregator {
     // Implementation for trend calculation
     return {
       passRateTrend: 'stable',
-      executionTimeTrend: 'stable'
+      executionTimeTrend: 'stable',
     };
   }
 
@@ -183,13 +181,13 @@ class ResultAggregator {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `aggregated-results-${timestamp}.json`;
     const filepath = path.join(this.aggregatedDir, filename);
-    
+
     fs.writeFileSync(filepath, JSON.stringify(aggregation, null, 2));
-    
+
     // Also save as latest
     const latestPath = path.join(this.aggregatedDir, 'latest-results.json');
     fs.writeFileSync(latestPath, JSON.stringify(aggregation, null, 2));
-    
+
     console.log(`Aggregated results saved: ${filepath}`);
   }
 }

@@ -40,16 +40,19 @@ This document outlines the comprehensive security testing framework implemented 
 ### OWASP Top 10 2021 Coverage
 
 #### A01:2021 - Broken Access Control
+
 - **Insecure Direct Object References (IDOR)**: Testing unauthorized access to resources
 - **Privilege Escalation**: Vertical and horizontal privilege escalation testing
 - **Access Control Bypass**: Testing authentication and authorization mechanisms
 
 #### A02:2021 - Cryptographic Failures
+
 - **Sensitive Data Exposure**: Testing for exposed sensitive information
 - **Weak Encryption**: Validating encryption implementation
 - **Insecure Communication**: HTTPS enforcement and TLS configuration
 
 #### A03:2021 - Injection
+
 - **SQL Injection**: Comprehensive SQL injection testing across forms and APIs
 - **XSS (Cross-Site Scripting)**: Reflected, stored, and DOM-based XSS testing
 - **Command Injection**: OS command injection prevention testing
@@ -57,35 +60,42 @@ This document outlines the comprehensive security testing framework implemented 
 - **XML Injection**: XML external entity (XXE) testing
 
 #### A04:2021 - Insecure Design
+
 - **Business Logic Flaws**: Price manipulation and quantity validation
 - **Workflow Bypass**: Testing business process security
 - **Rate Limiting**: Brute force and DoS protection
 
 #### A05:2021 - Security Misconfiguration
+
 - **Security Headers**: Comprehensive security header validation
 - **Error Handling**: Information disclosure prevention
 - **Default Configurations**: Testing for insecure defaults
 
 #### A06:2021 - Vulnerable and Outdated Components
+
 - **Dependency Scanning**: Component vulnerability assessment
 - **Version Disclosure**: Technology stack information leakage
 
 #### A07:2021 - Identification and Authentication Failures
+
 - **Password Policy**: Password strength and complexity testing
 - **Session Management**: Session fixation and hijacking prevention
 - **Multi-Factor Authentication**: MFA implementation validation
 
 #### A08:2021 - Software and Data Integrity Failures
+
 - **Code Integrity**: Unsigned code and update validation
 - **Deserialization**: Insecure deserialization testing
 - **Supply Chain**: Third-party component integrity
 
 #### A09:2021 - Security Logging and Monitoring Failures
+
 - **Audit Logging**: Security event logging validation
 - **Monitoring**: Real-time threat detection testing
 - **Incident Response**: Security incident handling
 
 #### A10:2021 - Server-Side Request Forgery (SSRF)
+
 - **SSRF Prevention**: Server-side request validation
 - **Internal Network Access**: Unauthorized internal resource access
 
@@ -94,18 +104,19 @@ This document outlines the comprehensive security testing framework implemented 
 ### Web Application Security Tests
 
 #### 1. XSS Prevention Testing
+
 ```javascript
 test('XSS Prevention in Search Functionality', async ({ page }) => {
   const xssPayloads = [
     '<script>alert("XSS")</script>',
     '"><script>alert("XSS")</script>',
-    '<img src=x onerror=alert("XSS")>'
+    '<img src=x onerror=alert("XSS")>',
   ];
-  
+
   for (const payload of xssPayloads) {
     await searchInput.fill(payload);
     await page.keyboard.press('Enter');
-    
+
     // Verify no script execution and proper escaping
     const pageContent = await page.content();
     const isProperlyEscaped = pageContent.includes('&lt;script&gt;');
@@ -115,18 +126,15 @@ test('XSS Prevention in Search Functionality', async ({ page }) => {
 ```
 
 #### 2. SQL Injection Prevention Testing
+
 ```javascript
 test('SQL Injection Prevention in Login Form', async ({ page }) => {
-  const sqlPayloads = [
-    "' OR '1'='1",
-    "'; DROP TABLE users; --",
-    "' UNION SELECT * FROM users --"
-  ];
-  
+  const sqlPayloads = ["' OR '1'='1", "'; DROP TABLE users; --", "' UNION SELECT * FROM users --"];
+
   for (const payload of sqlPayloads) {
     await emailInput.fill(payload);
     await submitButton.click();
-    
+
     // Check for SQL errors and unauthorized access
     const pageContent = await page.textContent('body');
     const hasSqlError = /sql|mysql|postgresql/i.test(pageContent);
@@ -136,14 +144,15 @@ test('SQL Injection Prevention in Login Form', async ({ page }) => {
 ```
 
 #### 3. Authentication Security Testing
+
 ```javascript
 test('Session Management Security', async ({ page }) => {
   const initialCookies = await page.context().cookies();
-  const sessionCookies = initialCookies.filter(cookie => 
+  const sessionCookies = initialCookies.filter((cookie) =>
     cookie.name.toLowerCase().includes('session')
   );
-  
-  sessionCookies.forEach(cookie => {
+
+  sessionCookies.forEach((cookie) => {
     expect(cookie.httpOnly).toBe(true);
     expect(cookie.secure).toBe(true);
     expect(['Strict', 'Lax'].includes(cookie.sameSite)).toBe(true);
@@ -154,14 +163,15 @@ test('Session Management Security', async ({ page }) => {
 ### API Security Tests
 
 #### 1. API Authentication Testing
+
 ```javascript
 test('API Endpoint Authentication Requirements', async ({ page }) => {
   const protectedEndpoints = ['/api/users/profile', '/api/orders'];
-  
+
   for (const endpoint of protectedEndpoints) {
     const response = await page.request.get(endpoint);
     const status = response.status();
-    
+
     // Should return 401 or 403 without authentication
     expect([401, 403].includes(status)).toBe(true);
   }
@@ -169,16 +179,17 @@ test('API Endpoint Authentication Requirements', async ({ page }) => {
 ```
 
 #### 2. JWT Token Security Testing
+
 ```javascript
 test('JWT Token Security', async ({ page }) => {
   const loginResponse = await page.request.post('/api/auth/login', {
-    data: { email: 'test@example.com', password: 'password123' }
+    data: { email: 'test@example.com', password: 'password123' },
   });
-  
+
   const { token } = await loginResponse.json();
   const tokenParts = token.split('.');
   const payload = JSON.parse(atob(tokenParts[1]));
-  
+
   // Verify token security
   expect(payload.exp).toBeDefined(); // Has expiration
   expect(payload.password).toBeUndefined(); // No sensitive data
@@ -186,21 +197,22 @@ test('JWT Token Security', async ({ page }) => {
 ```
 
 #### 3. API Rate Limiting Testing
+
 ```javascript
 test('API Rate Limiting', async ({ page }) => {
   let rateLimitHit = false;
-  
+
   for (let i = 1; i <= 10; i++) {
     const response = await page.request.post('/api/auth/login', {
-      data: { email: 'test@example.com', password: 'wrong' }
+      data: { email: 'test@example.com', password: 'wrong' },
     });
-    
+
     if (response.status() === 429) {
       rateLimitHit = true;
       break;
     }
   }
-  
+
   expect(rateLimitHit).toBe(true);
 });
 ```
@@ -241,36 +253,33 @@ test('API Rate Limiting', async ({ page }) => {
 ### Vulnerability Payloads
 
 #### XSS Payloads
+
 ```javascript
 xss: [
   '<script>alert("XSS")</script>',
   '"><script>alert("XSS")</script>',
   '<img src=x onerror=alert("XSS")>',
   '<svg onload=alert("XSS")>',
-  '<iframe src="javascript:alert(\'XSS\')"></iframe>'
-]
+  '<iframe src="javascript:alert(\'XSS\')"></iframe>',
+];
 ```
 
 #### SQL Injection Payloads
+
 ```javascript
 sqlInjection: [
   "' OR '1'='1",
   "'; DROP TABLE users; --",
   "' UNION SELECT * FROM users --",
   "admin'--",
-  "1' OR '1'='1' /*"
-]
+  "1' OR '1'='1' /*",
+];
 ```
 
 #### Command Injection Payloads
+
 ```javascript
-commandInjection: [
-  '; ls -la',
-  '| whoami',
-  '&& cat /etc/passwd',
-  '`id`',
-  '$(whoami)'
-]
+commandInjection: ['; ls -la', '| whoami', '&& cat /etc/passwd', '`id`', '$(whoami)'];
 ```
 
 ### Security Thresholds
@@ -283,7 +292,7 @@ thresholds: {
     medium: { score: 4, maxAllowed: 2 },
     low: { score: 1, maxAllowed: 5 }
   },
-  
+
   securityScore: {
     excellent: 95,
     good: 80,
@@ -426,11 +435,11 @@ thresholds: {
   run: |
     npm run test:security
     npm run test:security:api
-    
+
 - name: Security Report
   run: |
     npm run security:report
-    
+
 - name: Fail on Critical Issues
   run: |
     npm run security:check-thresholds
@@ -465,11 +474,9 @@ npm run security:report
 
 ```javascript
 // Custom XSS testing
-const xssResults = await SecurityTestUtils.testXSSVulnerability(
-  page, 
-  'input[name="search"]', 
-  ['<script>alert("XSS")</script>']
-);
+const xssResults = await SecurityTestUtils.testXSSVulnerability(page, 'input[name="search"]', [
+  '<script>alert("XSS")</script>',
+]);
 
 // Security header analysis
 const headerAnalysis = await SecurityTestUtils.analyzeSecurityHeaders(page);

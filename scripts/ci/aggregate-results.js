@@ -29,10 +29,10 @@ class CIResultsAggregator {
         githubWorkflow: process.env.GITHUB_WORKFLOW,
         githubRunId: process.env.GITHUB_RUN_ID,
         githubRunNumber: process.env.GITHUB_RUN_NUMBER,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
-    
+
     this.notificationManager = new NotificationManager({
       enabled: process.env.NOTIFICATIONS_ENABLED !== 'false',
       smtp: {
@@ -41,15 +41,15 @@ class CIResultsAggregator {
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
+          pass: process.env.SMTP_PASS,
+        },
       },
       from: process.env.NOTIFICATION_FROM,
       recipients: {
         summary: process.env.SUMMARY_RECIPIENTS?.split(',') || [],
         failures: process.env.FAILURE_RECIPIENTS?.split(',') || [],
-        critical: process.env.CRITICAL_RECIPIENTS?.split(',') || []
-      }
+        critical: process.env.CRITICAL_RECIPIENTS?.split(',') || [],
+      },
     });
   }
 
@@ -58,28 +58,27 @@ class CIResultsAggregator {
    */
   async aggregate() {
     console.log('Starting CI test results aggregation...');
-    
+
     try {
       // Discover and process test result files
       await this.discoverTestResults();
-      
+
       // Process Playwright reports
       await this.processPlaywrightReports();
-      
+
       // Generate aggregated reports
       await this.generateReports();
-      
+
       // Load trend analysis
       const trendAnalysis = await this.loadTrendAnalysis();
-      
+
       // Send notifications
       await this.sendNotifications(trendAnalysis);
-      
+
       // Set GitHub Actions outputs
       this.setGitHubOutputs();
-      
+
       console.log('CI test results aggregation completed successfully');
-      
     } catch (error) {
       console.error('CI aggregation failed:', error);
       process.exit(1);
@@ -91,19 +90,19 @@ class CIResultsAggregator {
    */
   async discoverTestResults() {
     const testResultsDir = './test-results';
-    
+
     if (!fs.existsSync(testResultsDir)) {
       console.warn('No test results directory found');
       return;
     }
-    
+
     console.log('Discovering test result files...');
-    
+
     // Recursively find all results.json files
     const resultFiles = this.findResultFiles(testResultsDir);
-    
+
     console.log(`Found ${resultFiles.length} result files`);
-    
+
     for (const resultFile of resultFiles) {
       await this.processResultFile(resultFile);
     }
@@ -116,14 +115,14 @@ class CIResultsAggregator {
    */
   findResultFiles(dir) {
     const resultFiles = [];
-    
+
     const traverse = (currentDir) => {
       const items = fs.readdirSync(currentDir);
-      
+
       for (const item of items) {
         const itemPath = path.join(currentDir, item);
         const stat = fs.statSync(itemPath);
-        
+
         if (stat.isDirectory()) {
           traverse(itemPath);
         } else if (item === 'results.json' || item.endsWith('-results.json')) {
@@ -131,7 +130,7 @@ class CIResultsAggregator {
         }
       }
     };
-    
+
     traverse(dir);
     return resultFiles;
   }
@@ -143,25 +142,24 @@ class CIResultsAggregator {
   async processResultFile(filePath) {
     try {
       console.log(`Processing result file: ${filePath}`);
-      
+
       const rawData = fs.readFileSync(filePath, 'utf8');
       const data = JSON.parse(rawData);
-      
+
       // Extract environment and browser from file path
       const pathParts = filePath.split(path.sep);
       const environment = this.extractEnvironmentFromPath(pathParts);
       const browser = this.extractBrowserFromPath(pathParts);
-      
+
       // Process test results
       this.processTestData(data, environment, browser);
-      
     } catch (error) {
       console.error(`Failed to process result file ${filePath}:`, error.message);
       this.results.errors.push({
         type: 'result_processing_error',
         file: filePath,
         message: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -174,13 +172,13 @@ class CIResultsAggregator {
   extractEnvironmentFromPath(pathParts) {
     // Look for known environment names in path
     const environments = ['development', 'staging', 'production', 'test'];
-    
+
     for (const part of pathParts) {
       if (environments.includes(part)) {
         return part;
       }
     }
-    
+
     return 'unknown';
   }
 
@@ -192,13 +190,13 @@ class CIResultsAggregator {
   extractBrowserFromPath(pathParts) {
     // Look for known browser names in path
     const browsers = ['chromium', 'firefox', 'webkit', 'chrome', 'safari', 'edge'];
-    
+
     for (const part of pathParts) {
       if (browsers.includes(part)) {
         return part;
       }
     }
-    
+
     return 'unknown';
   }
 
@@ -212,7 +210,7 @@ class CIResultsAggregator {
     // Handle different result formats
     let stats = {};
     let suites = [];
-    
+
     if (data.stats) {
       // Playwright format
       stats = data.stats;
@@ -223,7 +221,7 @@ class CIResultsAggregator {
         total: data.numTotalTests,
         passed: data.numPassedTests,
         failed: data.numFailedTests,
-        skipped: data.numPendingTests || 0
+        skipped: data.numPendingTests || 0,
       };
       suites = data.testResults || [];
     } else {
@@ -231,41 +229,49 @@ class CIResultsAggregator {
       stats = this.inferStatsFromData(data);
       suites = data.suites || data.testResults || [];
     }
-    
+
     // Update totals
     this.results.total += stats.total || 0;
     this.results.passed += stats.passed || 0;
     this.results.failed += stats.failed || 0;
     this.results.skipped += stats.skipped || 0;
-    
+
     // Update environment results
     if (!this.results.environments[environment]) {
       this.results.environments[environment] = {
-        total: 0, passed: 0, failed: 0, skipped: 0, browsers: {}
+        total: 0,
+        passed: 0,
+        failed: 0,
+        skipped: 0,
+        browsers: {},
       };
     }
-    
+
     const envResult = this.results.environments[environment];
     envResult.total += stats.total || 0;
     envResult.passed += stats.passed || 0;
     envResult.failed += stats.failed || 0;
     envResult.skipped += stats.skipped || 0;
     envResult.browsers[browser] = stats;
-    
+
     // Update browser results
     if (!this.results.browsers[browser]) {
       this.results.browsers[browser] = {
-        total: 0, passed: 0, failed: 0, skipped: 0, environments: {}
+        total: 0,
+        passed: 0,
+        failed: 0,
+        skipped: 0,
+        environments: {},
       };
     }
-    
+
     const browserResult = this.results.browsers[browser];
     browserResult.total += stats.total || 0;
     browserResult.passed += stats.passed || 0;
     browserResult.failed += stats.failed || 0;
     browserResult.skipped += stats.skipped || 0;
     browserResult.environments[environment] = stats;
-    
+
     // Process suites
     this.processSuites(suites, environment, browser);
   }
@@ -277,21 +283,27 @@ class CIResultsAggregator {
    */
   inferStatsFromData(data) {
     const stats = { total: 0, passed: 0, failed: 0, skipped: 0 };
-    
+
     // Try to count from various possible structures
     if (Array.isArray(data)) {
-      data.forEach(item => {
+      data.forEach((item) => {
         if (item.status) {
           stats.total++;
           switch (item.status) {
-            case 'passed': stats.passed++; break;
-            case 'failed': stats.failed++; break;
-            case 'skipped': stats.skipped++; break;
+            case 'passed':
+              stats.passed++;
+              break;
+            case 'failed':
+              stats.failed++;
+              break;
+            case 'skipped':
+              stats.skipped++;
+              break;
           }
         }
       });
     }
-    
+
     return stats;
   }
 
@@ -302,40 +314,44 @@ class CIResultsAggregator {
    * @param {string} browser - Browser name
    */
   processSuites(suites, environment, browser) {
-    suites.forEach(suite => {
+    suites.forEach((suite) => {
       const suiteName = suite.title || suite.name || 'Unknown Suite';
-      
+
       if (!this.results.suites[suiteName]) {
         this.results.suites[suiteName] = {
-          total: 0, passed: 0, failed: 0, skipped: 0,
-          environments: {}, browsers: {}
+          total: 0,
+          passed: 0,
+          failed: 0,
+          skipped: 0,
+          environments: {},
+          browsers: {},
         };
       }
-      
+
       const suiteStats = this.calculateSuiteStats(suite);
       const suiteResult = this.results.suites[suiteName];
-      
+
       suiteResult.total += suiteStats.total;
       suiteResult.passed += suiteStats.passed;
       suiteResult.failed += suiteStats.failed;
       suiteResult.skipped += suiteStats.skipped;
-      
+
       if (!suiteResult.environments[environment]) {
         suiteResult.environments[environment] = { total: 0, passed: 0, failed: 0, skipped: 0 };
       }
-      
+
       if (!suiteResult.browsers[browser]) {
         suiteResult.browsers[browser] = { total: 0, passed: 0, failed: 0, skipped: 0 };
       }
-      
+
       const envSuite = suiteResult.environments[environment];
       const browserSuite = suiteResult.browsers[browser];
-      
+
       envSuite.total += suiteStats.total;
       envSuite.passed += suiteStats.passed;
       envSuite.failed += suiteStats.failed;
       envSuite.skipped += suiteStats.skipped;
-      
+
       browserSuite.total += suiteStats.total;
       browserSuite.passed += suiteStats.passed;
       browserSuite.failed += suiteStats.failed;
@@ -350,21 +366,28 @@ class CIResultsAggregator {
    */
   calculateSuiteStats(suite) {
     const stats = { total: 0, passed: 0, failed: 0, skipped: 0 };
-    
+
     // Handle different suite formats
     if (suite.tests) {
-      suite.tests.forEach(test => {
+      suite.tests.forEach((test) => {
         stats.total++;
         switch (test.status || test.state) {
-          case 'passed': stats.passed++; break;
-          case 'failed': stats.failed++; break;
-          case 'skipped': case 'pending': stats.skipped++; break;
+          case 'passed':
+            stats.passed++;
+            break;
+          case 'failed':
+            stats.failed++;
+            break;
+          case 'skipped':
+          case 'pending':
+            stats.skipped++;
+            break;
         }
       });
     }
-    
+
     if (suite.suites) {
-      suite.suites.forEach(subSuite => {
+      suite.suites.forEach((subSuite) => {
         const subStats = this.calculateSuiteStats(subSuite);
         stats.total += subStats.total;
         stats.passed += subStats.passed;
@@ -372,7 +395,7 @@ class CIResultsAggregator {
         stats.skipped += subStats.skipped;
       });
     }
-    
+
     return stats;
   }
 
@@ -381,25 +404,25 @@ class CIResultsAggregator {
    */
   async processPlaywrightReports() {
     const reportsDir = './playwright-reports';
-    
+
     if (!fs.existsSync(reportsDir)) {
       console.log('No Playwright reports directory found');
       return;
     }
-    
+
     console.log('Processing Playwright reports...');
-    
+
     // Copy Playwright reports to main reports directory
     const targetDir = './reports/playwright-reports';
-    
+
     if (!fs.existsSync('./reports')) {
       fs.mkdirSync('./reports', { recursive: true });
     }
-    
+
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
-    
+
     // Copy all Playwright report files
     this.copyDirectory(reportsDir, targetDir);
   }
@@ -411,12 +434,12 @@ class CIResultsAggregator {
    */
   copyDirectory(src, dest) {
     const items = fs.readdirSync(src);
-    
+
     for (const item of items) {
       const srcPath = path.join(src, item);
       const destPath = path.join(dest, item);
       const stat = fs.statSync(srcPath);
-      
+
       if (stat.isDirectory()) {
         if (!fs.existsSync(destPath)) {
           fs.mkdirSync(destPath, { recursive: true });
@@ -433,21 +456,21 @@ class CIResultsAggregator {
    */
   async generateReports() {
     console.log('Generating aggregated reports...');
-    
+
     // Ensure reports directory exists
     if (!fs.existsSync('./reports')) {
       fs.mkdirSync('./reports', { recursive: true });
     }
-    
+
     // Generate JSON report
     await this.generateJSONReport();
-    
+
     // Generate HTML report
     await this.generateHTMLReport();
-    
+
     // Generate JUnit XML report
     await this.generateJUnitReport();
-    
+
     // Update trend analysis
     await this.updateTrendAnalysis();
   }
@@ -457,13 +480,13 @@ class CIResultsAggregator {
    */
   async generateJSONReport() {
     const reportPath = './reports/test-results.json';
-    
+
     const report = {
       ...this.results,
       generatedAt: new Date().toISOString(),
-      passRate: this.results.total > 0 ? (this.results.passed / this.results.total) * 100 : 0
+      passRate: this.results.total > 0 ? (this.results.passed / this.results.total) * 100 : 0,
     };
-    
+
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     console.log(`JSON report saved: ${reportPath}`);
   }
@@ -473,8 +496,9 @@ class CIResultsAggregator {
    */
   async generateHTMLReport() {
     const reportPath = './reports/test-report.html';
-    const passRate = this.results.total > 0 ? ((this.results.passed / this.results.total) * 100).toFixed(1) : 0;
-    
+    const passRate =
+      this.results.total > 0 ? ((this.results.passed / this.results.total) * 100).toFixed(1) : 0;
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -562,7 +586,7 @@ class CIResultsAggregator {
     </div>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(reportPath, html);
     console.log(`HTML report saved: ${reportPath}`);
   }
@@ -573,14 +597,15 @@ class CIResultsAggregator {
    */
   generateEnvironmentSection() {
     if (Object.keys(this.results.environments).length === 0) return '';
-    
-    let html = '<div class="section"><h2>Results by Environment</h2><table><thead><tr><th>Environment</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<div class="section"><h2>Results by Environment</h2><table><thead><tr><th>Environment</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
+
     Object.entries(this.results.environments).forEach(([env, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
       html += `<tr><td><strong>${env}</strong></td><td>${stats.total}</td><td><span class="status-passed">${stats.passed}</span></td><td><span class="status-failed">${stats.failed}</span></td><td><span class="status-skipped">${stats.skipped}</span></td><td><strong>${passRate}%</strong></td></tr>`;
     });
-    
+
     html += '</tbody></table></div>';
     return html;
   }
@@ -591,14 +616,15 @@ class CIResultsAggregator {
    */
   generateBrowserSection() {
     if (Object.keys(this.results.browsers).length === 0) return '';
-    
-    let html = '<div class="section"><h2>Results by Browser</h2><table><thead><tr><th>Browser</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<div class="section"><h2>Results by Browser</h2><table><thead><tr><th>Browser</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
+
     Object.entries(this.results.browsers).forEach(([browser, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
       html += `<tr><td><strong>${browser}</strong></td><td>${stats.total}</td><td><span class="status-passed">${stats.passed}</span></td><td><span class="status-failed">${stats.failed}</span></td><td><span class="status-skipped">${stats.skipped}</span></td><td><strong>${passRate}%</strong></td></tr>`;
     });
-    
+
     html += '</tbody></table></div>';
     return html;
   }
@@ -609,14 +635,15 @@ class CIResultsAggregator {
    */
   generateSuiteSection() {
     if (Object.keys(this.results.suites).length === 0) return '';
-    
-    let html = '<div class="section"><h2>Results by Test Suite</h2><table><thead><tr><th>Suite</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<div class="section"><h2>Results by Test Suite</h2><table><thead><tr><th>Suite</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
+
     Object.entries(this.results.suites).forEach(([suite, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
       html += `<tr><td><strong>${suite}</strong></td><td>${stats.total}</td><td><span class="status-passed">${stats.passed}</span></td><td><span class="status-failed">${stats.failed}</span></td><td><span class="status-skipped">${stats.skipped}</span></td><td><strong>${passRate}%</strong></td></tr>`;
     });
-    
+
     html += '</tbody></table></div>';
     return html;
   }
@@ -626,29 +653,29 @@ class CIResultsAggregator {
    */
   async generateJUnitReport() {
     const reportPath = './reports/junit-results.xml';
-    
+
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += `<testsuites tests="${this.results.total}" failures="${this.results.failed}" time="0">\n`;
-    
+
     Object.entries(this.results.suites).forEach(([suiteName, stats]) => {
       xml += `  <testsuite name="${this.escapeXml(suiteName)}" tests="${stats.total}" failures="${stats.failed}" time="0">\n`;
-      
+
       // Add test cases (simplified)
       for (let i = 0; i < stats.passed; i++) {
         xml += `    <testcase name="test-${i}" classname="${this.escapeXml(suiteName)}" time="0"/>\n`;
       }
-      
+
       for (let i = 0; i < stats.failed; i++) {
         xml += `    <testcase name="failed-test-${i}" classname="${this.escapeXml(suiteName)}" time="0">\n`;
         xml += `      <failure message="Test failed">Test execution failed</failure>\n`;
         xml += `    </testcase>\n`;
       }
-      
+
       xml += '  </testsuite>\n';
     });
-    
+
     xml += '</testsuites>';
-    
+
     fs.writeFileSync(reportPath, xml);
     console.log(`JUnit report saved: ${reportPath}`);
   }
@@ -658,7 +685,7 @@ class CIResultsAggregator {
    */
   async updateTrendAnalysis() {
     const historyPath = './reports/test-history.json';
-    
+
     // Load existing history
     let history = [];
     if (fs.existsSync(historyPath)) {
@@ -668,7 +695,7 @@ class CIResultsAggregator {
         console.warn('Failed to load test history:', error.message);
       }
     }
-    
+
     // Add current results to history
     const currentResult = {
       timestamp: new Date().toISOString(),
@@ -677,23 +704,23 @@ class CIResultsAggregator {
       failed: this.results.failed,
       skipped: this.results.skipped,
       passRate: this.results.total > 0 ? (this.results.passed / this.results.total) * 100 : 0,
-      metadata: this.results.metadata
+      metadata: this.results.metadata,
     };
-    
+
     history.push(currentResult);
-    
+
     // Keep only last 50 runs
     if (history.length > 50) {
       history = history.slice(-50);
     }
-    
+
     // Save updated history
     fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
-    
+
     // Generate trend analysis
     const trendAnalysis = this.analyzeTrends(history);
     fs.writeFileSync('./reports/trend-analysis.json', JSON.stringify(trendAnalysis, null, 2));
-    
+
     console.log('Trend analysis updated');
   }
 
@@ -706,18 +733,21 @@ class CIResultsAggregator {
     if (history.length < 2) {
       return { message: 'Insufficient data for trend analysis' };
     }
-    
+
     const recent = history.slice(-5); // Last 5 runs
     const older = history.slice(-10, -5); // Previous 5 runs
-    
+
     const recentAvg = {
-      passRate: recent.reduce((sum, r) => sum + r.passRate, 0) / recent.length
+      passRate: recent.reduce((sum, r) => sum + r.passRate, 0) / recent.length,
     };
-    
+
     const olderAvg = {
-      passRate: older.length > 0 ? older.reduce((sum, r) => sum + r.passRate, 0) / older.length : recentAvg.passRate
+      passRate:
+        older.length > 0
+          ? older.reduce((sum, r) => sum + r.passRate, 0) / older.length
+          : recentAvg.passRate,
     };
-    
+
     return {
       totalRuns: history.length,
       recentRuns: recent.length,
@@ -726,11 +756,15 @@ class CIResultsAggregator {
           current: recentAvg.passRate,
           previous: olderAvg.passRate,
           change: recentAvg.passRate - olderAvg.passRate,
-          trend: recentAvg.passRate > olderAvg.passRate ? 'improving' : 
-                 recentAvg.passRate < olderAvg.passRate ? 'declining' : 'stable'
-        }
+          trend:
+            recentAvg.passRate > olderAvg.passRate
+              ? 'improving'
+              : recentAvg.passRate < olderAvg.passRate
+                ? 'declining'
+                : 'stable',
+        },
       },
-      history: history
+      history: history,
     };
   }
 
@@ -740,7 +774,7 @@ class CIResultsAggregator {
    */
   async loadTrendAnalysis() {
     const trendPath = './reports/trend-analysis.json';
-    
+
     if (fs.existsSync(trendPath)) {
       try {
         return JSON.parse(fs.readFileSync(trendPath, 'utf8'));
@@ -748,7 +782,7 @@ class CIResultsAggregator {
         console.warn('Failed to load trend analysis:', error.message);
       }
     }
-    
+
     return null;
   }
 
@@ -759,22 +793,21 @@ class CIResultsAggregator {
   async sendNotifications(trendAnalysis) {
     try {
       console.log('Sending notifications...');
-      
+
       // Send summary notification
       await this.notificationManager.sendSummaryNotification(this.results, trendAnalysis);
-      
+
       // Send failure notification if there are failures
       if (this.results.failed > 0) {
         await this.notificationManager.sendFailureNotification(this.results, []);
       }
-      
+
       // Send trend notification if significant trends detected
       if (trendAnalysis) {
         await this.notificationManager.sendTrendNotification(trendAnalysis);
       }
-      
+
       console.log('Notifications sent successfully');
-      
     } catch (error) {
       console.error('Failed to send notifications:', error.message);
       // Don't fail the entire process for notification errors
@@ -786,8 +819,9 @@ class CIResultsAggregator {
    */
   setGitHubOutputs() {
     if (process.env.GITHUB_ACTIONS) {
-      const passRate = this.results.total > 0 ? ((this.results.passed / this.results.total) * 100).toFixed(1) : 0;
-      
+      const passRate =
+        this.results.total > 0 ? ((this.results.passed / this.results.total) * 100).toFixed(1) : 0;
+
       console.log(`::set-output name=total_tests::${this.results.total}`);
       console.log(`::set-output name=passed_tests::${this.results.passed}`);
       console.log(`::set-output name=failed_tests::${this.results.failed}`);
@@ -815,7 +849,7 @@ class CIResultsAggregator {
 // Run aggregation if called directly
 if (require.main === module) {
   const aggregator = new CIResultsAggregator();
-  aggregator.aggregate().catch(error => {
+  aggregator.aggregate().catch((error) => {
     console.error('Aggregation failed:', error);
     process.exit(1);
   });

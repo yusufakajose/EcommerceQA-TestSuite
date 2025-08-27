@@ -2,7 +2,7 @@ name: Pull Request Validation
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     types: [opened, synchronize, reopened]
 
 env:
@@ -55,8 +55,8 @@ jobs:
 
       - name: Security audit
         run: |
-          echo "Running security audit..."
-          npm audit --audit-level=high || echo "Security audit completed with warnings"
+          echo "Running security audit (high/critical will fail the job)..."
+          npm audit --audit-level=high
 
   # Smoke tests for quick feedback
   pr-smoke-tests:
@@ -165,9 +165,9 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             let comment = '## PR Smoke Test Results\n\n';
-            
+
             try {
               // Try to read test results if available
               comment += 'Smoke tests completed successfully!\n\n';
@@ -175,9 +175,9 @@ jobs:
             } catch (error) {
               comment += 'Smoke tests encountered issues. Please check the workflow logs.\n\n';
             }
-            
+
             comment += '\n---\n*Automated comment from PR validation workflow*';
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

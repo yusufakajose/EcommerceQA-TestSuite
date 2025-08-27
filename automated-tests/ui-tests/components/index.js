@@ -8,5 +8,5 @@ const { FormComponent } = require('./FormComponent');
 
 module.exports = {
   NavigationComponent,
-  FormComponent
+  FormComponent,
 };

@@ -8,7 +8,7 @@
   },
   "retries": 0,
   "workers": 4,
-  "browsers": ["chromium"],
+  "browsers": ["chromium", "firefox", "webkit"],
   "headless": true,
   "video": "retain-on-failure",
   "screenshot": "only-on-failure",

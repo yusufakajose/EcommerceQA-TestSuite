@@ -33,7 +33,7 @@ class TestRunner {
         browsers: ['chromium'],
         outputDir: './test-results',
         reportDir: './reports',
-        cleanPreviousResults: true
+        cleanPreviousResults: true,
       },
       notifications: {
         enabled: process.env.NOTIFICATIONS_ENABLED !== 'false',
@@ -43,16 +43,16 @@ class TestRunner {
           secure: process.env.SMTP_SECURE === 'true',
           auth: {
             user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
-          }
+            pass: process.env.SMTP_PASS,
+          },
         },
         from: process.env.NOTIFICATION_FROM || 'noreply@example.com',
         recipients: {
           summary: process.env.SUMMARY_RECIPIENTS?.split(',') || [],
           failures: process.env.FAILURE_RECIPIENTS?.split(',') || [],
-          critical: process.env.CRITICAL_RECIPIENTS?.split(',') || []
-        }
-      }
+          critical: process.env.CRITICAL_RECIPIENTS?.split(',') || [],
+        },
+      },
     };
 
     // Load from config file if exists
@@ -78,15 +78,15 @@ class TestRunner {
    */
   mergeConfig(defaultConfig, fileConfig) {
     const merged = { ...defaultConfig };
-    
-    Object.keys(fileConfig).forEach(key => {
+
+    Object.keys(fileConfig).forEach((key) => {
       if (typeof fileConfig[key] === 'object' && !Array.isArray(fileConfig[key])) {
         merged[key] = { ...merged[key], ...fileConfig[key] };
       } else {
         merged[key] = fileConfig[key];
       }
     });
-    
+
     return merged;
   }
 
@@ -97,11 +97,11 @@ class TestRunner {
    */
   applyCommandLineArgs(config) {
     const args = process.argv.slice(2);
-    
+
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
       const nextArg = args[i + 1];
-      
+
       switch (arg) {
         case '--environments':
         case '-e':
@@ -161,7 +161,7 @@ class TestRunner {
           break;
       }
     }
-    
+
     return config;
   }
 
@@ -211,44 +211,43 @@ Environment Variables:
   async run() {
     console.log('🚀 Starting Test Execution Framework');
     console.log('=====================================');
-    
+
     const startTime = Date.now();
     let results = null;
     let trendAnalysis = null;
-    
+
     try {
       // Display configuration
       this.displayConfiguration();
-      
+
       // Execute tests
       console.log('\n📋 Executing tests...');
       results = await this.testExecutor.executeTests({
-        testPattern: this.config.execution.testPattern
+        testPattern: this.config.execution.testPattern,
       });
-      
+
       // Generate reports
       console.log('\n📊 Generating reports...');
       await this.reportGenerator.generateReport();
-      
+
       // Load trend analysis
       trendAnalysis = await this.loadTrendAnalysis();
-      
+
       // Send notifications
       if (this.config.notifications.enabled) {
         console.log('\n📧 Sending notifications...');
         await this.sendNotifications(results, trendAnalysis);
       }
-      
+
       // Display summary
       this.displaySummary(results, Date.now() - startTime);
-      
+
       // Exit with appropriate code
       const exitCode = results.failed > 0 ? 1 : 0;
       process.exit(exitCode);
-      
     } catch (error) {
       console.error('\n❌ Test execution failed:', error.message);
-      
+
       // Send failure notification
       if (this.config.notifications.enabled && results) {
         try {
@@ -257,7 +256,7 @@ Environment Variables:
           console.error('Failed to send failure notification:', notificationError.message);
         }
       }
-      
+
       process.exit(1);
     }
   }
@@ -273,7 +272,7 @@ Environment Variables:
     console.log(`   Timeout: ${this.config.execution.timeout / 1000}s`);
     console.log(`   Retries: ${this.config.execution.retries}`);
     console.log(`   Notifications: ${this.config.notifications.enabled ? 'Enabled' : 'Disabled'}`);
-    
+
     if (this.config.execution.testPattern) {
       console.log(`   Test Pattern: ${this.config.execution.testPattern}`);
     }
@@ -285,7 +284,7 @@ Environment Variables:
    */
   async loadTrendAnalysis() {
     const trendPath = path.join(this.config.execution.reportDir, 'trend-analysis.json');
-    
+
     if (fs.existsSync(trendPath)) {
       try {
         return JSON.parse(fs.readFileSync(trendPath, 'utf8'));
@@ -293,7 +292,7 @@ Environment Variables:
         console.warn('Failed to load trend analysis:', error.message);
       }
     }
-    
+
     return null;
   }
 
@@ -306,19 +305,18 @@ Environment Variables:
     try {
       // Send summary notification
       await this.notificationManager.sendSummaryNotification(results, trendAnalysis);
-      
+
       // Send failure notification if there are failures
       if (results.failed > 0) {
         await this.notificationManager.sendFailureNotification(results, []);
       }
-      
+
       // Send trend notification if significant trends detected
       if (trendAnalysis && this.notificationManager.hasSignificantTrends(trendAnalysis)) {
         await this.notificationManager.sendTrendNotification(trendAnalysis);
       }
-      
+
       console.log('   ✅ Notifications sent successfully');
-      
     } catch (error) {
       console.error('   ❌ Failed to send notifications:', error.message);
     }
@@ -331,7 +329,7 @@ Environment Variables:
    */
   displaySummary(results, totalDuration) {
     const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
-    
+
     console.log('\n📈 Execution Summary');
     console.log('===================');
     console.log(`   Total Tests: ${results.total}`);
@@ -340,7 +338,7 @@ Environment Variables:
     console.log(`   Skipped: ${results.skipped} ⏭️`);
     console.log(`   Pass Rate: ${passRate}%`);
     console.log(`   Duration: ${this.formatDuration(totalDuration)}`);
-    
+
     if (Object.keys(results.environments).length > 1) {
       console.log('\n   Environment Results:');
       Object.entries(results.environments).forEach(([env, stats]) => {
@@ -348,22 +346,31 @@ Environment Variables:
         console.log(`     ${env}: ${stats.passed}/${stats.total} (${envPassRate}%)`);
       });
     }
-    
+
     if (Object.keys(results.browsers).length > 1) {
       console.log('\n   Browser Results:');
       Object.entries(results.browsers).forEach(([browser, stats]) => {
-        const browserPassRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
+        const browserPassRate =
+          stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
         console.log(`     ${browser}: ${stats.passed}/${stats.total} (${browserPassRate}%)`);
       });
     }
-    
+
     console.log('\n📁 Reports Generated:');
-    console.log(`   HTML Report: ${path.join(this.config.execution.reportDir, 'test-report.html')}`);
-    console.log(`   JSON Report: ${path.join(this.config.execution.reportDir, 'test-results.json')}`);
-    console.log(`   Comprehensive Report: ${path.join(this.config.execution.reportDir, 'comprehensive/index.html')}`);
-    
+    console.log(
+      `   HTML Report: ${path.join(this.config.execution.reportDir, 'test-report.html')}`
+    );
+    console.log(
+      `   JSON Report: ${path.join(this.config.execution.reportDir, 'test-results.json')}`
+    );
+    console.log(
+      `   Comprehensive Report: ${path.join(this.config.execution.reportDir, 'comprehensive/index.html')}`
+    );
+
     if (results.failed > 0) {
-      console.log('\n⚠️  Some tests failed. Please review the detailed reports for more information.');
+      console.log(
+        '\n⚠️  Some tests failed. Please review the detailed reports for more information.'
+      );
     } else {
       console.log('\n🎉 All tests passed successfully!');
     }
@@ -378,7 +385,7 @@ Environment Variables:
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
     } else if (minutes > 0) {
@@ -392,7 +399,7 @@ Environment Variables:
 // Run if called directly
 if (require.main === module) {
   const runner = new TestRunner();
-  runner.run().catch(error => {
+  runner.run().catch((error) => {
     console.error('Fatal error:', error);
     process.exit(1);
   });

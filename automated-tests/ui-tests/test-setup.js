@@ -21,29 +21,29 @@ class TestSetup {
   async initialize() {
     // Set default viewport for consistent testing
     await this.page.setViewportSize({ width: 1280, height: 720 });
-    
+
     // Set up request/response logging for debugging
-    this.page.on('request', request => {
+    this.page.on('request', (request) => {
       if (process.env.DEBUG_REQUESTS === 'true') {
         console.log(`🔄 Request: ${request.method()} ${request.url()}`);
       }
     });
-    
-    this.page.on('response', response => {
+
+    this.page.on('response', (response) => {
       if (process.env.DEBUG_RESPONSES === 'true' && !response.ok()) {
         console.log(`❌ Failed Response: ${response.status()} ${response.url()}`);
       }
     });
-    
+
     // Set up console logging
-    this.page.on('console', msg => {
+    this.page.on('console', (msg) => {
       if (process.env.DEBUG_CONSOLE === 'true') {
         console.log(`🖥️  Console ${msg.type()}: ${msg.text()}`);
       }
     });
-    
+
     // Set up error handling
-    this.page.on('pageerror', error => {
+    this.page.on('pageerror', (error) => {
       console.error(`💥 Page Error: ${error.message}`);
     });
   }
@@ -73,12 +73,12 @@ class TestSetup {
   async takeScreenshot(name) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const screenshotPath = `automated-tests/ui-tests/screenshots/${name}-${timestamp}.png`;
-    
-    await this.page.screenshot({ 
-      path: screenshotPath, 
-      fullPage: true 
+
+    await this.page.screenshot({
+      path: screenshotPath,
+      fullPage: true,
     });
-    
+
     this.screenshots.push(screenshotPath);
     console.log(`📸 Screenshot saved: ${screenshotPath}`);
     return screenshotPath;
@@ -99,7 +99,7 @@ class TestSetup {
     try {
       // Clear cookies
       await this.context.clearCookies();
-      
+
       // Clear local storage and session storage
       await this.page.evaluate(() => {
         try {
@@ -110,7 +110,7 @@ class TestSetup {
           console.log('localStorage not available');
         }
       });
-      
+
       console.log('🧹 Browser data cleared');
     } catch (error) {
       console.log('⚠️  Browser data cleanup skipped:', error.message);
@@ -123,17 +123,16 @@ class TestSetup {
   async navigateToApp(path = '/') {
     const baseURL = process.env.BASE_URL || 'http://localhost:3000';
     const fullURL = `${baseURL}${path}`;
-    
+
     try {
-      await this.page.goto(fullURL, { 
+      await this.page.goto(fullURL, {
         waitUntil: 'networkidle',
-        timeout: 30000 
+        timeout: 30000,
       });
-      
+
       // Verify page loaded successfully
       await expect(this.page).toHaveURL(new RegExp(path));
       console.log(`🌐 Navigated to: ${fullURL}`);
-      
     } catch (error) {
       console.error(`❌ Navigation failed to ${fullURL}: ${error.message}`);
       await this.takeScreenshot('navigation-error');
@@ -148,9 +147,9 @@ class TestSetup {
     const defaultOptions = {
       timeout: 10000,
       state: 'visible',
-      ...options
+      ...options,
     };
-    
+
     try {
       await this.page.waitForSelector(selector, defaultOptions);
       console.log(`✅ Element found: ${selector}`);
@@ -166,19 +165,19 @@ class TestSetup {
    */
   async fillField(selector, value, options = {}) {
     await this.waitForElement(selector);
-    
+
     // Clear field first
     await this.page.fill(selector, '');
-    
+
     // Fill with new value
     await this.page.fill(selector, value);
-    
+
     // Verify value was set
     if (options.verify !== false) {
       const actualValue = await this.page.inputValue(selector);
       expect(actualValue).toBe(value);
     }
-    
+
     console.log(`📝 Filled field ${selector} with: ${value}`);
   }
 
@@ -188,7 +187,7 @@ class TestSetup {
   async clickElement(selector, options = {}) {
     const maxRetries = options.retries || 3;
     let lastError;
-    
+
     for (let i = 0; i < maxRetries; i++) {
       try {
         await this.waitForElement(selector);
@@ -198,13 +197,13 @@ class TestSetup {
       } catch (error) {
         lastError = error;
         console.warn(`⚠️  Click attempt ${i + 1} failed for ${selector}: ${error.message}`);
-        
+
         if (i < maxRetries - 1) {
           await this.page.waitForTimeout(1000); // Wait 1 second before retry
         }
       }
     }
-    
+
     await this.takeScreenshot(`click-failed-${selector.replace(/[^a-zA-Z0-9]/g, '-')}`);
     throw lastError;
   }
@@ -216,10 +215,9 @@ class TestSetup {
     try {
       // Clear any remaining data
       await this.clearBrowserData();
-      
+
       // Log cleanup completion
       console.log('🧹 Test cleanup completed');
-      
     } catch (error) {
       console.error(`❌ Cleanup error: ${error.message}`);
     }
@@ -232,7 +230,7 @@ class TestSetup {
     return {
       screenshots: this.screenshots,
       testData: this.testData,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

@@ -23,10 +23,10 @@ class TestDataHelper {
   async initializeTestSuite(suiteName) {
     console.log(`Initializing test data for suite: ${suiteName}`);
     this.currentSuite = suiteName;
-    
+
     // Reset generators for clean state
     this.dataManager.reset();
-    
+
     // Log initialization if enabled
     if (this.config.logging.enabled && this.config.logging.logDataGeneration) {
       console.log(`Test data initialized for environment: ${this.environment}`);
@@ -41,7 +41,7 @@ class TestDataHelper {
    */
   getScenarioData(scenarioName, customConfig = {}) {
     const scenarioConfig = this.config.scenarios[scenarioName];
-    
+
     if (!scenarioConfig) {
       throw new Error(`Scenario '${scenarioName}' not found in configuration`);
     }
@@ -49,14 +49,14 @@ class TestDataHelper {
     // Merge custom config with default scenario config
     const mergedConfig = {
       ...scenarioConfig,
-      ...customConfig
+      ...customConfig,
     };
 
     const scenarioData = this.dataManager.createScenarioData(mergedConfig);
-    
+
     // Store for cleanup later
     this.currentTestData.set(scenarioName, scenarioData);
-    
+
     return scenarioData;
   }
 
@@ -72,19 +72,22 @@ class TestDataHelper {
 
     switch (userType) {
       case 'valid':
-        userData = index !== null ? 
-          users.validUsers[index] : 
-          this.dataManager.getRandomTestData('users', 'validUsers');
+        userData =
+          index !== null
+            ? users.validUsers[index]
+            : this.dataManager.getRandomTestData('users', 'validUsers');
         break;
       case 'invalid':
-        userData = index !== null ? 
-          users.invalidUsers[index] : 
-          this.dataManager.getRandomTestData('users', 'invalidUsers');
+        userData =
+          index !== null
+            ? users.invalidUsers[index]
+            : this.dataManager.getRandomTestData('users', 'invalidUsers');
         break;
       case 'existing':
-        userData = index !== null ? 
-          users.existingUsers[index] : 
-          this.dataManager.getRandomTestData('users', 'existingUsers');
+        userData =
+          index !== null
+            ? users.existingUsers[index]
+            : this.dataManager.getRandomTestData('users', 'existingUsers');
         break;
       case 'generated':
         userData = this.dataGenerator.generateUser();
@@ -108,14 +111,16 @@ class TestDataHelper {
 
     switch (productType) {
       case 'featured':
-        productData = index !== null ? 
-          products.featuredProducts[index] : 
-          this.dataManager.getRandomTestData('products', 'featuredProducts');
+        productData =
+          index !== null
+            ? products.featuredProducts[index]
+            : this.dataManager.getRandomTestData('products', 'featuredProducts');
         break;
       case 'outOfStock':
-        productData = index !== null ? 
-          products.outOfStockProducts[index] : 
-          this.dataManager.getRandomTestData('products', 'outOfStockProducts');
+        productData =
+          index !== null
+            ? products.outOfStockProducts[index]
+            : this.dataManager.getRandomTestData('products', 'outOfStockProducts');
         break;
       case 'generated':
         productData = this.dataGenerator.generateProduct();
@@ -134,8 +139,8 @@ class TestDataHelper {
    */
   getCartData(scenarioName) {
     const cartData = this.dataManager.getTestData('cart');
-    const scenario = cartData.cartScenarios.find(s => s.scenarioName === scenarioName);
-    
+    const scenario = cartData.cartScenarios.find((s) => s.scenarioName === scenarioName);
+
     if (!scenario) {
       throw new Error(`Cart scenario '${scenarioName}' not found`);
     }
@@ -150,8 +155,8 @@ class TestDataHelper {
    */
   getCheckoutData(scenarioName) {
     const checkoutData = this.dataManager.getTestData('checkout');
-    const scenario = checkoutData.checkoutScenarios.find(s => s.scenarioName === scenarioName);
-    
+    const scenario = checkoutData.checkoutScenarios.find((s) => s.scenarioName === scenarioName);
+
     if (!scenario) {
       throw new Error(`Checkout scenario '${scenarioName}' not found`);
     }
@@ -166,8 +171,10 @@ class TestDataHelper {
    */
   getPaymentMethodData(cardType = 'visa') {
     const paymentData = this.dataManager.getTestData('checkout');
-    const paymentMethod = paymentData.paymentMethods.find(p => p.name.toLowerCase().includes(cardType.toLowerCase()));
-    
+    const paymentMethod = paymentData.paymentMethods.find((p) =>
+      p.name.toLowerCase().includes(cardType.toLowerCase())
+    );
+
     if (!paymentMethod) {
       // Generate if not found in fixtures
       return this.dataGenerator.generateCreditCard(cardType);
@@ -206,7 +213,9 @@ class TestDataHelper {
    */
   generateBulkData(dataType, count, overrides = {}) {
     if (count > this.config.generation.maxBulkGeneration) {
-      throw new Error(`Bulk generation count (${count}) exceeds maximum allowed (${this.config.generation.maxBulkGeneration})`);
+      throw new Error(
+        `Bulk generation count (${count}) exceeds maximum allowed (${this.config.generation.maxBulkGeneration})`
+      );
     }
 
     return this.dataGenerator.generateBulk(dataType, count, overrides);
@@ -220,7 +229,7 @@ class TestDataHelper {
    */
   validateTestData(data, schemaName) {
     const schema = this.config.schemas[schemaName];
-    
+
     if (!schema) {
       throw new Error(`Schema '${schemaName}' not found`);
     }
@@ -238,23 +247,29 @@ class TestDataHelper {
     const testData = {};
 
     // Process each requirement
-    Object.keys(requirements).forEach(key => {
+    Object.keys(requirements).forEach((key) => {
       const requirement = requirements[key];
-      
+
       if (requirement.type === 'fixture') {
         testData[key] = this.dataManager.getTestData(requirement.fixture, requirement.dataKey);
       } else if (requirement.type === 'generated') {
         if (requirement.bulk) {
           testData[key] = this.generateBulkData(
-            requirement.dataType, 
+            requirement.dataType,
             requirement.count || this.config.generation.defaultBulkSize,
             requirement.overrides || {}
           );
         } else {
-          testData[key] = this.generateUniqueData(requirement.dataType, requirement.overrides || {});
+          testData[key] = this.generateUniqueData(
+            requirement.dataType,
+            requirement.overrides || {}
+          );
         }
       } else if (requirement.type === 'random') {
-        testData[key] = this.dataManager.getRandomTestData(requirement.fixture, requirement.dataKey);
+        testData[key] = this.dataManager.getRandomTestData(
+          requirement.fixture,
+          requirement.dataKey
+        );
       }
     });
 
@@ -327,11 +342,11 @@ class TestDataHelper {
     const stats = {
       fixtures: {},
       currentTestData: this.currentTestData.size,
-      environment: this.environment
+      environment: this.environment,
     };
 
     // Get stats for each fixture
-    Object.keys(this.config.fixtures).forEach(fixtureName => {
+    Object.keys(this.config.fixtures).forEach((fixtureName) => {
       stats.fixtures[fixtureName] = this.dataManager.getDataStats(fixtureName);
     });
 

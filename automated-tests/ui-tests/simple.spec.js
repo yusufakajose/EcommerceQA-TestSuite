@@ -9,9 +9,9 @@ test('simple test to verify setup', async ({ page }) => {
 test('basic navigation test', async ({ page }) => {
   // Test basic navigation to the configured baseURL
   await page.goto('https://demo.playwright.dev/todomvc');
-  
+
   // Verify page loads (should work with any valid URL)
   await expect(page).toHaveURL(/demo\.playwright\.dev/);
-  
+
   console.log('✅ Basic navigation test completed');
 });

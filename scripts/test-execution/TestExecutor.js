@@ -18,7 +18,7 @@ class TestExecutor {
       outputDir: './test-results',
       reportDir: './reports',
       cleanPreviousResults: true,
-      ...config
+      ...config,
     };
   }
 
@@ -29,7 +29,7 @@ class TestExecutor {
    */
   async executeTests(options = {}) {
     const { testPattern } = options;
-    
+
     // Clean previous results if configured
     if (this.config.cleanPreviousResults) {
       await this.cleanPreviousResults();
@@ -45,7 +45,7 @@ class TestExecutor {
       skipped: 0,
       environments: {},
       browsers: {},
-      duration: 0
+      duration: 0,
     };
 
     const startTime = Date.now();
@@ -55,15 +55,15 @@ class TestExecutor {
       for (const environment of this.config.environments) {
         for (const browser of this.config.browsers) {
           console.log(`\n🧪 Running tests: ${environment} / ${browser}`);
-          
+
           const envResults = await this.runTestsForEnvironment(environment, browser, testPattern);
-          
+
           // Aggregate results
           results.total += envResults.total;
           results.passed += envResults.passed;
           results.failed += envResults.failed;
           results.skipped += envResults.skipped;
-          
+
           // Track per-environment stats
           if (!results.environments[environment]) {
             results.environments[environment] = { total: 0, passed: 0, failed: 0, skipped: 0 };
@@ -72,7 +72,7 @@ class TestExecutor {
           results.environments[environment].passed += envResults.passed;
           results.environments[environment].failed += envResults.failed;
           results.environments[environment].skipped += envResults.skipped;
-          
+
           // Track per-browser stats
           if (!results.browsers[browser]) {
             results.browsers[browser] = { total: 0, passed: 0, failed: 0, skipped: 0 };
@@ -85,12 +85,11 @@ class TestExecutor {
       }
 
       results.duration = Date.now() - startTime;
-      
+
       // Save results summary
       await this.saveResultsSummary(results);
-      
+
       return results;
-      
     } catch (error) {
       console.error('Test execution failed:', error.message);
       throw error;
@@ -109,11 +108,15 @@ class TestExecutor {
       const args = [
         'test',
         '--config=config/playwright.config.js',
-        '--project', browser,
-        '--workers', this.config.maxParallelWorkers.toString(),
-        '--timeout', this.config.timeout.toString(),
-        '--retries', this.config.retries.toString(),
-        '--reporter=json'
+        '--project',
+        browser,
+        '--workers',
+        this.config.maxParallelWorkers.toString(),
+        '--timeout',
+        this.config.timeout.toString(),
+        '--retries',
+        this.config.retries.toString(),
+        '--reporter=json',
       ];
 
       // Add test pattern if specified
@@ -124,12 +127,12 @@ class TestExecutor {
       // Set environment variable
       const env = {
         ...process.env,
-        TEST_ENV: environment
+        TEST_ENV: environment,
       };
 
       const playwrightProcess = spawn('npx', ['playwright', ...args], {
         env,
-        stdio: ['pipe', 'pipe', 'pipe']
+        stdio: ['pipe', 'pipe', 'pipe'],
       });
 
       let stdout = '';
@@ -149,18 +152,24 @@ class TestExecutor {
         try {
           // Parse Playwright JSON output
           const results = this.parsePlaywrightResults(stdout, stderr);
-          
+
           console.log(`   ✅ ${environment}/${browser}: ${results.passed}/${results.total} passed`);
-          
+
           resolve(results);
         } catch (error) {
-          console.error(`   ❌ Failed to parse results for ${environment}/${browser}:`, error.message);
+          console.error(
+            `   ❌ Failed to parse results for ${environment}/${browser}:`,
+            error.message
+          );
           resolve({ total: 0, passed: 0, failed: 0, skipped: 0 });
         }
       });
 
       playwrightProcess.on('error', (error) => {
-        console.error(`   ❌ Failed to start Playwright for ${environment}/${browser}:`, error.message);
+        console.error(
+          `   ❌ Failed to start Playwright for ${environment}/${browser}:`,
+          error.message
+        );
         reject(error);
       });
     });
@@ -177,7 +186,7 @@ class TestExecutor {
       // Try to find JSON output in stdout
       const lines = stdout.split('\n');
       let jsonResult = null;
-      
+
       for (const line of lines) {
         if (line.trim().startsWith('{') && line.includes('"stats"')) {
           jsonResult = JSON.parse(line.trim());
@@ -190,13 +199,12 @@ class TestExecutor {
           total: jsonResult.stats.total || 0,
           passed: jsonResult.stats.passed || 0,
           failed: jsonResult.stats.failed || 0,
-          skipped: jsonResult.stats.skipped || 0
+          skipped: jsonResult.stats.skipped || 0,
         };
       }
 
       // Fallback: parse from text output
       return this.parseTextResults(stdout + stderr);
-      
     } catch (error) {
       console.warn('Failed to parse JSON results, falling back to text parsing:', error.message);
       return this.parseTextResults(stdout + stderr);
@@ -210,24 +218,27 @@ class TestExecutor {
    */
   parseTextResults(output) {
     const results = { total: 0, passed: 0, failed: 0, skipped: 0 };
-    
+
     // Look for summary patterns
-    const patterns = [
-      /(\d+) passed/i,
-      /(\d+) failed/i,
-      /(\d+) skipped/i,
-      /(\d+) total/i
-    ];
+    const patterns = [/(\d+) passed/i, /(\d+) failed/i, /(\d+) skipped/i, /(\d+) total/i];
 
     patterns.forEach((pattern, index) => {
       const match = output.match(pattern);
       if (match) {
         const count = parseInt(match[1]);
         switch (index) {
-          case 0: results.passed = count; break;
-          case 1: results.failed = count; break;
-          case 2: results.skipped = count; break;
-          case 3: results.total = count; break;
+          case 0:
+            results.passed = count;
+            break;
+          case 1:
+            results.failed = count;
+            break;
+          case 2:
+            results.skipped = count;
+            break;
+          case 3:
+            results.total = count;
+            break;
         }
       }
     });
@@ -245,7 +256,7 @@ class TestExecutor {
    */
   async cleanPreviousResults() {
     const dirsToClean = [this.config.outputDir, this.config.reportDir];
-    
+
     for (const dir of dirsToClean) {
       if (fs.existsSync(dir)) {
         try {
@@ -263,7 +274,7 @@ class TestExecutor {
    */
   async ensureDirectories() {
     const dirs = [this.config.outputDir, this.config.reportDir];
-    
+
     for (const dir of dirs) {
       try {
         await fs.promises.mkdir(dir, { recursive: true });
@@ -279,14 +290,14 @@ class TestExecutor {
    */
   async saveResultsSummary(results) {
     const summaryPath = path.join(this.config.reportDir, 'execution-summary.json');
-    
+
     try {
       const summary = {
         ...results,
         timestamp: new Date().toISOString(),
-        config: this.config
+        config: this.config,
       };
-      
+
       await fs.promises.writeFile(summaryPath, JSON.stringify(summary, null, 2));
       console.log(`   📄 Results summary saved to ${summaryPath}`);
     } catch (error) {

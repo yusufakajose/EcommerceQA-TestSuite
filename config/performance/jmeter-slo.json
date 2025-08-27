@@ -1,0 +1,15 @@
+{
+  "global": {
+    "error_rate_pct": { "lte": 5 },
+    "p95_ms": { "lte": 1500 },
+    "throughput_rps": { "gte": 5 }
+  },
+  "labels": {
+    "01 - Load Homepage": {
+      "p95_ms": { "lte": 800 },
+      "error_rate_pct": { "lte": 2 },
+      "throughput_rps": { "gte": 1 }
+    },
+    "02 - Login": { "p95_ms": { "lte": 1200 }, "error_rate_pct": { "lte": 3 } }
+  }
+}

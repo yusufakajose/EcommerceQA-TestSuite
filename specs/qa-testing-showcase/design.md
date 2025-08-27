@@ -7,6 +7,7 @@ The QA Testing Showcase project will demonstrate comprehensive testing practices
 ## Architecture
 
 ### Project Structure
+
 ```
 qa-testing-showcase/
 ├── manual-tests/
@@ -32,6 +33,7 @@ qa-testing-showcase/
 ```
 
 ### Testing Layers
+
 1. **Manual Testing Layer**: Comprehensive test case documentation and execution tracking
 2. **UI Automation Layer**: Browser-based testing using Playwright
 3. **API Testing Layer**: REST API validation using Postman/Newman
@@ -43,12 +45,14 @@ qa-testing-showcase/
 ### Manual Testing Components
 
 #### Test Case Management
+
 - **Test Case Templates**: Standardized format with preconditions, steps, expected results
 - **Test Suite Organization**: Hierarchical categorization by functional areas
 - **Traceability Matrix**: Links between requirements and test cases
 - **Test Execution Tracking**: Status tracking and results documentation
 
 #### Bug Reporting System
+
 - **Bug Report Templates**: Structured format with severity classification
 - **Bug Lifecycle Tracking**: Status progression from discovery to resolution
 - **Evidence Collection**: Screenshots, logs, and reproduction steps
@@ -57,6 +61,7 @@ qa-testing-showcase/
 ### Automated Testing Components
 
 #### UI Testing Framework (Playwright)
+
 - **Page Object Model**: Reusable page components and element selectors
 - **Test Data Management**: JSON fixtures for test scenarios
 - **Cross-browser Testing**: Chrome, Firefox, Safari compatibility
@@ -64,6 +69,7 @@ qa-testing-showcase/
 - **Visual Regression Testing**: Screenshot comparison capabilities
 
 #### API Testing Framework (Postman/Newman)
+
 - **Collection Organization**: Grouped by API endpoints and functionality
 - **Environment Management**: Development, staging, production configurations
 - **Data-driven Testing**: CSV datasets for parameterized tests
@@ -71,6 +77,7 @@ qa-testing-showcase/
 - **Authentication Testing**: Token-based and session-based auth flows
 
 #### Performance Testing Framework (JMeter)
+
 - **Load Test Scenarios**: User journey simulation under load
 - **Stress Testing**: System breaking point identification
 - **Spike Testing**: Sudden load increase handling
@@ -80,6 +87,7 @@ qa-testing-showcase/
 ## Data Models
 
 ### Test Case Model
+
 ```typescript
 interface TestCase {
   id: string;
@@ -102,6 +110,7 @@ interface TestStep {
 ```
 
 ### Bug Report Model
+
 ```typescript
 interface BugReport {
   id: string;
@@ -120,6 +129,7 @@ interface BugReport {
 ```
 
 ### Test Execution Model
+
 ```typescript
 interface TestExecution {
   testCaseId: string;
@@ -136,6 +146,7 @@ interface TestExecution {
 ## Error Handling
 
 ### Test Execution Error Handling
+
 - **Retry Mechanisms**: Automatic retry for flaky tests with exponential backoff
 - **Timeout Management**: Configurable timeouts for different test types
 - **Screenshot Capture**: Automatic screenshot on test failure
@@ -143,6 +154,7 @@ interface TestExecution {
 - **Graceful Degradation**: Continue test execution when non-critical tests fail
 
 ### Data Validation Error Handling
+
 - **Schema Validation**: API response schema validation with detailed error messages
 - **Data Sanitization**: Input data validation and sanitization
 - **Boundary Testing**: Edge case validation with proper error reporting
@@ -151,6 +163,7 @@ interface TestExecution {
 ## Testing Strategy
 
 ### Test Coverage Strategy
+
 - **Functional Coverage**: All user stories and acceptance criteria
 - **Browser Coverage**: Chrome, Firefox, Safari, Edge
 - **Device Coverage**: Desktop, tablet, mobile viewports
@@ -158,6 +171,7 @@ interface TestExecution {
 - **Performance Coverage**: Load, stress, spike, and volume testing
 
 ### Test Data Strategy
+
 - **Static Test Data**: JSON fixtures for consistent test scenarios
 - **Dynamic Test Data**: Generated data for unique test cases
 - **Boundary Data**: Edge cases and limit testing
@@ -165,6 +179,7 @@ interface TestExecution {
 - **Production-like Data**: Realistic datasets for performance testing
 
 ### Test Environment Strategy
+
 - **Local Development**: Individual developer testing environment
 - **CI/CD Integration**: Automated test execution in pipeline
 - **Staging Environment**: Pre-production testing environment
@@ -173,18 +188,21 @@ interface TestExecution {
 ## Reporting and Documentation
 
 ### Test Reporting Framework
+
 - **HTML Reports**: Playwright HTML reporter with screenshots and videos
 - **JSON Reports**: Machine-readable results for CI/CD integration
 - **JUnit XML**: Standard format for test result integration
 - **Custom Dashboards**: Visual representation of test metrics and trends
 
 ### Documentation Standards
+
 - **Test Case Documentation**: Standardized templates and formatting
 - **API Documentation**: Postman collection documentation
 - **Setup Guides**: Environment setup and tool installation guides
 - **Best Practices**: Testing guidelines and coding standards
 
 ### Metrics and KPIs
+
 - **Test Coverage Metrics**: Percentage of requirements covered by tests
 - **Test Execution Metrics**: Pass/fail rates and execution times
 - **Defect Metrics**: Bug discovery rate and resolution time

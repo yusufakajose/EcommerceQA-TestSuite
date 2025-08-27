@@ -13,7 +13,7 @@ class ReportGenerator {
     this.reportDir = './reports';
     this.testResultsDir = './test-results';
     this.outputDir = './reports/comprehensive';
-    
+
     this.ensureDirectories();
   }
 
@@ -22,8 +22,8 @@ class ReportGenerator {
    */
   ensureDirectories() {
     const dirs = [this.reportDir, this.outputDir];
-    
-    dirs.forEach(dir => {
+
+    dirs.forEach((dir) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -35,28 +35,27 @@ class ReportGenerator {
    */
   async generateReport() {
     console.log('Generating comprehensive test report...');
-    
+
     try {
       // Load test results
       const results = await this.loadTestResults();
-      
+
       // Collect media files
       const mediaFiles = await this.collectMediaFiles();
-      
+
       // Generate main report
       await this.generateMainReport(results, mediaFiles);
-      
+
       // Generate detailed test reports
       await this.generateDetailedReports(results, mediaFiles);
-      
+
       // Generate media gallery
       await this.generateMediaGallery(mediaFiles);
-      
+
       // Generate summary dashboard
       await this.generateSummaryDashboard(results);
-      
+
       console.log('Comprehensive report generated successfully');
-      
     } catch (error) {
       console.error('Failed to generate comprehensive report:', error);
       throw error;
@@ -69,7 +68,7 @@ class ReportGenerator {
    */
   async loadTestResults() {
     const resultsPath = path.join(this.reportDir, 'test-results.json');
-    
+
     if (!fs.existsSync(resultsPath)) {
       console.warn('Test results file not found, using empty results');
       return {
@@ -81,10 +80,10 @@ class ReportGenerator {
         duration: 0,
         timestamp: new Date().toISOString(),
         config: {},
-        metadata: {}
+        metadata: {},
       };
     }
-    
+
     return JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
   }
 
@@ -97,18 +96,20 @@ class ReportGenerator {
       screenshots: [],
       videos: [],
       traces: [],
-      attachments: []
+      attachments: [],
     };
-    
+
     if (!fs.existsSync(this.testResultsDir)) {
       return mediaFiles;
     }
-    
+
     // Recursively find media files
     this.findMediaFiles(this.testResultsDir, mediaFiles);
-    
-    console.log(`Found ${mediaFiles.screenshots.length} screenshots, ${mediaFiles.videos.length} videos, ${mediaFiles.traces.length} traces`);
-    
+
+    console.log(
+      `Found ${mediaFiles.screenshots.length} screenshots, ${mediaFiles.videos.length} videos, ${mediaFiles.traces.length} traces`
+    );
+
     return mediaFiles;
   }
 
@@ -119,17 +120,17 @@ class ReportGenerator {
    */
   findMediaFiles(dir, mediaFiles) {
     const items = fs.readdirSync(dir);
-    
+
     for (const item of items) {
       const itemPath = path.join(dir, item);
       const stat = fs.statSync(itemPath);
-      
+
       if (stat.isDirectory()) {
         this.findMediaFiles(itemPath, mediaFiles);
       } else {
         const ext = path.extname(item).toLowerCase();
         const relativePath = path.relative(this.testResultsDir, itemPath);
-        
+
         const fileInfo = {
           name: item,
           path: itemPath,
@@ -138,9 +139,9 @@ class ReportGenerator {
           modified: stat.mtime,
           environment: this.extractEnvironmentFromPath(itemPath),
           browser: this.extractBrowserFromPath(itemPath),
-          testName: this.extractTestNameFromPath(itemPath)
+          testName: this.extractTestNameFromPath(itemPath),
         };
-        
+
         switch (ext) {
           case '.png':
           case '.jpg':
@@ -174,13 +175,13 @@ class ReportGenerator {
    */
   extractEnvironmentFromPath(filePath) {
     const environments = ['development', 'staging', 'production'];
-    
+
     for (const env of environments) {
       if (filePath.includes(env)) {
         return env;
       }
     }
-    
+
     return 'unknown';
   }
 
@@ -191,13 +192,13 @@ class ReportGenerator {
    */
   extractBrowserFromPath(filePath) {
     const browsers = ['chromium', 'firefox', 'webkit', 'chrome', 'safari', 'edge'];
-    
+
     for (const browser of browsers) {
       if (filePath.includes(browser)) {
         return browser;
       }
     }
-    
+
     return 'unknown';
   }
 
@@ -208,7 +209,7 @@ class ReportGenerator {
    */
   extractTestNameFromPath(filePath) {
     const fileName = path.basename(filePath, path.extname(filePath));
-    
+
     // Remove common prefixes/suffixes
     return fileName
       .replace(/^test-/, '')
@@ -226,7 +227,7 @@ class ReportGenerator {
   async generateMainReport(results, mediaFiles) {
     const reportPath = path.join(this.outputDir, 'index.html');
     const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -435,7 +436,7 @@ class ReportGenerator {
     </script>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(reportPath, html);
     console.log(`Main report saved: ${reportPath}`);
   }
@@ -449,14 +450,17 @@ class ReportGenerator {
     if (!results.environments || Object.keys(results.environments).length === 0) {
       return '<p>No environment data available.</p>';
     }
-    
-    let html = '<table><thead><tr><th>Environment</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th><th>Status</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<table><thead><tr><th>Environment</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th><th>Status</th></tr></thead><tbody>';
+
     Object.entries(results.environments).forEach(([env, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
-      const status = stats.failed === 0 ? 'success' : stats.failed > stats.total * 0.1 ? 'danger' : 'warning';
-      const statusText = stats.failed === 0 ? 'Passing' : stats.failed > stats.total * 0.1 ? 'Critical' : 'Warning';
-      
+      const status =
+        stats.failed === 0 ? 'success' : stats.failed > stats.total * 0.1 ? 'danger' : 'warning';
+      const statusText =
+        stats.failed === 0 ? 'Passing' : stats.failed > stats.total * 0.1 ? 'Critical' : 'Warning';
+
       html += `<tr>
         <td><strong>${env}</strong></td>
         <td>${stats.total}</td>
@@ -467,7 +471,7 @@ class ReportGenerator {
         <td><span class="badge badge-${status}">${statusText}</span></td>
       </tr>`;
     });
-    
+
     html += '</tbody></table>';
     return html;
   }
@@ -481,14 +485,17 @@ class ReportGenerator {
     if (!results.browsers || Object.keys(results.browsers).length === 0) {
       return '<p>No browser data available.</p>';
     }
-    
-    let html = '<table><thead><tr><th>Browser</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th><th>Status</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<table><thead><tr><th>Browser</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th><th>Status</th></tr></thead><tbody>';
+
     Object.entries(results.browsers).forEach(([browser, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
-      const status = stats.failed === 0 ? 'success' : stats.failed > stats.total * 0.1 ? 'danger' : 'warning';
-      const statusText = stats.failed === 0 ? 'Passing' : stats.failed > stats.total * 0.1 ? 'Critical' : 'Warning';
-      
+      const status =
+        stats.failed === 0 ? 'success' : stats.failed > stats.total * 0.1 ? 'danger' : 'warning';
+      const statusText =
+        stats.failed === 0 ? 'Passing' : stats.failed > stats.total * 0.1 ? 'Critical' : 'Warning';
+
       html += `<tr>
         <td><strong>${browser}</strong></td>
         <td>${stats.total}</td>
@@ -499,7 +506,7 @@ class ReportGenerator {
         <td><span class="badge badge-${status}">${statusText}</span></td>
       </tr>`;
     });
-    
+
     html += '</tbody></table>';
     return html;
   }
@@ -513,14 +520,17 @@ class ReportGenerator {
     if (!results.suites || Object.keys(results.suites).length === 0) {
       return '<p>No test suite data available.</p>';
     }
-    
-    let html = '<table><thead><tr><th>Test Suite</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th><th>Status</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<table><thead><tr><th>Test Suite</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th><th>Status</th></tr></thead><tbody>';
+
     Object.entries(results.suites).forEach(([suite, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
-      const status = stats.failed === 0 ? 'success' : stats.failed > stats.total * 0.1 ? 'danger' : 'warning';
-      const statusText = stats.failed === 0 ? 'Passing' : stats.failed > stats.total * 0.1 ? 'Critical' : 'Warning';
-      
+      const status =
+        stats.failed === 0 ? 'success' : stats.failed > stats.total * 0.1 ? 'danger' : 'warning';
+      const statusText =
+        stats.failed === 0 ? 'Passing' : stats.failed > stats.total * 0.1 ? 'Critical' : 'Warning';
+
       html += `<tr>
         <td><strong>${suite}</strong></td>
         <td>${stats.total}</td>
@@ -531,7 +541,7 @@ class ReportGenerator {
         <td><span class="badge badge-${status}">${statusText}</span></td>
       </tr>`;
     });
-    
+
     html += '</tbody></table>';
     return html;
   }
@@ -546,12 +556,12 @@ class ReportGenerator {
     if (mediaFiles.length === 0) {
       return `<p>No ${type}s available.</p>`;
     }
-    
+
     let html = '<div class="media-grid">';
-    
-    mediaFiles.forEach(file => {
+
+    mediaFiles.forEach((file) => {
       const relativePath = path.relative(process.cwd(), file.path);
-      
+
       if (type === 'screenshot') {
         html += `
           <div class="media-item">
@@ -575,7 +585,7 @@ class ReportGenerator {
           </div>`;
       }
     });
-    
+
     html += '</div>';
     return html;
   }
@@ -589,13 +599,14 @@ class ReportGenerator {
     if (attachments.length === 0) {
       return '<p>No traces or attachments available.</p>';
     }
-    
-    let html = '<table><thead><tr><th>File</th><th>Test</th><th>Environment</th><th>Browser</th><th>Size</th><th>Modified</th><th>Download</th></tr></thead><tbody>';
-    
-    attachments.forEach(file => {
+
+    let html =
+      '<table><thead><tr><th>File</th><th>Test</th><th>Environment</th><th>Browser</th><th>Size</th><th>Modified</th><th>Download</th></tr></thead><tbody>';
+
+    attachments.forEach((file) => {
       const relativePath = path.relative(process.cwd(), file.path);
       const sizeKB = (file.size / 1024).toFixed(1);
-      
+
       html += `<tr>
         <td><strong>${file.name}</strong></td>
         <td>${file.testName}</td>
@@ -606,7 +617,7 @@ class ReportGenerator {
         <td><a href="../${relativePath}" download><i class="fas fa-download"></i> Download</a></td>
       </tr>`;
     });
-    
+
     html += '</tbody></table>';
     return html;
   }
@@ -621,7 +632,7 @@ class ReportGenerator {
     for (const [environment, stats] of Object.entries(results.environments)) {
       await this.generateEnvironmentReport(environment, stats, mediaFiles);
     }
-    
+
     // Generate individual browser reports
     for (const [browser, stats] of Object.entries(results.browsers)) {
       await this.generateBrowserReport(browser, stats, mediaFiles);
@@ -637,14 +648,14 @@ class ReportGenerator {
   async generateEnvironmentReport(environment, stats, mediaFiles) {
     const reportPath = path.join(this.outputDir, `environment-${environment}.html`);
     const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
-    
+
     // Filter media files for this environment
     const envMedia = {
-      screenshots: mediaFiles.screenshots.filter(f => f.environment === environment),
-      videos: mediaFiles.videos.filter(f => f.environment === environment),
-      traces: mediaFiles.traces.filter(f => f.environment === environment)
+      screenshots: mediaFiles.screenshots.filter((f) => f.environment === environment),
+      videos: mediaFiles.videos.filter((f) => f.environment === environment),
+      traces: mediaFiles.traces.filter((f) => f.environment === environment),
     };
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -708,44 +719,61 @@ class ReportGenerator {
                     </tr>
                 </thead>
                 <tbody>
-                    ${Object.entries(stats.browsers).map(([browser, browserStats]) => {
-                      const browserPassRate = browserStats.total > 0 ? ((browserStats.passed / browserStats.total) * 100).toFixed(1) : 0;
-                      return `<tr>
+                    ${Object.entries(stats.browsers)
+                      .map(([browser, browserStats]) => {
+                        const browserPassRate =
+                          browserStats.total > 0
+                            ? ((browserStats.passed / browserStats.total) * 100).toFixed(1)
+                            : 0;
+                        return `<tr>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${browser}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6; color: #28a745;">${browserStats.passed}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6; color: #dc3545;">${browserStats.failed}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${browserPassRate}%</td>
                       </tr>`;
-                    }).join('')}
+                      })
+                      .join('')}
                 </tbody>
             </table>
         </div>
         
-        ${envMedia.screenshots.length > 0 ? `
+        ${
+          envMedia.screenshots.length > 0
+            ? `
         <div class="section">
             <h2>Screenshots (${envMedia.screenshots.length})</h2>
             <div class="media-grid">
-                ${envMedia.screenshots.map(file => {
-                  const relativePath = path.relative(this.outputDir, file.path);
-                  return `<div class="media-item"><img src="${relativePath}" alt="${file.testName}"></div>`;
-                }).join('')}
+                ${envMedia.screenshots
+                  .map((file) => {
+                    const relativePath = path.relative(this.outputDir, file.path);
+                    return `<div class="media-item"><img src="${relativePath}" alt="${file.testName}"></div>`;
+                  })
+                  .join('')}
             </div>
-        </div>` : ''}
+        </div>`
+            : ''
+        }
         
-        ${envMedia.videos.length > 0 ? `
+        ${
+          envMedia.videos.length > 0
+            ? `
         <div class="section">
             <h2>Videos (${envMedia.videos.length})</h2>
             <div class="media-grid">
-                ${envMedia.videos.map(file => {
-                  const relativePath = path.relative(this.outputDir, file.path);
-                  return `<div class="media-item"><video controls><source src="${relativePath}" type="video/webm"></video></div>`;
-                }).join('')}
+                ${envMedia.videos
+                  .map((file) => {
+                    const relativePath = path.relative(this.outputDir, file.path);
+                    return `<div class="media-item"><video controls><source src="${relativePath}" type="video/webm"></video></div>`;
+                  })
+                  .join('')}
             </div>
-        </div>` : ''}
+        </div>`
+            : ''
+        }
     </div>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(reportPath, html);
     console.log(`Environment report saved: ${reportPath}`);
   }
@@ -759,14 +787,14 @@ class ReportGenerator {
   async generateBrowserReport(browser, stats, mediaFiles) {
     const reportPath = path.join(this.outputDir, `browser-${browser}.html`);
     const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
-    
+
     // Filter media files for this browser
     const browserMedia = {
-      screenshots: mediaFiles.screenshots.filter(f => f.browser === browser),
-      videos: mediaFiles.videos.filter(f => f.browser === browser),
-      traces: mediaFiles.traces.filter(f => f.browser === browser)
+      screenshots: mediaFiles.screenshots.filter((f) => f.browser === browser),
+      videos: mediaFiles.videos.filter((f) => f.browser === browser),
+      traces: mediaFiles.traces.filter((f) => f.browser === browser),
     };
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -830,44 +858,61 @@ class ReportGenerator {
                     </tr>
                 </thead>
                 <tbody>
-                    ${Object.entries(stats.environments).map(([env, envStats]) => {
-                      const envPassRate = envStats.total > 0 ? ((envStats.passed / envStats.total) * 100).toFixed(1) : 0;
-                      return `<tr>
+                    ${Object.entries(stats.environments)
+                      .map(([env, envStats]) => {
+                        const envPassRate =
+                          envStats.total > 0
+                            ? ((envStats.passed / envStats.total) * 100).toFixed(1)
+                            : 0;
+                        return `<tr>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${env}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6; color: #28a745;">${envStats.passed}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6; color: #dc3545;">${envStats.failed}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${envPassRate}%</td>
                       </tr>`;
-                    }).join('')}
+                      })
+                      .join('')}
                 </tbody>
             </table>
         </div>
         
-        ${browserMedia.screenshots.length > 0 ? `
+        ${
+          browserMedia.screenshots.length > 0
+            ? `
         <div class="section">
             <h2>Screenshots (${browserMedia.screenshots.length})</h2>
             <div class="media-grid">
-                ${browserMedia.screenshots.map(file => {
-                  const relativePath = path.relative(this.outputDir, file.path);
-                  return `<div class="media-item"><img src="${relativePath}" alt="${file.testName}"></div>`;
-                }).join('')}
+                ${browserMedia.screenshots
+                  .map((file) => {
+                    const relativePath = path.relative(this.outputDir, file.path);
+                    return `<div class="media-item"><img src="${relativePath}" alt="${file.testName}"></div>`;
+                  })
+                  .join('')}
             </div>
-        </div>` : ''}
+        </div>`
+            : ''
+        }
         
-        ${browserMedia.videos.length > 0 ? `
+        ${
+          browserMedia.videos.length > 0
+            ? `
         <div class="section">
             <h2>Videos (${browserMedia.videos.length})</h2>
             <div class="media-grid">
-                ${browserMedia.videos.map(file => {
-                  const relativePath = path.relative(this.outputDir, file.path);
-                  return `<div class="media-item"><video controls><source src="${relativePath}" type="video/webm"></video></div>`;
-                }).join('')}
+                ${browserMedia.videos
+                  .map((file) => {
+                    const relativePath = path.relative(this.outputDir, file.path);
+                    return `<div class="media-item"><video controls><source src="${relativePath}" type="video/webm"></video></div>`;
+                  })
+                  .join('')}
             </div>
-        </div>` : ''}
+        </div>`
+            : ''
+        }
     </div>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(reportPath, html);
     console.log(`Browser report saved: ${reportPath}`);
   }
@@ -878,7 +923,7 @@ class ReportGenerator {
    */
   async generateMediaGallery(mediaFiles) {
     const galleryPath = path.join(this.outputDir, 'media-gallery.html');
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -914,17 +959,25 @@ class ReportGenerator {
             <label>Filter by Environment:</label>
             <select id="envFilter">
                 <option value="">All Environments</option>
-                ${[...new Set([...mediaFiles.screenshots, ...mediaFiles.videos].map(f => f.environment))].map(env => 
-                  `<option value="${env}">${env}</option>`
-                ).join('')}
+                ${[
+                  ...new Set(
+                    [...mediaFiles.screenshots, ...mediaFiles.videos].map((f) => f.environment)
+                  ),
+                ]
+                  .map((env) => `<option value="${env}">${env}</option>`)
+                  .join('')}
             </select>
             
             <label>Filter by Browser:</label>
             <select id="browserFilter">
                 <option value="">All Browsers</option>
-                ${[...new Set([...mediaFiles.screenshots, ...mediaFiles.videos].map(f => f.browser))].map(browser => 
-                  `<option value="${browser}">${browser}</option>`
-                ).join('')}
+                ${[
+                  ...new Set(
+                    [...mediaFiles.screenshots, ...mediaFiles.videos].map((f) => f.browser)
+                  ),
+                ]
+                  .map((browser) => `<option value="${browser}">${browser}</option>`)
+                  .join('')}
             </select>
             
             <label>Search:</label>
@@ -934,9 +987,10 @@ class ReportGenerator {
         <div class="section">
             <h2>Screenshots (${mediaFiles.screenshots.length})</h2>
             <div class="media-grid" id="screenshotGrid">
-                ${mediaFiles.screenshots.map(file => {
-                  const relativePath = path.relative(this.outputDir, file.path);
-                  return `
+                ${mediaFiles.screenshots
+                  .map((file) => {
+                    const relativePath = path.relative(this.outputDir, file.path);
+                    return `
                     <div class="media-item" data-env="${file.environment}" data-browser="${file.browser}" data-test="${file.testName}">
                         <img src="${relativePath}" alt="${file.testName}" loading="lazy">
                         <div class="media-info">
@@ -945,16 +999,18 @@ class ReportGenerator {
                             <p>${file.modified.toLocaleString()}</p>
                         </div>
                     </div>`;
-                }).join('')}
+                  })
+                  .join('')}
             </div>
         </div>
         
         <div class="section">
             <h2>Videos (${mediaFiles.videos.length})</h2>
             <div class="media-grid" id="videoGrid">
-                ${mediaFiles.videos.map(file => {
-                  const relativePath = path.relative(this.outputDir, file.path);
-                  return `
+                ${mediaFiles.videos
+                  .map((file) => {
+                    const relativePath = path.relative(this.outputDir, file.path);
+                    return `
                     <div class="media-item" data-env="${file.environment}" data-browser="${file.browser}" data-test="${file.testName}">
                         <video controls>
                             <source src="${relativePath}" type="video/webm">
@@ -965,7 +1021,8 @@ class ReportGenerator {
                             <p>${file.modified.toLocaleString()}</p>
                         </div>
                     </div>`;
-                }).join('')}
+                  })
+                  .join('')}
             </div>
         </div>
     </div>
@@ -1000,7 +1057,7 @@ class ReportGenerator {
     </script>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(galleryPath, html);
     console.log(`Media gallery saved: ${galleryPath}`);
   }
@@ -1012,7 +1069,7 @@ class ReportGenerator {
   async generateSummaryDashboard(results) {
     const dashboardPath = path.join(this.outputDir, 'dashboard.html');
     const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -1122,12 +1179,12 @@ class ReportGenerator {
                 datasets: [
                     {
                         label: 'Passed',
-                        data: ${JSON.stringify(Object.values(results.environments).map(env => env.passed))},
+                        data: ${JSON.stringify(Object.values(results.environments).map((env) => env.passed))},
                         backgroundColor: '#28a745'
                     },
                     {
                         label: 'Failed',
-                        data: ${JSON.stringify(Object.values(results.environments).map(env => env.failed))},
+                        data: ${JSON.stringify(Object.values(results.environments).map((env) => env.failed))},
                         backgroundColor: '#dc3545'
                     }
                 ]
@@ -1155,12 +1212,12 @@ class ReportGenerator {
                 datasets: [
                     {
                         label: 'Passed',
-                        data: ${JSON.stringify(Object.values(results.browsers).map(browser => browser.passed))},
+                        data: ${JSON.stringify(Object.values(results.browsers).map((browser) => browser.passed))},
                         backgroundColor: '#28a745'
                     },
                     {
                         label: 'Failed',
-                        data: ${JSON.stringify(Object.values(results.browsers).map(browser => browser.failed))},
+                        data: ${JSON.stringify(Object.values(results.browsers).map((browser) => browser.failed))},
                         backgroundColor: '#dc3545'
                     }
                 ]
@@ -1181,7 +1238,7 @@ class ReportGenerator {
     </script>
 </body>
 </html>`;
-    
+
     fs.writeFileSync(dashboardPath, html);
     console.log(`Dashboard saved: ${dashboardPath}`);
   }
@@ -1190,7 +1247,7 @@ class ReportGenerator {
 // Run report generation if called directly
 if (require.main === module) {
   const generator = new ReportGenerator();
-  generator.generateReport().catch(error => {
+  generator.generateReport().catch((error) => {
     console.error('Report generation failed:', error);
     process.exit(1);
   });

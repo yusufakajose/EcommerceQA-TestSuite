@@ -1,371 +1,475 @@
+---
 # Azure DevOps Pipeline for QA Testing Showcase
 # This file provides CI/CD configuration for Azure DevOps users
 
 trigger:
   branches:
     include:
-    - main
-    - develop
+      - main
+      - develop
   paths:
     exclude:
-    - README.md
-    - docs/*
+      - README.md
+      - docs/*
 
 pr:
   branches:
     include:
-    - main
-    - develop
+      - main
+      - develop
 
 schedules:
-- cron: "0 2 * * *"
-  displayName: Nightly test run
-  branches:
-    include:
-    - main
-  always: true
+  - cron: '0 2 * * *'
+    displayName: Nightly test run
+    branches:
+      include:
+        - main
+    always: true
 
 variables:
   nodeVersion: '18.x'
   playwrightVersion: '1.40.0'
+  NPM_CACHE: '$(Pipeline.Workspace)/.npm'
+  JMETER_VERSION: '5.6.2'
 
 stages:
-- stage: Validate
-  displayName: 'Validation Stage'
-  jobs:
-  - job: ProjectValidation
-    displayName: 'Project Structure Validation'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - script: |
-        echo "🔍 Validating project structure..."
-        
-        # Check required files and directories
-        if [ ! -f package.json ]; then
-          echo "❌ package.json not found"
-          exit 1
-        fi
-        
-        if [ ! -d automated-tests ]; then
-          echo "❌ automated-tests directory not found"
-          exit 1
-        fi
-        
-        if [ ! -d scripts ]; then
-          echo "❌ scripts directory not found"
-          exit 1
-        fi
-        
-        echo "✅ Project structure validated"
-      displayName: 'Validate project structure'
-    
-    - script: |
-        echo "🔍 Running comprehensive code quality checks..."
-        
-        # Linting
-        if npm run lint:check; then
-          echo "✅ Linting passed"
-        else
-          echo "⚠️ Linting issues found, attempting to fix..."
-          npm run lint || echo "❌ Auto-fix failed"
-        fi
-        
-        # Type checking
-        if npm run type-check; then
-          echo "✅ Type checking passed"
-        else
-          echo "❌ Type checking failed"
-        fi
-        
-        # Build
-        if npm run build; then
-          echo "✅ Build successful"
-        else
-          echo "❌ Build failed"
-          exit 1
-        fi
-        
-        # Security audit
-        echo "🔒 Running security audit..."
-        npm audit --audit-level=moderate || echo "⚠️ Security vulnerabilities found"
-      displayName: 'Code quality and build checks'
+  - stage: Validate
+    displayName: Validation Stage
+    jobs:
+      - job: ProjectValidation
+        displayName: Project Structure Validation
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 30
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - script: |
+              echo "🔍 Validating project structure..."
+              if [ ! -f package.json ]; then echo "❌ package.json not found"; exit 1; fi
+              if [ ! -d automated-tests ]; then echo "❌ automated-tests directory not found"; exit 1; fi
+              if [ ! -d scripts ]; then echo "❌ scripts directory not found"; exit 1; fi
+              echo "✅ Project structure validated"
+            displayName: Validate project structure
+          - script: |
+              echo "🔍 Running comprehensive code quality checks..."
+              if npm run lint:check; then echo "✅ Linting passed"; else echo "⚠️ Linting issues found, attempting to fix..."; npm run lint || echo "❌ Auto-fix failed"; fi
+              if npm run type-check; then echo "✅ Type checking passed"; else echo "❌ Type checking failed"; fi
+              if npm run build; then echo "✅ Build successful"; else echo "❌ Build failed"; exit 1; fi
+              echo "🔒 Running security audit..."
+              npm audit --audit-level=moderate || echo "⚠️ Security vulnerabilities found"
+            displayName: Code quality and build checks
 
-- stage: SmokeTests
-  displayName: 'Smoke Tests'
-  dependsOn: Validate
-  condition: succeeded()
-  jobs:
-  - job: SmokeTestExecution
-    displayName: 'Execute Smoke Tests'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - script: |
-        npx playwright install --with-deps
-      displayName: 'Install Playwright browsers'
-    
-    - script: |
-        npm run test:ci:smoke
-      displayName: 'Run smoke tests'
-      env:
-        CI: true
-    
-    - task: PublishTestResults@2
-      condition: always()
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: 'reports/junit.xml'
-        testRunTitle: 'Smoke Tests'
-    
-    - task: PublishHtmlReport@1
-      condition: always()
-      inputs:
-        reportDir: 'playwright-report'
-        tabName: 'Smoke Test Report'
+  - stage: SmokeTests
+    displayName: Smoke Tests
+    dependsOn: Validate
+    condition: succeeded()
+    jobs:
+      - job: SmokeTestExecution
+        displayName: Execute Smoke Tests
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 40
+        strategy:
+          matrix:
+            development:
+              TEST_ENV: development
+              BASE_URL: https://www.saucedemo.com
+            staging:
+              TEST_ENV: staging
+              BASE_URL: https://magento.softwaretestingboard.com
+            production:
+              TEST_ENV: production
+              BASE_URL: https://magento.softwaretestingboard.com
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - script: |
+              npx playwright install --with-deps
+            displayName: Install Playwright browsers
+          - script: |
+              npm run test:ci:smoke
+            displayName: Run smoke tests
+            env:
+              CI: true
+              TEST_ENV: $(TEST_ENV)
+              BASE_URL: $(BASE_URL)
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: reports/junit.xml
+              testRunTitle: Smoke Tests
+          - task: PublishHtmlReport@1
+            condition: always()
+            inputs:
+              reportDir: playwright-report
+              tabName: Smoke Test Report
 
-- stage: UITests
-  displayName: 'UI Tests'
-  dependsOn: SmokeTests
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.Reason'], 'Schedule')))
-  jobs:
-  - job: UITestExecution
-    displayName: 'Execute UI Tests'
-    pool:
-      vmImage: 'ubuntu-latest'
-    strategy:
-      matrix:
-        Chromium:
-          browserName: 'chromium'
-        Firefox:
-          browserName: 'firefox'
-        WebKit:
-          browserName: 'webkit'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - script: |
-        npx playwright install --with-deps
-      displayName: 'Install Playwright browsers'
-    
-    - script: |
-        npm run test:ui -- --project=$(browserName)
-      displayName: 'Run UI tests - $(browserName)'
-      env:
-        CI: true
-        BROWSER: $(browserName)
-    
-    - task: PublishTestResults@2
-      condition: always()
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: 'reports/junit-$(browserName).xml'
-        testRunTitle: 'UI Tests - $(browserName)'
-    
-    - task: PublishHtmlReport@1
-      condition: always()
-      inputs:
-        reportDir: 'playwright-report'
-        tabName: 'UI Test Report - $(browserName)'
+  - stage: UITests
+    displayName: UI Tests
+    dependsOn: SmokeTests
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.Reason'], 'Schedule')))
+    jobs:
+      - job: UITestExecution
+        displayName: Execute UI Tests
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 120
+        strategy:
+          matrix:
+            dev-chromium:
+              browserName: chromium
+              TEST_ENV: development
+              BASE_URL: https://www.saucedemo.com
+            dev-firefox:
+              browserName: firefox
+              TEST_ENV: development
+              BASE_URL: https://www.saucedemo.com
+            dev-webkit:
+              browserName: webkit
+              TEST_ENV: development
+              BASE_URL: https://www.saucedemo.com
+            stg-chromium:
+              browserName: chromium
+              TEST_ENV: staging
+              BASE_URL: https://magento.softwaretestingboard.com
+            stg-firefox:
+              browserName: firefox
+              TEST_ENV: staging
+              BASE_URL: https://magento.softwaretestingboard.com
+            stg-webkit:
+              browserName: webkit
+              TEST_ENV: staging
+              BASE_URL: https://magento.softwaretestingboard.com
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - script: |
+              npx playwright install --with-deps
+            displayName: Install Playwright browsers
+          - script: |
+              npm run test:ui -- --project=$(browserName)
+            displayName: Run UI tests - $(browserName)
+            env:
+              CI: true
+              BROWSER: $(browserName)
+              TEST_ENV: $(TEST_ENV)
+              BASE_URL: $(BASE_URL)
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: reports/junit-$(browserName).xml
+              testRunTitle: UI Tests - $(browserName)
+          - task: PublishHtmlReport@1
+            condition: always()
+            inputs:
+              reportDir: playwright-report
+              tabName: UI Test Report - $(browserName)
 
-- stage: APITests
-  displayName: 'API Tests'
-  dependsOn: SmokeTests
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.Reason'], 'Schedule')))
-  jobs:
-  - job: APITestExecution
-    displayName: 'Execute API Tests'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - script: |
-        npm run test:api:comprehensive
-      displayName: 'Run API tests'
-      env:
-        CI: true
-    
-    - task: PublishTestResults@2
-      condition: always()
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: 'reports/api-tests/junit.xml'
-        testRunTitle: 'API Tests'
-    
-    - task: PublishHtmlReport@1
-      condition: always()
-      inputs:
-        reportDir: 'reports/newman'
-        tabName: 'API Test Report'
+  - stage: APITests
+    displayName: API Tests
+    dependsOn: SmokeTests
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.Reason'], 'Schedule')))
+    jobs:
+      - job: APITestExecution
+        displayName: Execute API Tests
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 40
+        strategy:
+          matrix:
+            development:
+              TEST_ENV: development
+              BASE_URL: https://www.saucedemo.com
+            staging:
+              TEST_ENV: staging
+              BASE_URL: https://magento.softwaretestingboard.com
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - script: |
+              npm run test:api:comprehensive
+            displayName: Run API tests
+            env:
+              CI: true
+              TEST_ENV: $(TEST_ENV)
+              BASE_URL: $(BASE_URL)
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: reports/api-tests/junit.xml
+              testRunTitle: API Tests
+          - task: PublishHtmlReport@1
+            condition: always()
+            inputs:
+              reportDir: reports/newman
+              tabName: API Test Report
 
-- stage: PerformanceTests
-  displayName: 'Performance Tests'
-  dependsOn: SmokeTests
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule')))
-  jobs:
-  - job: PerformanceTestExecution
-    displayName: 'Execute Performance Tests'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - script: |
-        wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
-        tar -xzf apache-jmeter-5.6.2.tgz
-        echo "##vso[task.setvariable variable=JMETER_HOME]$(Agent.BuildDirectory)/apache-jmeter-5.6.2"
-        echo "##vso[task.prependpath]$(Agent.BuildDirectory)/apache-jmeter-5.6.2/bin"
-      displayName: 'Setup JMeter'
-    
-    - script: |
-        npm run test:performance:advanced
-      displayName: 'Run performance tests'
-      env:
-        CI: true
-        JMETER_HOME: $(JMETER_HOME)
-    
-    - task: PublishHtmlReport@1
-      condition: always()
-      inputs:
-        reportDir: 'reports/performance-tests'
-        tabName: 'Performance Test Report'
+  - stage: PerformanceTests
+    displayName: Performance Tests
+    dependsOn: SmokeTests
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule')))
+    jobs:
+      - job: PerformanceTestExecution
+        displayName: Execute Performance Tests
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 120
+        strategy:
+          matrix:
+            development:
+              TEST_ENV: development
+              BASE_URL: https://www.saucedemo.com
+            staging:
+              TEST_ENV: staging
+              BASE_URL: https://magento.softwaretestingboard.com
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - task: Cache@2
+            displayName: Restore JMeter cache
+            inputs:
+              key: 'jmeter | "$(Agent.OS)" | $(JMETER_VERSION)'
+              path: '$(Pipeline.Workspace)/tools/apache-jmeter-$(JMETER_VERSION)'
+              restoreKeys: |
+                jmeter | "$(Agent.OS)" |
+          - script: |
+              set -e
+              JMETER_DIR="$(Pipeline.Workspace)/tools/apache-jmeter-$(JMETER_VERSION)"
+              LOCK_FILE="/tmp/jmeter-setup.lock"
+              (
+                flock -w 300 9 || { echo "Failed to acquire JMeter setup lock"; exit 1; }
+                if [ ! -d "$JMETER_DIR" ]; then
+                  echo "JMeter cache miss. Downloading..."
+                  mkdir -p "$(Pipeline.Workspace)/tools"
+                  attempts=0
+                  until [ $attempts -ge 3 ]
+                  do
+                    curl -fsSL "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$(JMETER_VERSION).tgz" -o "/tmp/apache-jmeter-$(JMETER_VERSION).tgz" && break
+                    attempts=$((attempts+1))
+                    echo "Download failed, retrying in 5s... ($attempts/3)"
+                    sleep 5
+                  done
+                  tar -xzf "/tmp/apache-jmeter-$(JMETER_VERSION).tgz" -C "$(Pipeline.Workspace)/tools"
+                else
+                  echo "JMeter cache hit. Using cached directory."
+                fi
+              ) 9>"$LOCK_FILE"
+              echo "##vso[task.setvariable variable=JMETER_HOME]$JMETER_DIR"
+              echo "##vso[task.prependpath]$JMETER_DIR/bin"
+            displayName: Setup JMeter (cached)
+          - script: |
+              npm run test:load:comprehensive -- --testType=all
+            displayName: Run load tests (k6 + JMeter)
+            env:
+              CI: true
+              JMETER_HOME: $(JMETER_HOME)
+              TEST_ENV: $(TEST_ENV)
+              BASE_URL: $(BASE_URL)
+          - script: |
+              if [ -f reports/ci/job-summary.md ]; then
+                echo "##vso[task.uploadsummary]reports/ci/job-summary.md"
+              fi
+            displayName: Upload CI Summary
+          - task: PublishHtmlReport@1
+            condition: always()
+            inputs:
+              reportDir: reports
+              tabName: QA Artifacts Index
 
-- stage: SecurityTests
-  displayName: 'Security Tests'
-  dependsOn: SmokeTests
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule')))
-  jobs:
-  - job: SecurityTestExecution
-    displayName: 'Execute Security Tests'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - script: |
-        npx playwright install --with-deps
-      displayName: 'Install Playwright browsers'
-    
-    - script: |
-        npm run test:security
-      displayName: 'Run security tests'
-      env:
-        CI: true
-    
-    - task: PublishTestResults@2
-      condition: always()
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: 'reports/security-tests/junit.xml'
-        testRunTitle: 'Security Tests'
-    
-    - task: PublishHtmlReport@1
-      condition: always()
-      inputs:
-        reportDir: 'reports/security-tests'
-        tabName: 'Security Test Report'
+  - stage: SecurityTests
+    displayName: Security Tests
+    dependsOn: SmokeTests
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule')))
+    jobs:
+      - job: SecurityTestExecution
+        displayName: Execute Security Tests
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 60
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - script: |
+              npx playwright install --with-deps
+            displayName: Install Playwright browsers
+          - script: |
+              npm run test:security
+            displayName: Run security tests
+            env:
+              CI: true
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: reports/security-tests/junit.xml
+              testRunTitle: Security Tests
+          - task: PublishHtmlReport@1
+            condition: always()
+            inputs:
+              reportDir: reports/security-tests
+              tabName: Security Test Report
 
-- stage: ReportGeneration
-  displayName: 'Generate Consolidated Reports'
-  dependsOn: 
-  - UITests
-  - APITests
-  - PerformanceTests
-  - SecurityTests
-  condition: always()
-  jobs:
-  - job: ConsolidatedReporting
-    displayName: 'Generate Consolidated Reports'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(nodeVersion)
-      displayName: 'Install Node.js'
-    
-    - task: Npm@1
-      inputs:
-        command: 'ci'
-      displayName: 'Install dependencies'
-    
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'all'
-        downloadPath: '$(System.ArtifactsDirectory)'
-      displayName: 'Download all test artifacts'
-    
-    - script: |
-        echo "📊 Aggregating test results..."
-        npm run test:aggregate
-        npm run report:consolidated
-      displayName: 'Generate consolidated reports'
-      env:
-        CI: true
-    
-    - task: PublishHtmlReport@1
-      condition: always()
-      inputs:
-        reportDir: 'reports/consolidated'
-        tabName: 'Consolidated Test Dashboard'
-    
-    - task: PublishBuildArtifacts@1
-      condition: always()
-      inputs:
-        pathToPublish: 'reports'
-        artifactName: 'ConsolidatedReports'
-        publishLocation: 'Container'
+  - stage: ReportGeneration
+    displayName: Generate Consolidated Reports
+    dependsOn:
+      - UITests
+      - APITests
+      - PerformanceTests
+      - SecurityTests
+    condition: always()
+    jobs:
+      - job: ConsolidatedReporting
+        displayName: Generate Consolidated Reports
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 40
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: current
+              downloadType: all
+              downloadPath: '$(System.ArtifactsDirectory)'
+            displayName: Download all test artifacts
+          - script: |
+              echo "📊 Aggregating test results..."
+              npm run test:aggregate
+              npm run report:consolidated
+            displayName: Generate consolidated reports
+            env:
+              CI: true
+          - task: PublishHtmlReport@1
+            condition: always()
+            inputs:
+              reportDir: reports/consolidated
+              tabName: Consolidated Test Dashboard
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            inputs:
+              pathToPublish: reports
+              artifactName: ConsolidatedReports
+              publishLocation: Container

@@ -183,18 +183,14 @@
       "shippingAddress": {
         "zipCode": "invalid"
       },
-      "expectedErrors": [
-        "Invalid ZIP code format"
-      ]
+      "expectedErrors": ["Invalid ZIP code format"]
     },
     {
       "scenarioName": "invalidPhoneNumber",
       "shippingAddress": {
         "phone": "123"
       },
-      "expectedErrors": [
-        "Invalid phone number format"
-      ]
+      "expectedErrors": ["Invalid phone number format"]
     }
   ],
   "shippingOptions": [

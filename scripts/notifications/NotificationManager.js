@@ -16,24 +16,24 @@ class NotificationManager {
         secure: config.smtp?.secure || process.env.SMTP_SECURE === 'true',
         auth: {
           user: config.smtp?.user || process.env.SMTP_USER,
-          pass: config.smtp?.pass || process.env.SMTP_PASS
-        }
+          pass: config.smtp?.pass || process.env.SMTP_PASS,
+        },
       },
       from: config.from || process.env.NOTIFICATION_FROM || 'noreply@example.com',
       recipients: {
         failures: config.recipients?.failures || process.env.FAILURE_RECIPIENTS?.split(',') || [],
         summary: config.recipients?.summary || process.env.SUMMARY_RECIPIENTS?.split(',') || [],
-        critical: config.recipients?.critical || process.env.CRITICAL_RECIPIENTS?.split(',') || []
+        critical: config.recipients?.critical || process.env.CRITICAL_RECIPIENTS?.split(',') || [],
       },
       thresholds: {
         criticalFailureRate: config.thresholds?.criticalFailureRate || 50, // 50% failure rate
-        warningFailureRate: config.thresholds?.warningFailureRate || 20,   // 20% failure rate
-        maxDurationIncrease: config.thresholds?.maxDurationIncrease || 100 // 100% duration increase
+        warningFailureRate: config.thresholds?.warningFailureRate || 20, // 20% failure rate
+        maxDurationIncrease: config.thresholds?.maxDurationIncrease || 100, // 100% duration increase
       },
       enabled: config.enabled !== false && process.env.NOTIFICATIONS_ENABLED !== 'false',
-      ...config
+      ...config,
     };
-    
+
     this.transporter = null;
     this.initializeTransporter();
   }
@@ -46,10 +46,10 @@ class NotificationManager {
       console.log('Notifications disabled');
       return;
     }
-    
+
     try {
       this.transporter = nodemailer.createTransporter(this.config.smtp);
-      
+
       // Verify connection
       await this.transporter.verify();
       console.log('Email transporter initialized successfully');
@@ -68,24 +68,25 @@ class NotificationManager {
     if (!this.config.enabled || this.config.recipients.summary.length === 0) {
       return;
     }
-    
+
     const severity = this.calculateSeverity(results);
     const subject = this.generateSummarySubject(results, severity);
     const htmlContent = this.generateSummaryHTML(results, trendAnalysis, severity);
     const textContent = this.generateSummaryText(results, trendAnalysis, severity);
-    
-    const recipients = severity === 'critical' ? 
-      [...this.config.recipients.summary, ...this.config.recipients.critical] :
-      this.config.recipients.summary;
-    
+
+    const recipients =
+      severity === 'critical'
+        ? [...this.config.recipients.summary, ...this.config.recipients.critical]
+        : this.config.recipients.summary;
+
     await this.sendEmail({
       to: recipients,
       subject: subject,
       html: htmlContent,
       text: textContent,
-      attachments: await this.generateAttachments(results)
+      attachments: await this.generateAttachments(results),
     });
-    
+
     console.log(`Summary notification sent to ${recipients.length} recipients`);
   }
 
@@ -98,29 +99,30 @@ class NotificationManager {
     if (!this.config.enabled || this.config.recipients.failures.length === 0) {
       return;
     }
-    
+
     const severity = this.calculateSeverity(results);
-    
+
     if (severity === 'success') {
       return; // Don't send failure notifications for successful runs
     }
-    
+
     const subject = this.generateFailureSubject(results, severity);
     const htmlContent = this.generateFailureHTML(results, failedTests, severity);
     const textContent = this.generateFailureText(results, failedTests, severity);
-    
-    const recipients = severity === 'critical' ? 
-      [...this.config.recipients.failures, ...this.config.recipients.critical] :
-      this.config.recipients.failures;
-    
+
+    const recipients =
+      severity === 'critical'
+        ? [...this.config.recipients.failures, ...this.config.recipients.critical]
+        : this.config.recipients.failures;
+
     await this.sendEmail({
       to: recipients,
       subject: subject,
       html: htmlContent,
       text: textContent,
-      priority: severity === 'critical' ? 'high' : 'normal'
+      priority: severity === 'critical' ? 'high' : 'normal',
     });
-    
+
     console.log(`Failure notification sent to ${recipients.length} recipients`);
   }
 
@@ -132,24 +134,24 @@ class NotificationManager {
     if (!this.config.enabled || this.config.recipients.summary.length === 0) {
       return;
     }
-    
+
     const hasSignificantTrends = this.hasSignificantTrends(trendAnalysis);
-    
+
     if (!hasSignificantTrends) {
       return; // Don't send notifications for insignificant trends
     }
-    
+
     const subject = this.generateTrendSubject(trendAnalysis);
     const htmlContent = this.generateTrendHTML(trendAnalysis);
     const textContent = this.generateTrendText(trendAnalysis);
-    
+
     await this.sendEmail({
       to: this.config.recipients.summary,
       subject: subject,
       html: htmlContent,
-      text: textContent
+      text: textContent,
     });
-    
+
     console.log('Trend analysis notification sent');
   }
 
@@ -160,7 +162,7 @@ class NotificationManager {
    */
   calculateSeverity(results) {
     const failureRate = results.total > 0 ? (results.failed / results.total) * 100 : 0;
-    
+
     if (failureRate >= this.config.thresholds.criticalFailureRate) {
       return 'critical';
     } else if (failureRate >= this.config.thresholds.warningFailureRate) {
@@ -181,7 +183,7 @@ class NotificationManager {
   generateSummarySubject(results, severity) {
     const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
     const statusEmoji = this.getSeverityEmoji(severity);
-    
+
     return `${statusEmoji} Test Execution Summary - ${passRate}% Pass Rate (${results.passed}/${results.total})`;
   }
 
@@ -193,7 +195,7 @@ class NotificationManager {
    */
   generateFailureSubject(results, severity) {
     const statusEmoji = this.getSeverityEmoji(severity);
-    
+
     return `${statusEmoji} Test Failures Detected - ${results.failed} Failed Tests`;
   }
 
@@ -205,10 +207,10 @@ class NotificationManager {
   generateTrendSubject(trendAnalysis) {
     const passRateTrend = trendAnalysis.trends?.passRate?.trend || 'stable';
     const durationTrend = trendAnalysis.trends?.duration?.trend || 'stable';
-    
-    const emoji = passRateTrend === 'improving' ? '📈' : 
-                  passRateTrend === 'declining' ? '📉' : '📊';
-    
+
+    const emoji =
+      passRateTrend === 'improving' ? '📈' : passRateTrend === 'declining' ? '📉' : '📊';
+
     return `${emoji} Test Trend Analysis - Pass Rate ${passRateTrend}, Duration ${durationTrend}`;
   }
 
@@ -219,11 +221,16 @@ class NotificationManager {
    */
   getSeverityEmoji(severity) {
     switch (severity) {
-      case 'critical': return '🚨';
-      case 'warning': return '⚠️';
-      case 'minor': return '🟡';
-      case 'success': return '✅';
-      default: return '📊';
+      case 'critical':
+        return '🚨';
+      case 'warning':
+        return '⚠️';
+      case 'minor':
+        return '🟡';
+      case 'success':
+        return '✅';
+      default:
+        return '📊';
     }
   }
 
@@ -237,7 +244,7 @@ class NotificationManager {
   generateSummaryHTML(results, trendAnalysis, severity) {
     const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
     const statusColor = this.getSeverityColor(severity);
-    
+
     return `
 <!DOCTYPE html>
 <html>
@@ -313,7 +320,7 @@ class NotificationManager {
    */
   generateSummaryText(results, trendAnalysis, severity) {
     const passRate = results.total > 0 ? ((results.passed / results.total) * 100).toFixed(1) : 0;
-    
+
     let text = `TEST EXECUTION SUMMARY\n`;
     text += `========================\n\n`;
     text += `Execution completed on ${new Date().toLocaleString()}\n`;
@@ -324,7 +331,7 @@ class NotificationManager {
     text += `- Failed: ${results.failed}\n`;
     text += `- Skipped: ${results.skipped}\n`;
     text += `- Pass Rate: ${passRate}%\n\n`;
-    
+
     if (Object.keys(results.environments).length > 0) {
       text += `RESULTS BY ENVIRONMENT:\n`;
       Object.entries(results.environments).forEach(([env, stats]) => {
@@ -333,25 +340,26 @@ class NotificationManager {
       });
       text += '\n';
     }
-    
+
     if (Object.keys(results.browsers).length > 0) {
       text += `RESULTS BY BROWSER:\n`;
       Object.entries(results.browsers).forEach(([browser, stats]) => {
-        const browserPassRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
+        const browserPassRate =
+          stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
         text += `- ${browser}: ${stats.passed}/${stats.total} (${browserPassRate}%)\n`;
       });
       text += '\n';
     }
-    
+
     if (trendAnalysis && trendAnalysis.trends) {
       text += `TREND ANALYSIS:\n`;
       text += `- Pass Rate Trend: ${trendAnalysis.trends.passRate.trend}\n`;
       text += `- Duration Trend: ${trendAnalysis.trends.duration.trend}\n\n`;
     }
-    
+
     text += `This is an automated notification from the QA Testing System.\n`;
     text += `Generated at ${new Date().toISOString()}`;
-    
+
     return text;
   }
 
@@ -364,7 +372,7 @@ class NotificationManager {
    */
   generateFailureHTML(results, failedTests, severity) {
     const statusColor = this.getSeverityColor(severity);
-    
+
     return `
 <!DOCTYPE html>
 <html>
@@ -433,7 +441,7 @@ class NotificationManager {
     text += `${results.failed} tests failed out of ${results.total} total tests\n`;
     text += `Failure Rate: ${((results.failed / results.total) * 100).toFixed(1)}%\n\n`;
     text += `ACTION REQUIRED: The following tests have failed and require immediate attention.\n\n`;
-    
+
     if (failedTests.length > 0) {
       text += `FAILED TESTS:\n`;
       failedTests.forEach((test, index) => {
@@ -444,10 +452,10 @@ class NotificationManager {
         text += '\n';
       });
     }
-    
+
     text += `Please investigate these failures and take appropriate action.\n`;
     text += `Generated at ${new Date().toISOString()}`;
-    
+
     return text;
   }
 
@@ -528,7 +536,7 @@ class NotificationManager {
     text += `- Trend: ${trendAnalysis.trends.duration.trend}\n\n`;
     text += `This trend analysis is based on the last ${trendAnalysis.recentRuns} test runs.\n`;
     text += `Generated at ${new Date().toISOString()}`;
-    
+
     return text;
   }
 
@@ -539,12 +547,12 @@ class NotificationManager {
    */
   hasSignificantTrends(trendAnalysis) {
     if (!trendAnalysis.trends) return false;
-    
+
     const passRateChange = Math.abs(trendAnalysis.trends.passRate.change);
     const durationChange = Math.abs(trendAnalysis.trends.duration.change);
-    
+
     // Notify if pass rate changed by more than 5% or duration changed by more than 50%
-    return passRateChange > 5 || durationChange > (trendAnalysis.trends.duration.previous * 0.5);
+    return passRateChange > 5 || durationChange > trendAnalysis.trends.duration.previous * 0.5;
   }
 
   /**
@@ -554,14 +562,15 @@ class NotificationManager {
    */
   generateEnvironmentTable(results) {
     if (Object.keys(results.environments).length === 0) return '';
-    
-    let html = '<div class="section"><h2>Results by Environment</h2><table><thead><tr><th>Environment</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<div class="section"><h2>Results by Environment</h2><table><thead><tr><th>Environment</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
+
     Object.entries(results.environments).forEach(([env, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
       html += `<tr><td>${env}</td><td>${stats.total}</td><td class="passed">${stats.passed}</td><td class="failed">${stats.failed}</td><td class="skipped">${stats.skipped}</td><td>${passRate}%</td></tr>`;
     });
-    
+
     html += '</tbody></table></div>';
     return html;
   }
@@ -573,14 +582,15 @@ class NotificationManager {
    */
   generateBrowserTable(results) {
     if (Object.keys(results.browsers).length === 0) return '';
-    
-    let html = '<div class="section"><h2>Results by Browser</h2><table><thead><tr><th>Browser</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
-    
+
+    let html =
+      '<div class="section"><h2>Results by Browser</h2><table><thead><tr><th>Browser</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Pass Rate</th></tr></thead><tbody>';
+
     Object.entries(results.browsers).forEach(([browser, stats]) => {
       const passRate = stats.total > 0 ? ((stats.passed / stats.total) * 100).toFixed(1) : 0;
       html += `<tr><td>${browser}</td><td>${stats.total}</td><td class="passed">${stats.passed}</td><td class="failed">${stats.failed}</td><td class="skipped">${stats.skipped}</td><td>${passRate}%</td></tr>`;
     });
-    
+
     html += '</tbody></table></div>';
     return html;
   }
@@ -592,7 +602,7 @@ class NotificationManager {
    */
   generateTrendSection(trendAnalysis) {
     if (!trendAnalysis.trends) return '';
-    
+
     return `
     <div class="section">
         <h2>Trend Analysis</h2>
@@ -620,7 +630,7 @@ class NotificationManager {
    */
   generateFailedTestsSection(failedTests) {
     let html = '<div class="section"><h2>Failed Tests</h2>';
-    
+
     failedTests.forEach((test, index) => {
       html += `<div class="failure">`;
       html += `<h3>${index + 1}. ${test.title}</h3>`;
@@ -632,7 +642,7 @@ class NotificationManager {
       }
       html += `</div>`;
     });
-    
+
     html += '</div>';
     return html;
   }
@@ -644,11 +654,16 @@ class NotificationManager {
    */
   getSeverityColor(severity) {
     switch (severity) {
-      case 'critical': return '#dc3545';
-      case 'warning': return '#fd7e14';
-      case 'minor': return '#ffc107';
-      case 'success': return '#28a745';
-      default: return '#007bff';
+      case 'critical':
+        return '#dc3545';
+      case 'warning':
+        return '#fd7e14';
+      case 'minor':
+        return '#ffc107';
+      case 'success':
+        return '#28a745';
+      default:
+        return '#007bff';
     }
   }
 
@@ -659,27 +674,27 @@ class NotificationManager {
    */
   async generateAttachments(results) {
     const attachments = [];
-    
+
     // Attach JSON report if it exists
     const jsonReportPath = path.join('./reports', 'test-results.json');
     if (fs.existsSync(jsonReportPath)) {
       attachments.push({
         filename: 'test-results.json',
         path: jsonReportPath,
-        contentType: 'application/json'
+        contentType: 'application/json',
       });
     }
-    
+
     // Attach HTML report if it exists
     const htmlReportPath = path.join('./reports', 'test-report.html');
     if (fs.existsSync(htmlReportPath)) {
       attachments.push({
         filename: 'test-report.html',
         path: htmlReportPath,
-        contentType: 'text/html'
+        contentType: 'text/html',
       });
     }
-    
+
     return attachments;
   }
 
@@ -692,7 +707,7 @@ class NotificationManager {
       console.warn('Email transporter not available');
       return;
     }
-    
+
     try {
       const mailOptions = {
         from: this.config.from,
@@ -701,9 +716,9 @@ class NotificationManager {
         text: options.text,
         html: options.html,
         attachments: options.attachments || [],
-        priority: options.priority || 'normal'
+        priority: options.priority || 'normal',
       };
-      
+
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Email sent successfully:', info.messageId);
     } catch (error) {
@@ -721,7 +736,7 @@ class NotificationManager {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
     } else if (minutes > 0) {

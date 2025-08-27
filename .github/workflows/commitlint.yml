@@ -1,0 +1,21 @@
+name: Lint Commit Messages
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.mjs
+        # Allow warnings but fail on errors
+        env:
+          NODE_PATH: ${{ github.workspace }}/node_modules

@@ -9,7 +9,7 @@ const { expect } = require('@playwright/test');
 class FormComponent extends BasePage {
   constructor(page) {
     super(page);
-    
+
     // Common form selectors
     this.selectors = {
       // Form elements
@@ -17,7 +17,7 @@ class FormComponent extends BasePage {
       submitButton: '[data-testid="submit-button"]',
       cancelButton: '[data-testid="cancel-button"]',
       resetButton: '[data-testid="reset-button"]',
-      
+
       // Input fields
       textInput: 'input[type="text"]',
       emailInput: 'input[type="email"]',
@@ -29,16 +29,16 @@ class FormComponent extends BasePage {
       checkbox: 'input[type="checkbox"]',
       radioButton: 'input[type="radio"]',
       fileInput: 'input[type="file"]',
-      
+
       // Validation messages
       errorMessage: '[data-testid="error-message"]',
       successMessage: '[data-testid="success-message"]',
       fieldError: '[data-testid="field-error"]',
       requiredIndicator: '[data-testid="required"]',
-      
+
       // Loading states
       loadingSpinner: '[data-testid="loading-spinner"]',
-      submitSpinner: '[data-testid="submit-spinner"]'
+      submitSpinner: '[data-testid="submit-spinner"]',
     };
   }
 
@@ -49,12 +49,12 @@ class FormComponent extends BasePage {
   async fillForm(formData) {
     for (const [fieldName, value] of Object.entries(formData)) {
       const selector = `[data-testid="${fieldName}"], [name="${fieldName}"], #${fieldName}`;
-      
+
       if (await this.isElementPresent(selector)) {
         const element = this.page.locator(selector);
-        const tagName = await element.evaluate(el => el.tagName.toLowerCase());
-        const inputType = await element.evaluate(el => el.type || '');
-        
+        const tagName = await element.evaluate((el) => el.tagName.toLowerCase());
+        const inputType = await element.evaluate((el) => el.type || '');
+
         switch (tagName) {
           case 'input':
             await this.fillInputByType(selector, value, inputType);
@@ -103,7 +103,7 @@ class FormComponent extends BasePage {
    */
   async setCheckbox(selector, checked) {
     const isChecked = await this.page.isChecked(selector);
-    
+
     if (checked && !isChecked) {
       await this.clickElement(selector);
     } else if (!checked && isChecked) {
@@ -127,13 +127,13 @@ class FormComponent extends BasePage {
    */
   async submitForm(waitForResponse = true) {
     await this.clickElement(this.selectors.submitButton);
-    
+
     if (waitForResponse) {
       // Wait for either success message, error message, or page navigation
       await Promise.race([
         this.waitForElement(this.selectors.successMessage, { timeout: 10000 }),
         this.waitForElement(this.selectors.errorMessage, { timeout: 10000 }),
-        this.waitForNetworkIdle()
+        this.waitForNetworkIdle(),
       ]);
     }
   }
@@ -160,14 +160,14 @@ class FormComponent extends BasePage {
   async getValidationErrors() {
     const errors = [];
     const errorElements = await this.page.locator(this.selectors.fieldError).all();
-    
+
     for (const element of errorElements) {
       const errorText = await element.textContent();
       if (errorText && errorText.trim()) {
         errors.push(errorText.trim());
       }
     }
-    
+
     return errors;
   }
 
@@ -198,7 +198,7 @@ class FormComponent extends BasePage {
   async validateFormSubmissionSuccess(expectedMessage) {
     await this.waitForElement(this.selectors.successMessage);
     const actualMessage = await this.getSuccessMessage();
-    
+
     if (expectedMessage) {
       expect(actualMessage).toContain(expectedMessage);
     }
@@ -211,7 +211,7 @@ class FormComponent extends BasePage {
   async validateFormSubmissionError(expectedError) {
     await this.waitForElement(this.selectors.errorMessage);
     const actualError = await this.getErrorMessage();
-    
+
     if (expectedError) {
       expect(actualError).toContain(expectedError);
     }
@@ -244,8 +244,10 @@ class FormComponent extends BasePage {
    * Check if form is in loading state
    */
   async isFormLoading() {
-    return await this.isElementVisible(this.selectors.loadingSpinner) ||
-           await this.isElementVisible(this.selectors.submitSpinner);
+    return (
+      (await this.isElementVisible(this.selectors.loadingSpinner)) ||
+      (await this.isElementVisible(this.selectors.submitSpinner))
+    );
   }
 
   /**
@@ -256,7 +258,7 @@ class FormComponent extends BasePage {
     if (await this.isElementVisible(this.selectors.loadingSpinner)) {
       await this.waitForElementToDisappear(this.selectors.loadingSpinner);
     }
-    
+
     if (await this.isElementVisible(this.selectors.submitSpinner)) {
       await this.waitForElementToDisappear(this.selectors.submitSpinner);
     }
@@ -267,14 +269,14 @@ class FormComponent extends BasePage {
    */
   async getFormValues() {
     const formValues = {};
-    
+
     // Get all input elements
     const inputs = await this.page.locator('input, textarea, select').all();
-    
+
     for (const input of inputs) {
-      const name = await input.getAttribute('name') || await input.getAttribute('data-testid');
-      const type = await input.getAttribute('type') || 'text';
-      
+      const name = (await input.getAttribute('name')) || (await input.getAttribute('data-testid'));
+      const type = (await input.getAttribute('type')) || 'text';
+
       if (name) {
         switch (type) {
           case 'checkbox':
@@ -293,7 +295,7 @@ class FormComponent extends BasePage {
         }
       }
     }
-    
+
     return formValues;
   }
 
@@ -301,12 +303,14 @@ class FormComponent extends BasePage {
    * Clear all form fields
    */
   async clearForm() {
-    const inputs = await this.page.locator('input[type="text"], input[type="email"], input[type="password"], textarea').all();
-    
+    const inputs = await this.page
+      .locator('input[type="text"], input[type="email"], input[type="password"], textarea')
+      .all();
+
     for (const input of inputs) {
       await input.fill('');
     }
-    
+
     // Uncheck all checkboxes
     const checkboxes = await this.page.locator('input[type="checkbox"]:checked').all();
     for (const checkbox of checkboxes) {

@@ -20,42 +20,55 @@ test.describe('API Performance Tests', () => {
         { url: 'https://jsonplaceholder.typicode.com/posts', name: 'posts', threshold: 500 },
         { url: 'https://jsonplaceholder.typicode.com/users', name: 'users', threshold: 500 },
         { url: 'https://jsonplaceholder.typicode.com/comments', name: 'comments', threshold: 800 },
-        { url: 'https://jsonplaceholder.typicode.com/albums', name: 'albums', threshold: 500 }
+        { url: 'https://jsonplaceholder.typicode.com/albums', name: 'albums', threshold: 500 },
       ];
 
       for (const endpoint of endpoints) {
-        const result = await apiMonitor.measureApiCall(async () => {
-          const response = await request.get(endpoint.url);
-          expect(response.status()).toBe(200);
-          const data = await response.json();
-          expect(Array.isArray(data)).toBe(true);
-          expect(data.length).toBeGreaterThan(0);
-          return response;
-        }, endpoint.name, endpoint.threshold);
+        const result = await apiMonitor.measureApiCall(
+          async () => {
+            const response = await request.get(endpoint.url);
+            expect(response.status()).toBe(200);
+            const data = await response.json();
+            expect(Array.isArray(data)).toBe(true);
+            expect(data.length).toBeGreaterThan(0);
+            return response;
+          },
+          endpoint.name,
+          endpoint.threshold
+        );
 
-        console.log(`✅ ${endpoint.name} API: ${result.duration}ms (threshold: ${endpoint.threshold}ms)`);
+        console.log(
+          `✅ ${endpoint.name} API: ${result.duration}ms (threshold: ${endpoint.threshold}ms)`
+        );
       }
 
-      console.log('📊 API Performance Summary:', JSON.stringify(apiMonitor.generateSummary(), null, 2));
+      console.log(
+        '📊 API Performance Summary:',
+        JSON.stringify(apiMonitor.generateSummary(), null, 2)
+      );
     });
 
     test('should perform POST requests with performance monitoring', async ({ request }) => {
       const postData = {
         title: 'Performance Test Post',
         body: 'This is a test post for performance monitoring',
-        userId: 1
+        userId: 1,
       };
 
-      const result = await apiMonitor.measureApiCall(async () => {
-        const response = await request.post('https://jsonplaceholder.typicode.com/posts', {
-          data: postData
-        });
-        expect(response.status()).toBe(201);
-        const responseData = await response.json();
-        expect(responseData.title).toBe(postData.title);
-        expect(responseData.body).toBe(postData.body);
-        return response;
-      }, 'createPost', 600);
+      const result = await apiMonitor.measureApiCall(
+        async () => {
+          const response = await request.post('https://jsonplaceholder.typicode.com/posts', {
+            data: postData,
+          });
+          expect(response.status()).toBe(201);
+          const responseData = await response.json();
+          expect(responseData.title).toBe(postData.title);
+          expect(responseData.body).toBe(postData.body);
+          return response;
+        },
+        'createPost',
+        600
+      );
 
       console.log(`✅ POST API: ${result.duration}ms (threshold: 600ms)`);
       console.log('📊 POST Performance:', JSON.stringify(result, null, 2));
@@ -66,28 +79,36 @@ test.describe('API Performance Tests', () => {
         id: 1,
         title: 'Updated Performance Test Post',
         body: 'This is an updated test post for performance monitoring',
-        userId: 1
+        userId: 1,
       };
 
-      const result = await apiMonitor.measureApiCall(async () => {
-        const response = await request.put('https://jsonplaceholder.typicode.com/posts/1', {
-          data: updateData
-        });
-        expect(response.status()).toBe(200);
-        const responseData = await response.json();
-        expect(responseData.title).toBe(updateData.title);
-        return response;
-      }, 'updatePost', 600);
+      const result = await apiMonitor.measureApiCall(
+        async () => {
+          const response = await request.put('https://jsonplaceholder.typicode.com/posts/1', {
+            data: updateData,
+          });
+          expect(response.status()).toBe(200);
+          const responseData = await response.json();
+          expect(responseData.title).toBe(updateData.title);
+          return response;
+        },
+        'updatePost',
+        600
+      );
 
       console.log(`✅ PUT API: ${result.duration}ms (threshold: 600ms)`);
     });
 
     test('should perform DELETE requests with performance monitoring', async ({ request }) => {
-      const result = await apiMonitor.measureApiCall(async () => {
-        const response = await request.delete('https://jsonplaceholder.typicode.com/posts/1');
-        expect(response.status()).toBe(200);
-        return response;
-      }, 'deletePost', 500);
+      const result = await apiMonitor.measureApiCall(
+        async () => {
+          const response = await request.delete('https://jsonplaceholder.typicode.com/posts/1');
+          expect(response.status()).toBe(200);
+          return response;
+        },
+        'deletePost',
+        500
+      );
 
       console.log(`✅ DELETE API: ${result.duration}ms (threshold: 500ms)`);
     });
@@ -101,20 +122,27 @@ test.describe('API Performance Tests', () => {
       // Create multiple concurrent requests
       for (let i = 1; i <= concurrentRequests; i++) {
         promises.push(
-          apiMonitor.measureApiCall(async () => {
-            const response = await request.get(`https://jsonplaceholder.typicode.com/posts/${i}`);
-            expect(response.status()).toBe(200);
-            const data = await response.json();
-            expect(data.id).toBe(i);
-            return response;
-          }, `concurrentPost${i}`, 800)
+          apiMonitor.measureApiCall(
+            async () => {
+              const response = await request.get(`https://jsonplaceholder.typicode.com/posts/${i}`);
+              expect(response.status()).toBe(200);
+              const data = await response.json();
+              expect(data.id).toBe(i);
+              return response;
+            },
+            `concurrentPost${i}`,
+            800
+          )
         );
       }
 
       const results = await Promise.all(promises);
-      const avgDuration = results.reduce((sum, result) => sum + result.duration, 0) / results.length;
+      const avgDuration =
+        results.reduce((sum, result) => sum + result.duration, 0) / results.length;
 
-      console.log(`✅ Concurrent Requests: Average ${Math.round(avgDuration)}ms across ${concurrentRequests} requests`);
+      console.log(
+        `✅ Concurrent Requests: Average ${Math.round(avgDuration)}ms across ${concurrentRequests} requests`
+      );
       expect(avgDuration).toBeLessThan(1000); // Ensure concurrent performance is acceptable
     });
 
@@ -122,17 +150,23 @@ test.describe('API Performance Tests', () => {
       const endpoints = [
         { url: 'https://jsonplaceholder.typicode.com/posts/1', name: 'singlePost' },
         { url: 'https://jsonplaceholder.typicode.com/posts', name: 'allPosts' },
-        { url: 'https://jsonplaceholder.typicode.com/comments', name: 'allComments' }
+        { url: 'https://jsonplaceholder.typicode.com/comments', name: 'allComments' },
       ];
 
       for (const endpoint of endpoints) {
-        const result = await apiMonitor.measureApiCallWithSize(async () => {
-          const response = await request.get(endpoint.url);
-          expect(response.status()).toBe(200);
-          return response;
-        }, endpoint.name, 1000);
+        const result = await apiMonitor.measureApiCallWithSize(
+          async () => {
+            const response = await request.get(endpoint.url);
+            expect(response.status()).toBe(200);
+            return response;
+          },
+          endpoint.name,
+          1000
+        );
 
-        console.log(`✅ ${endpoint.name}: ${result.duration}ms, Size: ${result.responseSize} bytes`);
+        console.log(
+          `✅ ${endpoint.name}: ${result.duration}ms, Size: ${result.responseSize} bytes`
+        );
       }
 
       const sizeAnalysis = apiMonitor.analyzeSizePerformanceCorrelation();
@@ -142,29 +176,37 @@ test.describe('API Performance Tests', () => {
 
   test.describe('API Error Handling Performance', () => {
     test('should handle 404 errors efficiently', async ({ request }) => {
-      const result = await apiMonitor.measureApiCall(async () => {
-        const response = await request.get('https://jsonplaceholder.typicode.com/posts/999999');
-        expect(response.status()).toBe(404);
-        return response;
-      }, 'notFoundError', 300);
+      const result = await apiMonitor.measureApiCall(
+        async () => {
+          const response = await request.get('https://jsonplaceholder.typicode.com/posts/999999');
+          expect(response.status()).toBe(404);
+          return response;
+        },
+        'notFoundError',
+        300
+      );
 
       console.log(`✅ 404 Error Handling: ${result.duration}ms (threshold: 300ms)`);
     });
 
     test('should handle network timeouts gracefully', async ({ request }) => {
       // Test with a very short timeout to simulate network issues
-      const result = await apiMonitor.measureApiCall(async () => {
-        try {
-          const response = await request.get('https://jsonplaceholder.typicode.com/posts', {
-            timeout: 1 // Very short timeout to trigger timeout error
-          });
-          return response;
-        } catch (error) {
-          // Expect timeout error
-          expect(error.message).toContain('Timeout');
-          return { status: () => 'timeout', error: true };
-        }
-      }, 'timeoutHandling', 100);
+      const result = await apiMonitor.measureApiCall(
+        async () => {
+          try {
+            const response = await request.get('https://jsonplaceholder.typicode.com/posts', {
+              timeout: 1, // Very short timeout to trigger timeout error
+            });
+            return response;
+          } catch (error) {
+            // Expect timeout error
+            expect(error.message).toContain('Timeout');
+            return { status: () => 'timeout', error: true };
+          }
+        },
+        'timeoutHandling',
+        100
+      );
 
       console.log(`✅ Timeout Handling: ${result.duration}ms`);
     });
@@ -176,20 +218,26 @@ test.describe('API Performance Tests', () => {
       const results = [];
 
       for (let i = 1; i <= runs; i++) {
-        const result = await apiMonitor.measureApiCall(async () => {
-          const response = await request.get('https://jsonplaceholder.typicode.com/posts/1');
-          expect(response.status()).toBe(200);
-          return response;
-        }, `consistencyRun${i}`, 500);
+        const result = await apiMonitor.measureApiCall(
+          async () => {
+            const response = await request.get('https://jsonplaceholder.typicode.com/posts/1');
+            expect(response.status()).toBe(200);
+            return response;
+          },
+          `consistencyRun${i}`,
+          500
+        );
 
         results.push(result.duration);
       }
 
       const avgDuration = results.reduce((sum, duration) => sum + duration, 0) / results.length;
       const maxVariation = Math.max(...results) - Math.min(...results);
-      
-      console.log(`✅ Consistency Test: Avg ${Math.round(avgDuration)}ms, Max Variation: ${maxVariation}ms`);
-      
+
+      console.log(
+        `✅ Consistency Test: Avg ${Math.round(avgDuration)}ms, Max Variation: ${maxVariation}ms`
+      );
+
       // Ensure performance is consistent (variation should be reasonable)
       expect(maxVariation).toBeLessThan(300); // Allow up to 300ms variation for network variability
     });

@@ -20,13 +20,13 @@ class BasePage {
   async navigateTo(url, options = {}) {
     const baseURL = process.env.BASE_URL || 'http://localhost:3000';
     const fullURL = url.startsWith('http') ? url : `${baseURL}${url}`;
-    
+
     const defaultOptions = {
       waitUntil: 'domcontentloaded', // Changed from networkidle to be more lenient
       timeout: this.timeout,
-      ...options
+      ...options,
     };
-    
+
     try {
       await this.page.goto(fullURL, defaultOptions);
       console.log(`Navigated to: ${fullURL}`);
@@ -53,9 +53,9 @@ class BasePage {
     const defaultOptions = {
       state: 'visible',
       timeout: this.shortTimeout, // Use shorter timeout for demo
-      ...options
+      ...options,
     };
-    
+
     try {
       await this.page.waitForSelector(selector, defaultOptions);
     } catch (error) {
@@ -73,9 +73,9 @@ class BasePage {
     const maxRetries = options.retries || 3;
     const defaultOptions = {
       timeout: this.shortTimeout,
-      ...options
+      ...options,
     };
-    
+
     for (let i = 0; i < maxRetries; i++) {
       try {
         await this.waitForElement(selector, { state: 'visible' });
@@ -98,13 +98,13 @@ class BasePage {
    */
   async fillInput(selector, value, options = {}) {
     await this.waitForElement(selector);
-    
+
     // Clear field first
     await this.page.fill(selector, '');
-    
+
     // Fill with new value
     await this.page.fill(selector, value);
-    
+
     // Verify value was set (unless disabled)
     if (options.verify !== false) {
       const actualValue = await this.page.inputValue(selector);
@@ -139,9 +139,9 @@ class BasePage {
    */
   async isElementVisible(selector, timeout = this.shortTimeout) {
     try {
-      await this.page.waitForSelector(selector, { 
-        state: 'visible', 
-        timeout 
+      await this.page.waitForSelector(selector, {
+        state: 'visible',
+        timeout,
       });
       return true;
     } catch {
@@ -156,9 +156,9 @@ class BasePage {
    */
   async isElementPresent(selector, timeout = this.shortTimeout) {
     try {
-      await this.page.waitForSelector(selector, { 
-        state: 'attached', 
-        timeout 
+      await this.page.waitForSelector(selector, {
+        state: 'attached',
+        timeout,
       });
       return true;
     } catch {
@@ -173,9 +173,9 @@ class BasePage {
    */
   async waitForElementToDisappear(selector, timeout = this.timeout) {
     try {
-      await this.page.waitForSelector(selector, { 
-        state: 'detached', 
-        timeout 
+      await this.page.waitForSelector(selector, {
+        state: 'detached',
+        timeout,
       });
     } catch (error) {
       throw new Error(`Element did not disappear: ${selector}. ${error.message}`);
@@ -189,7 +189,7 @@ class BasePage {
    */
   async selectOption(selector, option) {
     await this.waitForElement(selector);
-    
+
     if (typeof option === 'string') {
       // Try by value first, then by label
       try {
@@ -258,13 +258,13 @@ class BasePage {
   async takeScreenshot(name, options = {}) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const screenshotPath = `automated-tests/ui-tests/screenshots/${name}-${timestamp}.png`;
-    
+
     const defaultOptions = {
       path: screenshotPath,
       fullPage: true,
-      ...options
+      ...options,
     };
-    
+
     await this.page.screenshot(defaultOptions);
     return screenshotPath;
   }
@@ -327,7 +327,7 @@ class BasePage {
    * @param {string} promptText - Text to enter in prompt (optional)
    */
   async handleDialog(action = 'accept', promptText = '') {
-    this.page.on('dialog', async dialog => {
+    this.page.on('dialog', async (dialog) => {
       if (action === 'accept') {
         await dialog.accept(promptText);
       } else {

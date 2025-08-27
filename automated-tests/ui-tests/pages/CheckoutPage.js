@@ -10,21 +10,21 @@ class CheckoutPage extends BasePage {
   constructor(page) {
     super(page);
     this.form = new FormComponent(page);
-    
+
     // Page URL
     this.url = '/checkout';
-    
+
     // Page selectors
     this.selectors = {
       // Page elements
       pageTitle: '[data-testid="checkout-title"]',
       checkoutContainer: '[data-testid="checkout-container"]',
-      
+
       // Steps/Progress
       checkoutSteps: '[data-testid="checkout-steps"]',
       currentStep: '[data-testid="current-step"]',
       stepIndicator: '[data-testid="step-indicator"]',
-      
+
       // Shipping Information
       shippingSection: '[data-testid="shipping-section"]',
       shippingFirstName: '[data-testid="shipping-first-name"]',
@@ -36,7 +36,7 @@ class CheckoutPage extends BasePage {
       shippingZip: '[data-testid="shipping-zip"]',
       shippingCountry: '[data-testid="shipping-country"]',
       shippingPhone: '[data-testid="shipping-phone"]',
-      
+
       // Billing Information
       billingSection: '[data-testid="billing-section"]',
       sameAsShippingCheckbox: '[data-testid="same-as-shipping"]',
@@ -48,27 +48,27 @@ class CheckoutPage extends BasePage {
       billingState: '[data-testid="billing-state"]',
       billingZip: '[data-testid="billing-zip"]',
       billingCountry: '[data-testid="billing-country"]',
-      
+
       // Shipping Options
       shippingOptionsSection: '[data-testid="shipping-options-section"]',
       shippingOption: '[data-testid="shipping-option"]',
       standardShipping: '[data-testid="standard-shipping"]',
       expressShipping: '[data-testid="express-shipping"]',
       overnightShipping: '[data-testid="overnight-shipping"]',
-      
+
       // Payment Information
       paymentSection: '[data-testid="payment-section"]',
       paymentMethod: '[data-testid="payment-method"]',
       creditCardOption: '[data-testid="credit-card-option"]',
       paypalOption: '[data-testid="paypal-option"]',
-      
+
       // Credit Card Fields
       cardNumber: '[data-testid="card-number"]',
       expiryMonth: '[data-testid="expiry-month"]',
       expiryYear: '[data-testid="expiry-year"]',
       cvv: '[data-testid="cvv"]',
       cardholderName: '[data-testid="cardholder-name"]',
-      
+
       // Order Summary
       orderSummary: '[data-testid="order-summary"]',
       orderItems: '[data-testid="order-items"]',
@@ -76,40 +76,40 @@ class CheckoutPage extends BasePage {
       itemName: '[data-testid="item-name"]',
       itemQuantity: '[data-testid="item-quantity"]',
       itemPrice: '[data-testid="item-price"]',
-      
+
       // Order Totals
       subtotalAmount: '[data-testid="subtotal-amount"]',
       shippingAmount: '[data-testid="shipping-amount"]',
       taxAmount: '[data-testid="tax-amount"]',
       discountAmount: '[data-testid="discount-amount"]',
       totalAmount: '[data-testid="total-amount"]',
-      
+
       // Promo Code
       promoCodeInput: '[data-testid="promo-code-input"]',
       applyPromoButton: '[data-testid="apply-promo-button"]',
-      
+
       // Navigation Buttons
       continueButton: '[data-testid="continue-button"]',
       backButton: '[data-testid="back-button"]',
       placeOrderButton: '[data-testid="place-order-button"]',
-      
+
       // Guest Checkout
       guestCheckoutOption: '[data-testid="guest-checkout"]',
       createAccountOption: '[data-testid="create-account"]',
-      
+
       // Messages
       errorMessage: '[data-testid="error-message"]',
       successMessage: '[data-testid="success-message"]',
       validationError: '[data-testid="validation-error"]',
-      
+
       // Loading states
       loadingSpinner: '[data-testid="loading-spinner"]',
       processingPayment: '[data-testid="processing-payment"]',
-      
+
       // Order Confirmation
       orderConfirmation: '[data-testid="order-confirmation"]',
       orderNumber: '[data-testid="order-number"]',
-      confirmationMessage: '[data-testid="confirmation-message"]'
+      confirmationMessage: '[data-testid="confirmation-message"]',
     };
   }
 
@@ -129,16 +129,16 @@ class CheckoutPage extends BasePage {
     await this.fillInput(this.selectors.shippingFirstName, shippingData.firstName);
     await this.fillInput(this.selectors.shippingLastName, shippingData.lastName);
     await this.fillInput(this.selectors.shippingAddress, shippingData.street);
-    
+
     if (shippingData.address2) {
       await this.fillInput(this.selectors.shippingAddress2, shippingData.address2);
     }
-    
+
     await this.fillInput(this.selectors.shippingCity, shippingData.city);
     await this.selectOption(this.selectors.shippingState, shippingData.state);
     await this.fillInput(this.selectors.shippingZip, shippingData.zipCode);
     await this.selectOption(this.selectors.shippingCountry, shippingData.country);
-    
+
     if (shippingData.phone) {
       await this.fillInput(this.selectors.shippingPhone, shippingData.phone);
     }
@@ -154,15 +154,15 @@ class CheckoutPage extends BasePage {
       await this.form.setCheckbox(this.selectors.sameAsShippingCheckbox, true);
     } else {
       await this.form.setCheckbox(this.selectors.sameAsShippingCheckbox, false);
-      
+
       await this.fillInput(this.selectors.billingFirstName, billingData.firstName);
       await this.fillInput(this.selectors.billingLastName, billingData.lastName);
       await this.fillInput(this.selectors.billingAddress, billingData.street);
-      
+
       if (billingData.address2) {
         await this.fillInput(this.selectors.billingAddress2, billingData.address2);
       }
-      
+
       await this.fillInput(this.selectors.billingCity, billingData.city);
       await this.selectOption(this.selectors.billingState, billingData.state);
       await this.fillInput(this.selectors.billingZip, billingData.zipCode);
@@ -189,7 +189,7 @@ class CheckoutPage extends BasePage {
       default:
         selector = `${this.selectors.shippingOption}[value="${shippingType}"]`;
     }
-    
+
     await this.clickElement(selector);
     await this.waitForNetworkIdle();
   }
@@ -204,7 +204,7 @@ class CheckoutPage extends BasePage {
     } else if (paymentMethod === 'paypal') {
       await this.clickElement(this.selectors.paypalOption);
     }
-    
+
     await this.page.waitForTimeout(500); // Wait for payment form to appear
   }
 
@@ -251,12 +251,12 @@ class CheckoutPage extends BasePage {
    */
   async placeOrder() {
     await this.clickElement(this.selectors.placeOrderButton);
-    
+
     // Wait for order processing
     if (await this.isElementVisible(this.selectors.processingPayment)) {
       await this.waitForElementToDisappear(this.selectors.processingPayment);
     }
-    
+
     await this.waitForNetworkIdle();
   }
 
@@ -268,29 +268,29 @@ class CheckoutPage extends BasePage {
     // Fill shipping information
     await this.fillShippingInformation(checkoutData.shippingAddress);
     await this.continueToNextStep();
-    
+
     // Fill billing information
     await this.fillBillingInformation(
       checkoutData.billingAddress || checkoutData.shippingAddress,
       !checkoutData.billingAddress
     );
     await this.continueToNextStep();
-    
+
     // Select shipping option
     if (checkoutData.shippingOption) {
       await this.selectShippingOption(checkoutData.shippingOption);
       await this.continueToNextStep();
     }
-    
+
     // Fill payment information
     await this.selectPaymentMethod('credit-card');
     await this.fillCreditCardInformation(checkoutData.paymentInfo);
-    
+
     // Apply promo code if provided
     if (checkoutData.promoCode) {
       await this.applyPromoCode(checkoutData.promoCode);
     }
-    
+
     // Place order
     await this.placeOrder();
   }
@@ -323,10 +323,10 @@ class CheckoutPage extends BasePage {
       subtotal: await this.getTextContent(this.selectors.subtotalAmount),
       shipping: await this.getTextContent(this.selectors.shippingAmount),
       tax: await this.getTextContent(this.selectors.taxAmount),
-      discount: await this.isElementVisible(this.selectors.discountAmount) 
-        ? await this.getTextContent(this.selectors.discountAmount) 
+      discount: (await this.isElementVisible(this.selectors.discountAmount))
+        ? await this.getTextContent(this.selectors.discountAmount)
         : '0.00',
-      total: await this.getTextContent(this.selectors.totalAmount)
+      total: await this.getTextContent(this.selectors.totalAmount),
     };
   }
 
@@ -336,15 +336,15 @@ class CheckoutPage extends BasePage {
   async getOrderItems() {
     const items = [];
     const orderItems = await this.page.locator(this.selectors.orderItem).all();
-    
+
     for (const item of orderItems) {
       items.push({
         name: await item.locator(this.selectors.itemName).textContent(),
         quantity: await item.locator(this.selectors.itemQuantity).textContent(),
-        price: await item.locator(this.selectors.itemPrice).textContent()
+        price: await item.locator(this.selectors.itemPrice).textContent(),
       });
     }
-    
+
     return items;
   }
 
@@ -418,7 +418,7 @@ class CheckoutPage extends BasePage {
   async validateCheckoutError(expectedError) {
     await this.validateElementVisible(this.selectors.errorMessage);
     const actualError = await this.getErrorMessage();
-    
+
     if (expectedError) {
       expect(actualError).toContain(expectedError);
     }
@@ -438,13 +438,13 @@ class CheckoutPage extends BasePage {
    */
   async validateOrderTotalCalculation() {
     const summary = await this.getOrderSummary();
-    
+
     const subtotal = parseFloat(summary.subtotal.replace(/[^0-9.]/g, ''));
     const shipping = parseFloat(summary.shipping.replace(/[^0-9.]/g, ''));
     const tax = parseFloat(summary.tax.replace(/[^0-9.]/g, ''));
     const discount = parseFloat(summary.discount.replace(/[^0-9.]/g, ''));
     const total = parseFloat(summary.total.replace(/[^0-9.]/g, ''));
-    
+
     const expectedTotal = subtotal + shipping + tax - discount;
     expect(Math.abs(total - expectedTotal)).toBeLessThan(0.01);
   }

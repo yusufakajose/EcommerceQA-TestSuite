@@ -1,0 +1,11 @@
+{
+  "createdAt": "2025-08-26T22:43:30.665Z",
+  "env": "ci",
+  "git": {
+    "branch": "main",
+    "commit": "e0c3fb3",
+    "remote": "https://github.com/yusufakajose/EcommerceQA-TestSuite.git"
+  },
+  "project": "EcommerceQA-TestSuite",
+  "notes": "Initialized CI monitor artifacts. Use `npm run ci:monitor run` to execute CI suites and `npm run ci:monitor report` to summarize."
+}

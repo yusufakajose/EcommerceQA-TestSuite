@@ -1,0 +1,48 @@
+name: Auto Open PR (docs branch)
+
+on:
+  push:
+    branches:
+      - chore/docs-badges-and-env-example
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: auto-pr-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  open-pr:
+    name: Open PR to main if missing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create PR via GitHub API if it doesn't exist
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = 'chore/docs-badges-and-env-example';
+            const { owner, repo } = context.repo;
+            const openPrs = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${branch}`,
+              base: 'main'
+            });
+            if (openPrs.length > 0) {
+              core.info(`PR already exists: #${openPrs[0].number} ${openPrs[0].html_url}`);
+              return;
+            }
+            const res = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: 'chore(docs): add CI badges and clarify .env.example',
+              body: 'Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage. This PR exists to trigger CodeQL analysis on pull_request.',
+              base: 'main',
+              head: branch,
+              maintainer_can_modify: true,
+              draft: false
+            });
+            core.info(`Created PR #${res.data.number}: ${res.data.html_url}`);

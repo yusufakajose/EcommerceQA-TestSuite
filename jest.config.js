@@ -1,4 +1,8 @@
 module.exports = {
   testEnvironment: 'node',
-  testMatch: ['**/contract-tests/**/*.spec.js'],
+  // Include both contract tests and internal unit tests (e.g., JMeter JTL parser)
+  testMatch: [
+    '**/contract-tests/**/*.spec.js',
+    '**/scripts/load-testing/**/__tests__/**/*.spec.js',
+  ],
 };

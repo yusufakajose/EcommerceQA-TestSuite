@@ -203,7 +203,8 @@ function evaluateSLOs(slo, overall, byLabel) {
 async function parseJtl(filePath, options = {}) {
   const sloPath =
     options.sloPath || path.resolve(process.cwd(), 'config/performance/jmeter-slo.json');
-  const slo = loadSloConfig(sloPath);
+  // Allow explicit SLO object override (useful for unit tests)
+  const slo = options.slo || loadSloConfig(sloPath);
 
   // We may need to detect header presence. We'll do a small peek.
   const firstBytes =

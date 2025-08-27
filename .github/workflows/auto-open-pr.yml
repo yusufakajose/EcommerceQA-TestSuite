@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - chore/docs-badges-and-env-example
+  workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 concurrency:
@@ -21,6 +22,7 @@ jobs:
       - name: Create PR via GitHub API if it doesn't exist
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const branch = 'chore/docs-badges-and-env-example';
             const { owner, repo } = context.repo;

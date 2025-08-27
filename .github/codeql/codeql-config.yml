@@ -3,6 +3,8 @@ name: 'EcommerceQA CodeQL config'
 # Run the broader security and quality suite in addition to defaults
 queries:
   - uses: security-and-quality
+  - uses: github/codeql/javascript-queries@latest
+  - uses: github/codeql/contrib/javascript-queries@latest
 
 # Exclude generated artifacts and non-source content from analysis
 paths-ignore:
@@ -15,3 +17,8 @@ paths-ignore:
   - manual-tests/**
   - '**/*.md'
   - '**/*.yml'
+  - '**/*.yaml'
+  - '**/*.png'
+  - '**/*.jpg'
+  - '**/*.jpeg'
+  - '**/*.svg'

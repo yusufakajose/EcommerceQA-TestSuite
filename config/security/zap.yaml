@@ -1,0 +1,89 @@
+# ZAP Automation Framework plan for authenticated scan
+# Docs: https://www.zaproxy.org/docs/automate/automation-framework/
+---
+env:
+  contexts:
+    - name: ecommerce-app
+      urls:
+        - ${target}
+      authentication:
+        method: ${auth_method}
+        parameters:
+          loginPageUrl: ${login_page_url}
+          loginRequestUrl: ${login_request_url}
+          loginRequestBody: ${login_request_body}
+          script: ${auth_script}
+          scriptEngine: 'ECMAScript : Graal.js'
+          tokenRegex: ${token_regex}
+          loggedInIndicatorRegex: ${logged_in_indicator_regex}
+        verification:
+          method: both
+          loggedInRegex: ${logged_in_regex}
+          loggedOutRegex: ${logged_out_regex}
+      sessionManagement:
+        method: cookie
+      users:
+        - name: primary
+          credentials:
+            username: ${auth_username}
+            password: ${auth_password}
+  vars:
+    # Target and auth defaults; override via environment variables when running
+    target: ${ZAP_TARGET}
+    auth_method: ${ZAP_AUTH_METHOD}
+    login_page_url: ${ZAP_LOGIN_PAGE_URL}
+    login_request_url: ${ZAP_LOGIN_REQUEST_URL}
+    login_request_body: ${ZAP_LOGIN_REQUEST_BODY}
+    auth_script: ${ZAP_AUTH_SCRIPT}
+    token_regex: ${ZAP_TOKEN_REGEX}
+    logged_in_indicator_regex: ${ZAP_LOGGED_IN_INDICATOR_REGEX}
+    logged_in_regex: ${ZAP_LOGGED_IN_REGEX}
+    logged_out_regex: ${ZAP_LOGGED_OUT_REGEX}
+    auth_username: ${ZAP_USERNAME}
+    auth_password: ${ZAP_PASSWORD}
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: spider
+    parameters:
+      context: ecommerce-app
+      user: primary
+      maxDuration: 2
+
+  - type: passiveScan-wait
+
+  - type: activeScan
+    parameters:
+      context: ecommerce-app
+      user: primary
+      handleAntiCSRFTokens: true
+      maxScanDurationInMins: 15
+      maxRuleDurationInMins: 5
+
+  - type: report
+    parameters:
+      template: modern
+      reportDir: /zap/wrk/reports/zap
+      reportFile: zap-report.html
+      reportTitle: Ecommerce App ZAP Report
+      reportDescription: Authenticated ZAP scan via Automation Framework
+
+  # Generate SARIF JSON for code scanning integrations
+  - type: report
+    parameters:
+      template: sarif-json
+      reportDir: /zap/wrk/reports/zap
+      reportFile: zap-report.sarif.json
+      reportTitle: Ecommerce App ZAP SARIF
+      reportDescription: SARIF output for security scanning platforms
+
+  - type: exitStatus
+    parameters:
+      errorLevel: High
+      warnLevel: Medium
+      okExitValue: 0
+      warnExitValue: 2
+      errorExitValue: 1

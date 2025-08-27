@@ -103,6 +103,23 @@ npm run report:executive
 npm run report:all
 ```
 
+### Contract Testing (Pact + Broker)
+
+```bash
+# Generate consumer pacts
+npm run test:contract:consumer
+
+# Publish pacts to Pact Broker (requires env vars)
+npm run contract:publish
+
+# Verify provider (uses Broker if configured)
+npm run contract:verify
+
+# Pre-deploy safety gate and record deployment
+npm run contract:can-i-deploy
+npm run contract:record-deployment
+```
+
 ## 🎯 **Test Results & Reports**
 
 ### Sample Performance Results

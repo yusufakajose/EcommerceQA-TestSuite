@@ -381,39 +381,60 @@ stages:
               versionSpec: $(nodeVersion)
             displayName: Install Node.js
           - script: |
-              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
-            displayName: Configure npm cache variable
-          - task: Cache@2
-            displayName: Restore npm cache
-            inputs:
-              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
-              path: $(NPM_CACHE)
-              restoreKeys: |
-                npm | "$(Agent.OS)" | package-lock.json,package.json |
-                npm | "$(Agent.OS)" |
-          - script: |
               set -e
               npm ci || npm install
             displayName: Install dependencies (ci with fallback)
           - script: |
-              npx playwright install --with-deps
-            displayName: Install Playwright browsers
-          - script: |
-              npm run test:security
-            displayName: Run security tests
+              bash scripts/security/run-zap-af.sh
+            displayName: Run ZAP Automation Framework (Docker)
             env:
-              CI: true
-          - task: PublishTestResults@2
+              ZAP_TARGET: $(ZAP_TARGET)
+              ZAP_AUTH_METHOD: $(ZAP_AUTH_METHOD)
+              ZAP_USERNAME: $(ZAP_USERNAME)
+              ZAP_PASSWORD: $(ZAP_PASSWORD)
+              ZAP_LOGIN_PAGE_URL: $(ZAP_LOGIN_PAGE_URL)
+              ZAP_LOGIN_REQUEST_URL: $(ZAP_LOGIN_REQUEST_URL)
+              ZAP_LOGIN_REQUEST_BODY: $(ZAP_LOGIN_REQUEST_BODY)
+              ZAP_TOKEN_REGEX: $(ZAP_TOKEN_REGEX)
+              ZAP_LOGGED_IN_INDICATOR_REGEX: $(ZAP_LOGGED_IN_INDICATOR_REGEX)
+              ZAP_LOGGED_IN_REGEX: $(ZAP_LOGGED_IN_REGEX)
+              ZAP_LOGGED_OUT_REGEX: $(ZAP_LOGGED_OUT_REGEX)
+              ZAP_AUTH_SCRIPT: $(ZAP_AUTH_SCRIPT)
+          - task: PublishBuildArtifacts@1
             condition: always()
             inputs:
-              testResultsFormat: JUnit
-              testResultsFiles: reports/security-tests/junit.xml
-              testRunTitle: Security Tests
-          - task: PublishHtmlReport@1
+              pathToPublish: reports/zap
+              artifactName: ZAPReport
+              publishLocation: Container
+          - script: |
+              set -e
+              mkdir -p CodeAnalysisLogs
+              if [ -f reports/zap/zap-report.sarif.json ]; then
+                cp reports/zap/zap-report.sarif.json CodeAnalysisLogs/
+                echo "Staged SARIF at CodeAnalysisLogs/zap-report.sarif.json"
+              fi
+              if [ -f reports/zap/zap-report.sarif ]; then
+                cp reports/zap/zap-report.sarif CodeAnalysisLogs/
+                echo "Staged SARIF at CodeAnalysisLogs/zap-report.sarif"
+              fi
+              if [ -z "$(ls -A CodeAnalysisLogs 2>/dev/null)" ]; then
+                echo "No SARIF files found under reports/zap; skipping staging." >&2
+              fi
+            displayName: Stage SARIF for Code Analysis
+            condition: always()
+          - task: AdvancedSecurity-Publish@1
+            displayName: Publish SARIF to Advanced Security (if enabled)
             condition: always()
             inputs:
-              reportDir: reports/security-tests
-              tabName: Security Test Report
+              SarifsInputDirectory: CodeAnalysisLogs
+              Category: ZAP
+              WaitForProcessing: false
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            inputs:
+              pathToPublish: CodeAnalysisLogs
+              artifactName: CodeAnalysisLogs
+              publishLocation: Container
 
   - stage: ReportGeneration
     displayName: Generate Consolidated Reports
@@ -473,3 +494,76 @@ stages:
               pathToPublish: reports
               artifactName: ConsolidatedReports
               publishLocation: Container
+
+  - stage: Contracts
+    displayName: Contract Tests and Broker Integration
+    dependsOn: Validate
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.Reason'], 'Schedule')))
+    variables:
+      PACTICIPANT: 'EcommerceWebApp'
+      DEPLOY_ENVIRONMENT: 'test'
+    jobs:
+      - job: PactConsumerPublish
+        displayName: Run consumer tests and publish pacts
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 30
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              echo "##vso[task.setvariable variable=NPM_CONFIG_CACHE]$(NPM_CACHE)"
+            displayName: Configure npm cache variable
+          - task: Cache@2
+            displayName: Restore npm cache
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json,package.json | $(Build.SourcesDirectory)'
+              path: $(NPM_CACHE)
+              restoreKeys: |
+                npm | "$(Agent.OS)" | package-lock.json,package.json |
+                npm | "$(Agent.OS)" |
+          - script: |
+              set -e
+              npm ci || npm install
+            displayName: Install dependencies (ci with fallback)
+          - script: |
+              npm run test:contract:consumer
+            displayName: Run Pact consumer tests
+          - script: |
+              bash scripts/contract-tests/publish-pacts.sh
+            displayName: Publish pacts to Broker
+            env:
+              PACT_BROKER_BASE_URL: $(PACT_BROKER_BASE_URL)
+              PACT_BROKER_TOKEN: $(PACT_BROKER_TOKEN)
+              CONSUMER_VERSION: $(Build.SourceVersion)
+              BRANCH: $(Build.SourceBranchName)
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            inputs:
+              pathToPublish: pacts
+              artifactName: PactFiles
+              publishLocation: Container
+
+      - job: PactCanIDeploy
+        displayName: can-i-deploy gate
+        dependsOn: PactConsumerPublish
+        pool:
+          vmImage: ubuntu-latest
+        timeoutInMinutes: 15
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: Install Node.js
+          - script: |
+              set -e
+              bash scripts/contract-tests/can-i-deploy.sh
+            displayName: can-i-deploy to $(DEPLOY_ENVIRONMENT)
+            env:
+              PACT_BROKER_BASE_URL: $(PACT_BROKER_BASE_URL)
+              PACT_BROKER_TOKEN: $(PACT_BROKER_TOKEN)
+              PACTICIPANT: $(PACTICIPANT)
+              APP_VERSION: $(Build.SourceVersion)
+              TO_ENV: $(DEPLOY_ENVIRONMENT)

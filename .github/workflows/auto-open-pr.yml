@@ -28,7 +28,8 @@ jobs:
           echo "  2) Add a fine-scoped PAT secret named PAT_CREATE_PR and switch this job to use it (see workflow comments)"
 
       - name: Create PR via GitHub API (GITHUB_TOKEN fallback)
-        uses: actions/github-script@v7
+        # Pin to commit SHA to satisfy action allowlist/pinning policy
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

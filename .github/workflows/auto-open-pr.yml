@@ -22,7 +22,7 @@ jobs:
       PR_BRANCH: chore/docs-badges-and-env-example
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@v4
 
       - name: Tip if you want to use a PAT instead
         run: |
@@ -39,15 +39,31 @@ jobs:
           git add -A
           git commit -m "chore(ci): ensure diff for auto-PR workflow" || true
 
-      - name: Create PR (peter-evans/create-pull-request)
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.PR_BRANCH }}
-          base: main
-          title: 'chore(docs): add CI badges and clarify .env.example'
-          body: |
-            Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage.
-            This PR exists to trigger CodeQL analysis on pull_request.
-          maintainer-can-modify: true
-          draft: false
+      - name: Open PR via GitHub REST API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BASE: main
+          HEAD: ${{ env.PR_BRANCH }}
+          TITLE: 'chore(docs): add CI badges and clarify .env.example'
+        run: |
+          set -e
+          echo "Checking for existing open PR from ${HEAD} to ${BASE}..."
+          EXISTING=$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
+            "${{ github.api_url }}/repos/${REPO}/pulls?head=${{ github.repository_owner }}:${HEAD}&base=${BASE}&state=open")
+          COUNT=$(echo "$EXISTING" | jq 'length')
+          if [ "$COUNT" -gt 0 ]; then
+            echo "Open PR already exists. Skipping creation."; exit 0;
+          fi
+          echo "No existing PR found. Creating a new one..."
+          BODY=$'Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage.\nThis PR exists to trigger CodeQL analysis on pull_request.'
+          CREATE=$(jq -nc --arg title "$TITLE" --arg head "$HEAD" --arg base "$BASE" --arg body "$BODY" '{title:$title, head:$head, base:$base, body:$body, maintainer_can_modify:true, draft:false}')
+          RESP=$(curl -sS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
+            -d "$CREATE" "${{ github.api_url }}/repos/${REPO}/pulls")
+          URL=$(echo "$RESP" | jq -r '.html_url // empty')
+          if [ -n "$URL" ]; then
+            echo "PR created: $URL"
+          else
+            echo "PR creation response:" && echo "$RESP"
+            echo "Failed to create PR" >&2; exit 1;
+          fi

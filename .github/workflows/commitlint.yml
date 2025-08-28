@@ -12,10 +12,23 @@ jobs:
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: wagoid/commitlint-github-action@v6
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Setup Node for commitlint
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          configFile: commitlint.config.mjs
-        # Allow warnings but fail on errors
-        env:
-          NODE_PATH: ${{ github.workspace }}/node_modules
+          node-version: '18'
+          cache: 'npm'
+      - name: Install commitlint deps
+        run: |
+          npm ci --ignore-scripts
+      - name: Lint commits in PR range
+        if: github.event_name == 'pull_request'
+        run: |
+          HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+          npx commitlint --config commitlint.config.mjs --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+      - name: Lint last commit on push
+        if: github.event_name == 'push'
+        run: |
+          npx commitlint --config commitlint.config.mjs --from HEAD~1 --to HEAD --verbose

@@ -40,7 +40,8 @@ async function globalSetup() {
   const testConfig = {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'test',
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    // Default to a stable public demo target consistent with Playwright config
+    baseURL: process.env.BASE_URL || 'https://magento.softwaretestingboard.com',
     browsers: ['chromium', 'firefox', 'webkit'],
     testDataPath: path.resolve('test-data/fixtures'),
   };

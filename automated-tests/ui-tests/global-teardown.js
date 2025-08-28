@@ -10,8 +10,9 @@ async function globalTeardown() {
   console.log('Starting global teardown...');
 
   try {
-    // Generate test execution summary
-    const testResultsPath = 'reports/test-execution/test-results.json';
+    // Generate test execution summary (respect environment-aware reporter path)
+    const env = process.env.TEST_ENV || 'development';
+    const testResultsPath = path.join('reports', 'test-execution', env, 'test-results.json');
 
     if (fs.existsSync(testResultsPath)) {
       const testResults = JSON.parse(fs.readFileSync(testResultsPath, 'utf8'));

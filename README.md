@@ -1,5 +1,8 @@
 # 🚀 E-commerce QA Testing Showcase
 
+[![CodeQL](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/codeql.yml/badge.svg)](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/codeql.yml)
+[![ZAP Baseline](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/zap-baseline.yml/badge.svg)](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/zap-baseline.yml)
+
 A comprehensive, production-ready QA testing framework demonstrating advanced testing methodologies, automation, and performance engineering capabilities.
 
 ## 🎯 **Overview**

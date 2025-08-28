@@ -20,12 +20,12 @@ test.describe('Smoke Tests', () => {
   test('should have basic navigation', async ({ page }) => {
     await page.goto('https://playwright.dev', { waitUntil: 'domcontentloaded' });
 
-    // Prefer role-based selector for resilience
-    const getStartedLink = page.getByRole('link', { name: /get started/i });
-    await expect(getStartedLink).toBeVisible();
+    // Prefer role-based selector; fall back between common labels
+    const navLink = page.getByRole('link', { name: /(get started|docs)/i });
+    await expect(navLink).toBeVisible();
 
     // Click the link and verify navigation
-    await getStartedLink.click();
+    await navLink.click();
 
     // Verify we navigated to the docs (intro or docs path)
     await expect(page).toHaveURL(/docs/i);

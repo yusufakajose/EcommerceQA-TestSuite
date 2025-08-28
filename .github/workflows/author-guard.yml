@@ -1,0 +1,67 @@
+name: Author Guard
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+jobs:
+  check-authors:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if any commit author/committer is disallowed
+        run: |
+          set -euo pipefail
+          # Determine commit range
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..HEAD"
+          else
+            RANGE="${{ github.event.before }}..${{ github.sha }}"
+          fi
+
+          echo "Checking commits in range: $RANGE"
+
+          DISALLOWED_NAMES='^(ci-bot)$'
+          DISALLOWED_EMAILS='^(ci@example.com)$'
+
+          ERR=0
+          # If range is invalid (e.g., shallow or unknown), fall back to last 20 commits
+          if ! git rev-list $RANGE >/dev/null 2>&1; then
+            echo "Commit range not available; falling back to HEAD~20..HEAD"
+            RANGE="HEAD~20..HEAD"
+          fi
+
+          while IFS= read -r line; do
+            sha=${line%%|*}
+            meta=${line#*|}
+            author_name=${meta%%|*}
+            meta=${meta#*|}
+            author_email=${meta%%|*}
+            meta=${meta#*|}
+            committer_name=${meta%%|*}
+            committer_email=${meta#*|}
+
+            if echo "$author_name" | grep -Eqi "$DISALLOWED_NAMES"; then
+              echo "Disallowed author name in $sha: $author_name"; ERR=1; fi
+            if echo "$committer_name" | grep -Eqi "$DISALLOWED_NAMES"; then
+              echo "Disallowed committer name in $sha: $committer_name"; ERR=1; fi
+            if echo "$author_email" | grep -Eqi "$DISALLOWED_EMAILS"; then
+              echo "Disallowed author email in $sha: $author_email"; ERR=1; fi
+            if echo "$committer_email" | grep -Eqi "$DISALLOWED_EMAILS"; then
+              echo "Disallowed committer email in $sha: $committer_email"; ERR=1; fi
+          done < <(git log --format='%H|%an|%ae|%cn|%ce' $RANGE)
+
+          if [ "$ERR" -ne 0 ]; then
+            echo "Failing due to disallowed commit authors/committers in the range." >&2
+            exit 1
+          fi
+
+          echo "Authors/committers check passed."

@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+# Prevent pushing any commits authored/committed by the forbidden identity
+set -e
+
+# Determine the range being pushed when possible (fallback scans last 200 commits)
+RANGE="$(git rev-list --max-count=200 HEAD 2>/dev/null || true)"
+
+if git log -n 200 --format=%an | grep -qi '^ci-bot$'; then
+  echo "❌ Push blocked: found commits with author 'ci-bot' in recent history."
+  echo "   Amend those commits or ensure your identity is set to 'yusufakajose'."
+  exit 1
+fi
+
+if git log -n 200 --format=%cn | grep -qi '^ci-bot$'; then
+  echo "❌ Push blocked: found commits with committer 'ci-bot' in recent history."
+  echo "   Amend those commits or ensure your identity is set to 'yusufakajose'."
+  exit 1
+fi
+
+if git log -n 200 --format=%ae | grep -qi '^ci@example\.com$'; then
+  echo "❌ Push blocked: found commits with author email ci@example.com."
+  exit 1
+fi
+
+if git log -n 200 --format=%ce | grep -qi '^ci@example\.com$'; then
+  echo "❌ Push blocked: found commits with committer email ci@example.com."
+  exit 1
+fi
+
+exit 0

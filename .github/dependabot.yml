@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # Keep GitHub Actions (pinned SHAs) up to date; Dependabot will propose PRs when newer commits/tags are available
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '03:00'
+      timezone: UTC
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci(actions)'
+      include: scope
+    labels:
+      - dependencies
+      - ci
+
+  # Keep npm dev/prod dependencies fresh; avoid auto-upgrading majors by default
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '03:30'
+      timezone: UTC
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'chore(deps)'
+      include: scope
+    labels:
+      - dependencies
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major

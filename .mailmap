@@ -1,0 +1,10 @@
+# Unify commit author/committer display to the canonical identity without rewriting history.
+# This affects git shortlog, some blame views, and GitHub contributor graphs.
+# It does NOT rewrite commits or change commit SHAs/timestamps.
+
+# Canonical identity
+# New Name <newemail>  Old Name <oldemail>
+yusufakajose <yusufakajose@users.noreply.github.com>  ci-bot <ci@example.com>
+
+# Fallback by name only (in case some commits lack/alter email)
+yusufakajose <yusufakajose@users.noreply.github.com>  ci-bot

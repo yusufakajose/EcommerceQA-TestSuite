@@ -1,11 +1,11 @@
-# 🚀 E-commerce QA Testing Showcase
+# E-commerce QA Testing Showcase
 
 [![CodeQL](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/codeql.yml/badge.svg)](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/codeql.yml)
 [![ZAP Baseline](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/zap-baseline.yml/badge.svg)](https://github.com/yusufakajose/EcommerceQA-TestSuite/actions/workflows/zap-baseline.yml)
 
 A comprehensive, production-ready QA testing framework demonstrating advanced testing methodologies, automation, and performance engineering capabilities.
 
-## 🎯 **Overview**
+## **Overview**
 
 This showcase demonstrates world-class QA engineering skills through a complete testing framework that includes:
 
@@ -15,17 +15,17 @@ This showcase demonstrates world-class QA engineering skills through a complete 
 - **Executive Reporting** with professional dashboards
 - **CI/CD Integration** ready for DevOps pipelines
 
-## 🏆 **Key Achievements**
+## **Key Achievements**
 
-- ✅ **36+ Automated Tests** with 100% pass rate
-- ✅ **Real-time Performance Monitoring** with industry baselines
-- ✅ **Professional Executive Reports** with visual dashboards
-- ✅ **Comprehensive Load Testing** with K6 and JMeter integration
-- ✅ **API Performance Validation** with backend monitoring
-- ✅ **Cross-browser Testing** across Chrome, Firefox, Safari
-- ✅ **Mobile Testing** for responsive applications
+- **36+ Automated Tests** with 100% pass rate
+- **Real-time Performance Monitoring** with industry baselines
+- **Professional Executive Reports** with visual dashboards
+- **Comprehensive Load Testing** with K6 and JMeter integration
+- **API Performance Validation** with backend monitoring
+- **Cross-browser Testing** across Chrome, Firefox, Safari
+- **Mobile Testing** for responsive applications
 
-## 🚀 **Quick Start**
+## **Quick Start**
 
 ### Prerequisites
 
@@ -49,7 +49,7 @@ npx playwright install
 npm run demo:showcase
 ```
 
-## 📊 **Test Execution**
+## **Test Execution**
 
 ### UI Testing
 
@@ -123,18 +123,18 @@ npm run contract:can-i-deploy
 npm run contract:record-deployment
 ```
 
-## 🎯 **Test Results & Reports**
+## **Test Results & Reports**
 
 ### Sample Performance Results
 
 ```
-🎯 PERFORMANCE SUMMARY:
-✅ Page Load: 1403ms (Baseline: 3000ms) - EXCELLENT
-✅ Login Process: 271ms (Baseline: 2000ms) - EXCELLENT
-✅ Add to Cart: 169ms (Baseline: 1000ms) - EXCELLENT
-✅ API Response: 229ms average across 4 endpoints
-✅ Load Test: 19,000+ requests, 3.2% error rate
-📈 OVERALL STATUS: ALL METRICS EXCELLENT
+PERFORMANCE SUMMARY:
+Page Load: 1403ms (Baseline: 3000ms) - EXCELLENT
+Login Process: 271ms (Baseline: 2000ms) - EXCELLENT
+Add to Cart: 169ms (Baseline: 1000ms) - EXCELLENT
+API Response: 229ms average across 4 endpoints
+Load Test: 19,000+ requests, 3.2% error rate
+OVERALL STATUS: ALL METRICS EXCELLENT
 ```
 
 ### Generated Reports
@@ -144,7 +144,7 @@ npm run contract:record-deployment
 - **API Performance**: `reports/api-performance-report.html`
 - **Load Testing**: `reports/load-test-report.html`
 
-## 🔧 **Framework Architecture**
+## **Framework Architecture**
 
 ### Directory Structure
 
@@ -170,7 +170,7 @@ ecommerce-qa-testsuite/
 - **API Monitoring**: Backend performance and health checks
 - **Cross-platform Testing**: Desktop and mobile coverage
 
-## 🎯 **Testing Capabilities**
+## **Testing Capabilities**
 
 ### UI Testing
 
@@ -193,17 +193,17 @@ ecommerce-qa-testsuite/
 - **Multiple Scenarios**: Smoke, Load, Stress, Spike, Endurance
 - **Professional Reporting**: Comprehensive performance analysis
 
-## 📈 **Performance Baselines**
+## **Performance Baselines**
 
-| Metric        | Baseline | Current | Status       |
-| ------------- | -------- | ------- | ------------ |
-| Page Load     | < 3000ms | 1403ms  | ✅ EXCELLENT |
-| Login Process | < 2000ms | 271ms   | ✅ EXCELLENT |
-| API Response  | < 500ms  | 229ms   | ✅ EXCELLENT |
-| Add to Cart   | < 1000ms | 169ms   | ✅ EXCELLENT |
-| Error Rate    | < 5%     | 3.2%    | ✅ GOOD      |
+| Metric        | Baseline | Current | Status    |
+| ------------- | -------- | ------- | --------- |
+| Page Load     | < 3000ms | 1403ms  | EXCELLENT |
+| Login Process | < 2000ms | 271ms   | EXCELLENT |
+| API Response  | < 500ms  | 229ms   | EXCELLENT |
+| Add to Cart   | < 1000ms | 169ms   | EXCELLENT |
+| Error Rate    | < 5%     | 3.2%    | GOOD      |
 
-## 🚀 **CI/CD Integration**
+## **CI/CD Integration**
 
 ### GitHub Actions Ready
 
@@ -223,7 +223,7 @@ ecommerce-qa-testsuite/
 - `npm run ci:load` - CI-optimized load testing
 - `npm run report:all` - Generate all reports
 
-## 🎯 **What This Demonstrates**
+## **What This Demonstrates**
 
 ### Professional QA Engineering Skills
 
@@ -241,7 +241,7 @@ ecommerce-qa-testsuite/
 - **Professional Reporting** - Executive and technical stakeholder reports
 - **Scalable Architecture** - Maintainable and extensible framework
 
-## 📊 **Sample Reports**
+## **Sample Reports**
 
 ### Executive Dashboard
 
@@ -255,15 +255,15 @@ ecommerce-qa-testsuite/
 
 ![Load Testing Report](docs/images/load-test-report.png)
 
-## 🤝 **Contributing**
+## **Contributing**
 
 This is a showcase project demonstrating QA engineering capabilities. For questions or discussions about the implementation, please open an issue.
 
-## 📄 **License**
+## **License**
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🎯 **Contact**
+## **Contact**
 
 This showcase demonstrates advanced QA engineering capabilities including:
 
@@ -275,4 +275,4 @@ This showcase demonstrates advanced QA engineering capabilities including:
 
 ---
 
-**🏆 This project showcases production-ready QA engineering skills suitable for senior-level positions in quality assurance, performance engineering, and test automation.**
+**This project showcases production-ready QA engineering skills suitable for senior-level positions in quality assurance, performance engineering, and test automation.**

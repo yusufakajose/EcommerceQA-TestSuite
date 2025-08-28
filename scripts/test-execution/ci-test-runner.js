@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+// @ts-check
 /**
  * CI/CD Test Runner
  * Optimized test execution for continuous integration environments
@@ -13,6 +13,19 @@ class CITestRunner extends MasterTestRunner {
   constructor() {
     super();
 
+    /**
+     * CI presets describing what each suite should run in CI
+     * @type {{
+     *   suites: Record<string, {
+     *     name: string;
+     *     suites: string[];
+     *     environment: string;
+     *     browsers?: string[];
+     *     timeout: number;
+     *     parallel: boolean;
+     *   }>
+     * }}
+     */
     this.ciConfig = {
       // CI-optimized test suites
       suites: {
@@ -60,6 +73,9 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Execute CI test suite
+   * @param {string} suiteType
+   * @param {Record<string, any>=} options
+   * @returns {Promise<any>}
    */
   async executeCITests(suiteType = 'smoke', options = {}) {
     console.log('🔄 CI/CD Test Execution Started');
@@ -127,6 +143,7 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Get optimal number of workers for CI
+   * @returns {number}
    */
   getCIWorkers() {
     const cpus = require('os').cpus().length;
@@ -157,6 +174,9 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Process CI-specific results
+   * @param {any} results
+   * @param {string} suiteType
+   * @returns {Promise<any>}
    */
   async processCIResults(results, suiteType) {
     const ciResults = {
@@ -183,6 +203,7 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Get CI metadata
+   * @returns {{ ci: boolean; provider: string; branch: string; commit: string; pullRequest: boolean; buildNumber: string; buildUrl: string }}
    */
   getCIMetadata() {
     return {
@@ -201,6 +222,7 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Detect CI provider
+   * @returns {string}
    */
   detectCIProvider() {
     if (process.env.GITHUB_ACTIONS) return 'GitHub Actions';
@@ -214,6 +236,7 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Collect CI artifacts
+   * @returns {Promise<{reports: string[]; screenshots: string[]; videos: string[]; logs: string[]}>}
    */
   async collectCIArtifacts() {
     const artifacts = {
@@ -257,6 +280,8 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Collect files recursively
+   * @param {string} dir
+   * @returns {string[]}
    */
   collectFilesRecursively(dir) {
     const files = [];
@@ -283,6 +308,8 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Generate notifications
+   * @param {any} results
+   * @returns {Array<{type: string; title: string; message: string; severity: string}>}
    */
   generateNotifications(results) {
     const notifications = [];
@@ -323,6 +350,8 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Check quality gates
+   * @param {any} results
+   * @returns {Promise<{passed: boolean; gates: Record<string, {threshold: number; actual: number; passed: boolean}>}>}
    */
   async checkQualityGates(results) {
     const gates = {
@@ -359,6 +388,7 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Generate CI artifacts
+   * @param {any} results
    */
   async generateCIArtifacts(results) {
     console.log('\n📦 Generating CI artifacts...');
@@ -381,6 +411,7 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Generate JUnit XML report
+   * @param {any} results
    */
   async generateJUnitXML(results) {
     const xml = this.createJUnitXML(results);
@@ -392,6 +423,8 @@ class CITestRunner extends MasterTestRunner {
 
   /**
    * Create JUnit XML content
+   * @param {any} results
+   * @returns {string}
    */
   createJUnitXML(results) {
     const testsuites = Object.entries(results.suites)
@@ -413,6 +446,7 @@ ${testsuites}
 
   /**
    * Generate CI summary
+   * @param {any} results
    */
   async generateCISummary(results) {
     const summary = {
@@ -431,6 +465,7 @@ ${testsuites}
 
   /**
    * Generate GitHub Actions summary
+   * @param {any} results
    */
   async generateGitHubActionsSummary(results) {
     if (!process.env.GITHUB_STEP_SUMMARY) {
@@ -449,6 +484,8 @@ ${testsuites}
 
   /**
    * Create GitHub Actions summary content
+   * @param {any} results
+   * @returns {string}
    */
   createGitHubActionsSummary(results) {
     const passRate = results.summary.passRate;
@@ -494,6 +531,8 @@ ${results.notifications
 
   /**
    * Generate failure artifacts
+   * @param {Error} error
+   * @param {string} suiteType
    */
   async generateFailureArtifacts(error, suiteType) {
     console.log('\n💥 Generating failure artifacts...');

@@ -36,7 +36,7 @@
     "setup": "npm install && npx playwright install",
     "lint": "eslint --config .eslintrc.js automated-tests/ scripts/ --ext .js",
     "lint:check": "eslint --config .eslintrc.js automated-tests/ scripts/ --ext .js --max-warnings=0",
-    "type-check": "tsc -p tsconfig.json --noEmit",
+    "type-check": "tsc -p tsconfig.scripts.json --noEmit",
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf test-results/ reports/ playwright-report/",
     "ci:test": "npm run test -- --reporter=junit",

@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Test Executor
  * Handles the execution of Playwright tests with configuration management
@@ -7,8 +8,43 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * @typedef {Object} ExecutorConfig
+ * @property {number} maxParallelWorkers
+ * @property {number} timeout
+ * @property {number} retries
+ * @property {string[]} environments
+ * @property {string[]} browsers
+ * @property {string} outputDir
+ * @property {string} reportDir
+ * @property {boolean} cleanPreviousResults
+ */
+
+/**
+ * @typedef {Object} SuiteStats
+ * @property {number} total
+ * @property {number} passed
+ * @property {number} failed
+ * @property {number} skipped
+ */
+
+/**
+ * @typedef {Object} ExecutionResults
+ * @property {number} total
+ * @property {number} passed
+ * @property {number} failed
+ * @property {number} skipped
+ * @property {Record<string, SuiteStats>} environments
+ * @property {Record<string, SuiteStats>} browsers
+ * @property {number} duration
+ */
+
 class TestExecutor {
+  /**
+   * @param {Partial<ExecutorConfig>=} config
+   */
   constructor(config = {}) {
+    /** @type {ExecutorConfig} */
     this.config = {
       maxParallelWorkers: 4,
       timeout: 300000,
@@ -24,8 +60,8 @@ class TestExecutor {
 
   /**
    * Execute tests with the given configuration
-   * @param {Object} options - Test execution options
-   * @returns {Promise<Object>} - Test results summary
+   * @param {{ testPattern?: string }} [options] - Test execution options
+   * @returns {Promise<ExecutionResults>} - Test results summary
    */
   async executeTests(options = {}) {
     const { testPattern } = options;
@@ -38,6 +74,7 @@ class TestExecutor {
     // Ensure output directories exist
     await this.ensureDirectories();
 
+    /** @type {ExecutionResults} */
     const results = {
       total: 0,
       passed: 0,
@@ -100,8 +137,8 @@ class TestExecutor {
    * Run tests for a specific environment and browser
    * @param {string} environment - Environment name
    * @param {string} browser - Browser name
-   * @param {string} testPattern - Test pattern to run
-   * @returns {Promise<Object>} - Test results for this combination
+   * @param {string=} testPattern - Test pattern to run
+   * @returns {Promise<SuiteStats>} - Test results for this combination
    */
   async runTestsForEnvironment(environment, browser, testPattern) {
     return new Promise((resolve, reject) => {
@@ -179,7 +216,7 @@ class TestExecutor {
    * Parse Playwright JSON results
    * @param {string} stdout - Standard output from Playwright
    * @param {string} stderr - Standard error from Playwright
-   * @returns {Object} - Parsed results
+   * @returns {SuiteStats} - Parsed results
    */
   parsePlaywrightResults(stdout, stderr) {
     try {
@@ -214,9 +251,10 @@ class TestExecutor {
   /**
    * Parse results from text output
    * @param {string} output - Combined stdout and stderr
-   * @returns {Object} - Parsed results
+   * @returns {SuiteStats} - Parsed results
    */
   parseTextResults(output) {
+    /** @type {SuiteStats} */
     const results = { total: 0, passed: 0, failed: 0, skipped: 0 };
 
     // Look for summary patterns
@@ -260,7 +298,8 @@ class TestExecutor {
     for (const dir of dirsToClean) {
       if (fs.existsSync(dir)) {
         try {
-          await fs.promises.rmdir(dir, { recursive: true });
+          // rmdir recursive is deprecated; use rm with { recursive, force }
+          await fs.promises.rm(dir, { recursive: true, force: true });
           console.log(`   🧹 Cleaned ${dir}`);
         } catch (error) {
           console.warn(`   ⚠️  Failed to clean ${dir}:`, error.message);
@@ -286,7 +325,7 @@ class TestExecutor {
 
   /**
    * Save results summary to file
-   * @param {Object} results - Test results summary
+   * @param {ExecutionResults} results - Test results summary
    */
   async saveResultsSummary(results) {
     const summaryPath = path.join(this.config.reportDir, 'execution-summary.json');

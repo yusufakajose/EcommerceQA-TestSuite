@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "declaration": false,
     "outDir": "./dist",
     "rootDir": "./",
@@ -26,14 +26,23 @@
     "types": ["node", "@playwright/test"]
   },
   "include": [
-    "automated-tests/**/*.js",
-    "automated-tests/**/*.ts",
-    "test-data/**/*.json",
+    // Focus JS type-checking on scripts runners/parsers and config files
     "config/**/*.js",
     "config/**/*.json",
-    "scripts/**/*.js",
-    "*.ts",
-    "*.js"
+    "scripts/test-execution/**/*.js",
+    "scripts/load-testing/jmeter-jtl-parser.js",
+    "scripts/load-testing/k6-wrapper.js"
   ],
-  "exclude": ["node_modules", "dist", "reports", "test-results"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "reports",
+    "test-results",
+    "automated-tests",
+    "scripts/api-tests",
+    "scripts/notifications",
+    "scripts/security",
+    "scripts/ci",
+    "scripts/reporting"
+  ]
 }

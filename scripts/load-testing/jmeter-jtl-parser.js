@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * JMeter JTL Streaming Parser with SLO evaluation
  * - Streams CSV JTL files
@@ -35,12 +36,14 @@ const DEFAULT_COLUMNS = [
   // Additional optional fields may appear after these; csv-parse with relax_column_count will keep extras as undefined unless columns are provided.
 ];
 
+/** @param {any} x */
 function safeNumber(x) {
   if (x === undefined || x === null || x === '') return 0;
   const n = Number(x);
   return Number.isFinite(n) ? n : 0;
 }
 
+/** @returns {{count:number,errors:number,sumElapsed:number,minElapsed:number,maxElapsed:number,bytes:number,sentBytes:number,firstTs:number,lastTs:number,digest:TDigest}} */
 function initAgg() {
   return {
     count: 0,
@@ -56,6 +59,7 @@ function initAgg() {
   };
 }
 
+/** @param {ReturnType<typeof initAgg>} agg @param {any} rec */
 function updateAgg(agg, rec) {
   const ts = safeNumber(rec.timeStamp);
   const elapsed = safeNumber(rec.elapsed);
@@ -75,6 +79,7 @@ function updateAgg(agg, rec) {
   if (Number.isFinite(elapsed)) agg.digest.push(elapsed);
 }
 
+/** @param {string} name @param {ReturnType<typeof initAgg>} agg */
 function finalizeAgg(name, agg) {
   // Avoid zero/inf
   const durationSec = agg.lastTs > agg.firstTs ? (agg.lastTs - agg.firstTs) / 1000 : null;
@@ -112,6 +117,7 @@ function finalizeAgg(name, agg) {
   };
 }
 
+/** @param {string} [sloPath] */
 function loadSloConfig(sloPath) {
   try {
     if (sloPath && fs.existsSync(sloPath)) {
@@ -132,6 +138,7 @@ function loadSloConfig(sloPath) {
   };
 }
 
+/** @param {number|null} value @param {{gte?:number,lte?:number,gt?:number,lt?:number}|undefined} cons */
 function evalConstraint(value, cons) {
   if (value == null || cons == null) return true; // ignore missing
   if (typeof cons.gte === 'number' && !(value >= cons.gte)) return false;
@@ -141,6 +148,7 @@ function evalConstraint(value, cons) {
   return true;
 }
 
+/** @param {any} slo @param {any} overall @param {Record<string, any>} byLabel */
 function evaluateSLOs(slo, overall, byLabel) {
   const breaches = [];
   // Global
@@ -200,6 +208,10 @@ function evaluateSLOs(slo, overall, byLabel) {
   return { status, breaches };
 }
 
+/**
+ * @param {string} filePath
+ * @param {{ sloPath?: string, slo?: any }} [options]
+ */
 async function parseJtl(filePath, options = {}) {
   const sloPath =
     options.sloPath || path.resolve(process.cwd(), 'config/performance/jmeter-slo.json');
@@ -229,6 +241,7 @@ async function parseJtl(filePath, options = {}) {
 
   const rs = fs.createReadStream(filePath);
   const overallAgg = initAgg();
+  /** @type {Map<string, ReturnType<typeof initAgg>>} */
   const perLabelAgg = new Map();
 
   await new Promise((resolve, reject) => {
@@ -248,6 +261,7 @@ async function parseJtl(filePath, options = {}) {
   });
 
   const overall = finalizeAgg('OVERALL', overallAgg);
+  /** @type {Record<string, ReturnType<typeof finalizeAgg>>} */
   const byLabel = {};
   for (const [label, agg] of perLabelAgg.entries()) {
     byLabel[label] = finalizeAgg(label, agg);

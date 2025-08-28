@@ -1,3 +1,4 @@
+// @ts-check
 /*
   Flake Telemetry: parses Playwright JSON results to detect flaky/retried tests
   - Input: reports/test-execution/${TEST_ENV||development}/test-results.json
@@ -8,10 +9,12 @@
 const fs = require('fs');
 const path = require('path');
 
+/** @param {string} p */
 function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
 }
 
+/** @template T @param {string} p @returns {T|null} */
 function readJSON(p) {
   try {
     if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -19,6 +22,10 @@ function readJSON(p) {
   return null;
 }
 
+/**
+ * @param {any} root
+ * @param {(spec: any) => void} cb
+ */
 function walkSuites(root, cb) {
   const stack = Array.isArray(root) ? root.slice() : [root];
   while (stack.length) {
@@ -60,7 +67,9 @@ function main() {
     return;
   }
 
+  /** @type {Array<{key:string,title:string,file:string,project:string|null,attempts:number,statuses:string[]}>} */
   const flaky = [];
+  /** @type {{ total: number; retried: number; flaky: number }} */
   const totals = { total: 0, retried: 0, flaky: 0 };
 
   walkSuites({ suites: data.suites }, (spec) => {

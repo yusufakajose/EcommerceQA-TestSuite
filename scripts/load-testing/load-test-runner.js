@@ -1,3 +1,4 @@
+// @ts-check
 /* eslint-disable no-empty */
 /* eslint-disable no-redeclare */
 /**
@@ -10,14 +11,24 @@ const fs = require('fs');
 const path = require('path');
 // Defer requiring the JMeter parser to avoid hard dependency when JMeter isn't available
 
+/**
+ * @typedef {Object} Recommendation
+ * @property {'HIGH'|'MEDIUM'|'LOW'} priority
+ * @property {string} category
+ * @property {string} issue
+ * @property {string} recommendation
+ * @property {string} impact
+ */
+
 class LoadTestRunner {
   constructor() {
+    /** @type {{ timestamp: string; k6Results: Record<string, any>; jmeterResults: Record<string, any>; summary: any; recommendations: Recommendation[]; trends?: any }} */
     this.testResults = {
       timestamp: new Date().toISOString(),
       k6Results: {},
       jmeterResults: {},
       summary: {},
-      recommendations: [],
+      recommendations: /** @type {Recommendation[]} */ ([]),
     };
 
     this.loadTestConfig = {
@@ -45,6 +56,8 @@ class LoadTestRunner {
 
   /**
    * Run comprehensive load testing suite
+   * @param {{ testType?: 'all'|'k6'|'jmeter'; scenarios?: string[] }} [options]
+   * @returns {Promise<any>}
    */
   async runLoadTests(options = {}) {
     console.log('🚀 Starting Comprehensive Load Testing Suite...');
@@ -86,6 +99,7 @@ class LoadTestRunner {
 
   /**
    * Setup required directories
+   * @returns {Promise<void>}
    */
   async setupDirectories() {
     const dirs = [
@@ -102,6 +116,8 @@ class LoadTestRunner {
 
   /**
    * Run K6 load tests
+   * @param {string[]} scenarios
+   * @returns {Promise<void>}
    */
   async runK6Tests(scenarios) {
     const k6Results = {};
@@ -124,6 +140,8 @@ class LoadTestRunner {
 
   /**
    * Execute individual K6 test
+   * @param {string} scenario
+   * @returns {Promise<any>}
    */
   async executeK6Test(scenario) {
     return new Promise((resolve, reject) => {
@@ -253,6 +271,8 @@ class LoadTestRunner {
 
   /**
    * Generate mock K6 results for demonstration
+   * @param {string} scenario
+   * @returns {any}
    */
   generateMockK6Results(scenario) {
     const baseMetrics = {
@@ -291,6 +311,8 @@ class LoadTestRunner {
 
   /**
    * Parse K6 results from JSON output
+   * @param {string} outputFile
+   * @returns {any}
    */
   parseK6Results(outputFile) {
     try {
@@ -305,6 +327,7 @@ class LoadTestRunner {
 
   /**
    * Run JMeter load tests
+   * @returns {Promise<void>}
    */
   async runJMeterTests() {
     const jmeterResults = {};
@@ -327,6 +350,8 @@ class LoadTestRunner {
 
   /**
    * Execute individual JMeter test
+   * @param {string} testPlan
+   * @returns {Promise<any>}
    */
   async executeJMeterTest(testPlan) {
     return new Promise((resolve, reject) => {
@@ -368,6 +393,8 @@ class LoadTestRunner {
 
   /**
    * Generate mock JMeter results for demonstration
+   * @param {string} testPlan
+   * @returns {any}
    */
   generateMockJMeterResults(testPlan) {
     return {
@@ -405,6 +432,8 @@ class LoadTestRunner {
 
   /**
    * Parse JMeter results from JTL file
+   * @param {string} outputFile
+   * @returns {any}
    */
   parseJMeterResults(outputFile) {
     // Deprecated: replaced by streaming parser in executeJMeterTest
@@ -413,6 +442,7 @@ class LoadTestRunner {
 
   /**
    * Generate comprehensive load test report
+   * @returns {Promise<void>}
    */
   async generateLoadTestReport() {
     console.log('📊 Generating Load Test Report...');
@@ -456,6 +486,7 @@ class LoadTestRunner {
 
   /**
    * Calculate summary metrics across all tests
+   * @returns {void}
    */
   calculateSummaryMetrics() {
     const summary = {
@@ -511,7 +542,7 @@ class LoadTestRunner {
     // Calculate derived metrics
     summary.overallErrorRate =
       summary.totalRequests > 0
-        ? ((summary.totalErrors / summary.totalRequests) * 100).toFixed(2)
+        ? Number(((summary.totalErrors / summary.totalRequests) * 100).toFixed(2))
         : 0;
 
     summary.averageResponseTime =
@@ -525,6 +556,7 @@ class LoadTestRunner {
 
   /**
    * Emit Azure Pipelines error messages for failed scenarios/plans
+   * @returns {void}
    */
   emitAzureIssues() {
     try {
@@ -555,6 +587,7 @@ class LoadTestRunner {
   /**
    * Enforce optional gates on adverse trend deltas
    * Controlled via env FAIL_ON_TREND_REGRESSION=1
+   * @returns {Promise<void>}
    */
   async enforceTrendGates() {
     try {
@@ -584,14 +617,16 @@ class LoadTestRunner {
 
   /**
    * Generate performance recommendations
+   * @returns {void}
    */
   generateRecommendations() {
+    /** @type {Recommendation[]} */
     const recommendations = [];
     const summary = this.testResults.summary;
 
     if (summary.overallErrorRate > 5) {
       recommendations.push({
-        priority: 'HIGH',
+        priority: /** @type {'HIGH'} */ ('HIGH'),
         category: 'Reliability',
         issue: `High error rate: ${summary.overallErrorRate}%`,
         recommendation: 'Investigate failing requests and implement proper error handling',
@@ -601,7 +636,7 @@ class LoadTestRunner {
 
     if (summary.maxResponseTime > this.loadTestConfig.thresholds.responseTime.p99) {
       recommendations.push({
-        priority: 'HIGH',
+        priority: /** @type {'HIGH'} */ ('HIGH'),
         category: 'Performance',
         issue: `Maximum response time exceeds threshold: ${summary.maxResponseTime}ms`,
         recommendation: 'Optimize slow endpoints and consider caching strategies',
@@ -611,7 +646,7 @@ class LoadTestRunner {
 
     if (summary.overallThroughput < this.loadTestConfig.thresholds.throughput.min) {
       recommendations.push({
-        priority: 'MEDIUM',
+        priority: /** @type {'MEDIUM'} */ ('MEDIUM'),
         category: 'Scalability',
         issue: `Low throughput: ${summary.overallThroughput} req/s`,
         recommendation: 'Consider horizontal scaling and load balancing',
@@ -621,7 +656,7 @@ class LoadTestRunner {
 
     if (summary.failedTests > 0) {
       recommendations.push({
-        priority: 'MEDIUM',
+        priority: /** @type {'MEDIUM'} */ ('MEDIUM'),
         category: 'Test Quality',
         issue: `${summary.failedTests} load tests failed`,
         recommendation: 'Review failed test scenarios and adjust performance baselines',
@@ -631,7 +666,7 @@ class LoadTestRunner {
 
     if (recommendations.length === 0) {
       recommendations.push({
-        priority: 'LOW',
+        priority: /** @type {'LOW'} */ ('LOW'),
         category: 'General',
         issue: 'All load test metrics are within acceptable ranges',
         recommendation: 'Continue monitoring and maintain current performance levels',
@@ -644,6 +679,7 @@ class LoadTestRunner {
 
   /**
    * Generate HTML report
+   * @returns {Promise<void>}
    */
   async generateHTMLReport() {
     const html = this.generateLoadTestHTML();
@@ -653,6 +689,7 @@ class LoadTestRunner {
 
   /**
    * Generate load test HTML content
+   * @returns {string}
    */
   generateLoadTestHTML() {
     const data = this.testResults;
@@ -874,6 +911,8 @@ class LoadTestRunner {
 
   /**
    * Compute trend deltas vs previous history entry
+   * @param {any} previousEntry
+   * @returns {void}
    */
   computeTrendDeltas(previousEntry) {
     const trends = { k6: {}, jmeter: {}, summary: {} };
@@ -957,6 +996,10 @@ class LoadTestRunner {
 
   /**
    * Calculate delta object between current and previous values
+   * @param {number} current
+   * @param {number} previous
+   * @param {{ lowerIsBetter?: boolean; higherIsBetter?: boolean; suffix?: string }} [opts]
+   * @returns {{ current: number; previous: number; diff: number; pct: number|null; direction: 'up'|'down'|'neutral'; good: boolean|null; suffix: string } | null}
    */
   calcDelta(current, previous, opts = {}) {
     const { lowerIsBetter = false, higherIsBetter = false, suffix = '' } = opts;
@@ -975,6 +1018,9 @@ class LoadTestRunner {
 
   /**
    * Render an HTML badge for a delta
+   * @param {{ direction: 'up'|'down'|'neutral'; pct: number|null; diff: number; suffix: string } | null} delta
+   * @param {'higherIsBetter'=} mode
+   * @returns {string}
    */
   renderDeltaBadge(delta, mode) {
     if (!delta) return '';
@@ -999,6 +1045,7 @@ class LoadTestRunner {
 
   /**
    * Generate a top-level artifacts index for quick navigation
+   * @returns {Promise<void>}
    */
   async generateArtifactIndex() {
     try {
@@ -1076,6 +1123,7 @@ class LoadTestRunner {
 
   /**
    * Generate JSON report
+   * @returns {Promise<void>}
    */
   async generateJSONReport() {
     const jsonPath = 'reports/load-test-data.json';
@@ -1084,6 +1132,7 @@ class LoadTestRunner {
 
   /**
    * Update trends history with the latest run (keep last 20)
+   * @returns {Promise<void>}
    */
   async updateTrendHistory() {
     try {
@@ -1138,6 +1187,7 @@ class LoadTestRunner {
 
   /**
    * Generate a CI job summary markdown combining k6 and JMeter statuses
+   * @returns {Promise<void>}
    */
   async generateJobSummary() {
     try {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+// @ts-check
 /**
  * Test Result Aggregator
  * Collects and aggregates test results from all test suites
@@ -34,6 +34,14 @@ class ResultAggregator {
   async aggregateResults() {
     console.log('Aggregating test results...');
 
+    /** @type {{
+     *  timestamp: string;
+     *  summary: { totalTests: number; passedTests: number; failedTests: number; skippedTests: number; passRate: number; totalDuration: number };
+     *  suites: Record<string, { total: number; passed: number; failed: number; skipped: number; duration: number }>;
+     *  environments: Record<string, any>;
+     *  browsers: Record<string, any>;
+     *  trends: any;
+     * }} */
     const aggregation = {
       timestamp: new Date().toISOString(),
       summary: {

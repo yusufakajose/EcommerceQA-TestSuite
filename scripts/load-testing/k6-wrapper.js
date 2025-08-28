@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 /**
  * k6 Wrapper CLI
  * Runs one or more k6 scenarios with consistent outputs and exit-code semantics.
@@ -29,7 +30,29 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * @typedef {Object} WrapperArgs
+ * @property {string[]} [types]
+ * @property {string} [script]
+ * @property {string} [baseUrl]
+ * @property {string} [vus]
+ * @property {string} [duration]
+ * @property {string} [iterations]
+ * @property {string[]} [tags]
+ * @property {boolean} [parallel]
+ * @property {boolean} [quiet]
+ * @property {boolean} [noThresholds]
+ * @property {string[]} [k6Args]
+ * @property {boolean} [help]
+ * @property {string} [outDir]
+ */
+
+/**
+ * @param {string[]} argv
+ * @returns {WrapperArgs}
+ */
 function parseArgs(argv) {
+  /** @type {WrapperArgs} */
   const args = { tags: [], types: [], parallel: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -119,13 +142,22 @@ Notes:
   console.log(msg);
 }
 
+/** @type {readonly string[]} */
 const COMMON_TYPES = ['smoke', 'load', 'stress', 'spike', 'volume'];
+/** @type {readonly string[]} */
 const ADVANCED_TYPES = ['baseline', 'capacity', 'endurance', 'breakpoint'];
 
+/**
+ * @param {string} dir
+ */
 async function ensureDir(dir) {
   await fs.promises.mkdir(dir, { recursive: true });
 }
 
+/**
+ * @param {WrapperArgs} baseArgs
+ * @returns {string[]}
+ */
 function buildK6Args(baseArgs) {
   const args = ['run'];
   if (baseArgs.quiet) args.push('--quiet');
@@ -148,6 +180,10 @@ function buildK6Args(baseArgs) {
   return args;
 }
 
+/**
+ * @param {{ type: string; script: string; outDir: string; env: NodeJS.ProcessEnv; baseArgs: WrapperArgs }} opts
+ * @returns {Promise<{ type: string; code: number; jsonStream: string; summaryPath: string; error?: Error }>}
+ */
 function runOne({ type, script, outDir, env, baseArgs }) {
   return new Promise((resolve) => {
     const jsonStream = path.join(outDir, `${type}-results.json`);
@@ -181,13 +217,14 @@ async function main() {
 
   const script = args.script || 'automated-tests/load-tests/k6-load-tests.js';
   const outDir = args.outDir || 'reports/load-tests/k6';
+  /** @type {NodeJS.ProcessEnv} */
   const env = {};
   if (args.baseUrl) env.BASE_URL = args.baseUrl;
 
   // Resolve types
   let types = args.types && args.types.length ? args.types : ['load'];
   if (types.length === 1 && types[0].toLowerCase() === 'all') {
-    types = COMMON_TYPES; // keep advanced types explicit
+    types = [...COMMON_TYPES]; // keep advanced types explicit
   }
 
   await ensureDir(outDir);

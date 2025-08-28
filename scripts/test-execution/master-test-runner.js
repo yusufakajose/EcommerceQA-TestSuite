@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+// @ts-check
 /**
  * Master Test Execution Runner
  * Orchestrates execution of all test suites with comprehensive reporting
@@ -101,6 +101,17 @@ class MasterTestRunner {
       ...options,
     };
 
+    /** @type {{
+     *  executionId: string;
+     *  config: any;
+     *  startTime: string;
+     *  endTime: string | null;
+     *  duration: number;
+     *  suites: Record<string, any>;
+     *  summary: { total: number; passed: number; failed: number; skipped: number; passRate: number };
+     *  environment: { nodeVersion: string; platform: NodeJS.Platform; ci: boolean };
+     *  error?: string;
+     * }} */
     const results = {
       executionId,
       config,
@@ -180,6 +191,21 @@ class MasterTestRunner {
     const suite = this.testSuites[suiteId];
     const startTime = Date.now();
 
+    /** @type {{
+     *  suiteId: string;
+     *  name: string;
+     *  startTime: string;
+     *  endTime: string | null;
+     *  duration: number;
+     *  status: 'running' | 'passed' | 'failed' | 'error';
+     *  attempts: number;
+     *  maxAttempts: number;
+     *  tests: { total: number; passed: number; failed: number; skipped: number };
+     *  environments: Record<string, any>;
+     *  browsers: Record<string, any>;
+     *  logs: any[];
+     *  error: string | null;
+     * }} */
     const result = {
       suiteId,
       name: suite.name,
@@ -258,6 +284,19 @@ class MasterTestRunner {
   async executeSuiteForEnvironment(suiteId, environment, browsers, config) {
     const suite = this.testSuites[suiteId];
 
+    /** @type {{
+     *  environment: string;
+     *  startTime: string;
+     *  endTime: string | null;
+     *  duration: number;
+     *  status: 'running' | 'passed' | 'failed' | 'error';
+     *  tests: { total: number; passed: number; failed: number; skipped: number };
+     *  browsers: Record<string, any>;
+     *  command: string | null;
+     *  exitCode: number | null;
+     *  logs: any[];
+     *  error?: string;
+     * }} */
     const envResult = {
       environment,
       startTime: new Date().toISOString(),

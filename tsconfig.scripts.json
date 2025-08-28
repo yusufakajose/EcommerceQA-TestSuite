@@ -1,0 +1,28 @@
+{
+  // Narrow type-checking to scripts runners/parsers only
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true
+  },
+  "include": [
+    "config/**/*.js",
+    "scripts/test-execution/**/*.js",
+    "scripts/load-testing/jmeter-jtl-parser.js",
+    "scripts/load-testing/k6-wrapper.js",
+    "scripts/load-testing/load-test-runner.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "reports",
+    "test-results",
+    "automated-tests",
+    "scripts/api-tests",
+    "scripts/notifications",
+    "scripts/security",
+    "scripts/ci",
+    "scripts/reporting"
+  ]
+}

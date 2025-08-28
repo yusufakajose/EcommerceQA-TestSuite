@@ -14,7 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Quick validation for PR feedback
   quick-validation:
     name: Quick Validation
     runs-on: ubuntu-latest
@@ -36,29 +35,16 @@ jobs:
       - name: Lint code
         run: |
           echo "Running code linting..."
-          if npm run lint:check; then
-            echo "Linting passed"
-          else
-            echo "Linting issues found, attempting to fix..."
-            npm run lint || echo "Linting failed"
-          fi
+          npm run lint:check || npm run lint || true
 
       - name: Type checking
         run: |
           echo "Running type checking..."
-          if npm run type-check; then
-            echo "Type checking passed"
-          else
-            echo "Type checking failed"
-            exit 1
-          fi
+          npm run type-check
 
-      - name: Security audit
-        run: |
-          echo "Running security audit (high/critical will fail the job)..."
-          npm audit --audit-level=high
+      - name: Security audit (high/critical will fail)
+        run: npm audit --audit-level=high
 
-  # Smoke tests for quick feedback
   pr-smoke-tests:
     name: PR Smoke Tests
     runs-on: ubuntu-latest
@@ -76,8 +62,8 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          npm ci
+        run: npm ci
+
       - name: Cache Playwright browsers
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809
         with:
@@ -85,13 +71,12 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             playwright-${{ runner.os }}-
+
       - name: Install Playwright browsers
-        run: |
-          npx playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Run smoke tests
-        run: |
-          npm run test:ci:smoke
+        run: npm run test:ci:smoke
         env:
           CI: true
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -118,79 +103,68 @@ jobs:
 
       - name: PR job summary
         if: always()
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            const reportPath = path.join('reports','test-execution','development','test-results.json');
-            const totals = { total: 0, passed: 0, failed: 0, skipped: 0 };
-            function walkSuite(suite) {
-              for (const s of suite.suites || []) walkSuite(s);
-              for (const spec of suite.specs || []) {
-                for (const test of spec.tests || []) {
-                  totals.total++;
-                  const res = (test.results && test.results[0]) || {};
-                  const st = res.status || test.status || 'unknown';
-                  if (st === 'passed') totals.passed++;
-                  else if (st === 'skipped' || st === 'interrupted') totals.skipped++;
-                  else totals.failed++;
-                }
+        run: |
+          node -e '
+          const fs = require("fs");
+          const path = require("path");
+          const reportPath = path.join("reports","test-execution","development","test-results.json");
+          const totals = { total: 0, passed: 0, failed: 0, skipped: 0 };
+          function walkSuite(suite){
+            for(const s of suite.suites||[]) walkSuite(s);
+            for(const spec of suite.specs||[]){
+              for(const test of spec.tests||[]){
+                totals.total++;
+                const res = (test.results && test.results[0]) || {};
+                const st = res.status || test.status || "unknown";
+                if(st === "passed") totals.passed++;
+                else if(st === "skipped" || st === "interrupted") totals.skipped++;
+                else totals.failed++;
               }
             }
-            try {
-              if (fs.existsSync(reportPath)) {
-                const data = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
-                if (data && Array.isArray(data.suites)) walkSuite({ suites: data.suites });
-              }
-            } catch (e) {
-              // ignore parsing errors; leave totals as zeros
+          }
+          try{
+            if(fs.existsSync(reportPath)){
+              const data = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+              if(data && Array.isArray(data.suites)) walkSuite({ suites: data.suites });
             }
-            await core.summary
-              .addHeading('PR Smoke Test Summary')
-              .addTable([
-                ['Metric','Count'],
-                ['Total', String(totals.total)],
-                ['Passed', String(totals.passed)],
-                ['Failed', String(totals.failed)],
-                ['Skipped', String(totals.skipped)],
-              ])
-              .addLink('View workflow and artifacts', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`)
-              .write();
+          }catch(e){}
+          const lines = [];
+          lines.push("# PR Smoke Test Summary");
+          lines.push("");
+          lines.push("| Metric | Count |");
+          lines.push("|---|---|");
+          lines.push(`| Total | ${totals.total} |`);
+          lines.push(`| Passed | ${totals.passed} |`);
+          lines.push(`| Failed | ${totals.failed} |`);
+          lines.push(`| Skipped | ${totals.skipped} |`);
+          lines.push("");
+          lines.push(`View workflow and artifacts: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+          '
 
       - name: Comment PR with results
         if: always()
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY=$(cat << 'EOF'
+          ## PR Smoke Test Results
 
-            let comment = '## PR Smoke Test Results\n\n';
+          See the job summary and artifacts for details.
 
-            try {
-              // Try to read test results if available
-              comment += 'Smoke tests completed successfully!\n\n';
-              comment += '[View detailed test results](../actions/runs/${{ github.run_id }})\n';
-            } catch (error) {
-              comment += 'Smoke tests encountered issues. Please check the workflow logs.\n\n';
-            }
+          EOF
+          )
+          BODY+=$'\nRun: '${{ github.server_url }}'/'${{ github.repository }}'/actions/runs/'${{ github.run_id }}
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            -d "$(jq -nc --arg body "$BODY" '{ body: $body }')"
 
-            comment += '\n---\n*Automated comment from PR validation workflow*';
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-
-  # API tests for backend changes
   pr-api-tests:
     name: PR API Tests
     runs-on: ubuntu-latest
     needs: quick-validation
-    if: contains(github.event.pull_request.changed_files, 'config/postman/') || contains(github.event.pull_request.changed_files, 'scripts/api-tests/')
     steps:
       - name: Checkout PR
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -207,8 +181,7 @@ jobs:
         run: npm ci
 
       - name: Run API tests
-        run: |
-          npm run test:api:comprehensive
+        run: npm run test:api:comprehensive
         env:
           CI: true
           PR_NUMBER: ${{ github.event.pull_request.number }}

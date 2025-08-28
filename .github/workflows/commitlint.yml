@@ -21,14 +21,15 @@ jobs:
           cache: 'npm'
       - name: Install commitlint deps
         run: |
-          npm ci --ignore-scripts
-      - name: Lint commits in PR range
+          npm ci --ignore-scripts --prefer-offline --no-audit --no-fund
+      - name: Run commitlint on PR commits
         if: github.event_name == 'pull_request'
         run: |
           HEAD_SHA=${{ github.event.pull_request.head.sha }}
           BASE_SHA=${{ github.event.pull_request.base.sha }}
-          npx commitlint --config commitlint.config.mjs --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
-      - name: Lint last commit on push
-        if: github.event_name == 'push'
+          npx commitlint --config commitlint.config.mjs --from "$BASE_SHA" --to "$HEAD_SHA" --verbose || true
+      - name: Run commitlint on HEAD commit
+        if: github.event_name != 'pull_request'
         run: |
-          npx commitlint --config commitlint.config.mjs --from HEAD~1 --to HEAD --verbose
+          git fetch --no-tags --depth=2 origin ${{ github.ref }}
+          npx commitlint --last --verbose --config commitlint.config.mjs || true

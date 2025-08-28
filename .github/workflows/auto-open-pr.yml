@@ -19,64 +19,36 @@ jobs:
     name: Open PR to main if missing
     runs-on: ubuntu-latest
     steps:
-      - name: Create PR via GitHub API (PAT)
-        if: ${{ secrets.GH_PR_TOKEN != '' }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GH_PR_TOKEN }}
-          script: |
-            const branch = 'chore/docs-badges-and-env-example';
-            const { owner, repo } = context.repo;
-            const openPrs = await github.paginate(github.rest.pulls.list, {
-              owner,
-              repo,
-              state: 'open',
-              head: `${owner}:${branch}`,
-              base: 'main'
-            });
-            if (openPrs.length > 0) {
-              core.info(`PR already exists: #${openPrs[0].number} ${openPrs[0].html_url}`);
-              return;
-            }
-            const res = await github.rest.pulls.create({
-              owner,
-              repo,
-              title: 'chore(docs): add CI badges and clarify .env.example',
-              body: 'Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage. This PR exists to trigger CodeQL analysis on pull_request.',
-              base: 'main',
-              head: branch,
-              maintainer_can_modify: true,
-              draft: false
-            });
-            core.info(`Created PR #${res.data.number}: ${res.data.html_url}`);
+      - name: Ensure PR exists (curl)
+        env:
+          GH_PR_TOKEN: ${{ secrets.GH_PR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          BRANCH="chore/docs-badges-and-env-example"
+          REPO_FULL="${GITHUB_REPOSITORY}"
+          OWNER="${REPO_FULL%%/*}"
+          API_URL="${GITHUB_API_URL:-https://api.github.com}"
+          TOKEN="${GH_PR_TOKEN:-${GITHUB_TOKEN}}"
+          echo "Using token: ${GH_PR_TOKEN:+PAT (masked)}${GH_PR_TOKEN:+' '}${GH_PR_TOKEN:+' '}${GH_PR_TOKEN:+' '}${GH_PR_TOKEN:+' '}" >/dev/null 2>&1 || true
 
-      - name: Create PR via GitHub API (GITHUB_TOKEN)
-        if: ${{ secrets.GH_PR_TOKEN == '' }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const branch = 'chore/docs-badges-and-env-example';
-            const { owner, repo } = context.repo;
-            const openPrs = await github.paginate(github.rest.pulls.list, {
-              owner,
-              repo,
-              state: 'open',
-              head: `${owner}:${branch}`,
-              base: 'main'
-            });
-            if (openPrs.length > 0) {
-              core.info(`PR already exists: #${openPrs[0].number} ${openPrs[0].html_url}`);
-              return;
-            }
-            const res = await github.rest.pulls.create({
-              owner,
-              repo,
-              title: 'chore(docs): add CI badges and clarify .env.example',
-              body: 'Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage. This PR exists to trigger CodeQL analysis on pull_request.',
-              base: 'main',
-              head: branch,
-              maintainer_can_modify: true,
-              draft: false
-            });
-            core.info(`Created PR #${res.data.number}: ${res.data.html_url}`);
+          echo "Checking for existing PR from ${BRANCH} to main..."
+          PRS=$(curl -sS -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API_URL/repos/$REPO_FULL/pulls?state=open&head=$OWNER:$BRANCH&base=main")
+          if echo "$PRS" | jq -e 'length > 0' >/dev/null 2>&1; then
+            URL=$(echo "$PRS" | jq -r '.[0].html_url')
+            NUM=$(echo "$PRS" | jq -r '.[0].number')
+            echo "PR already exists: #$NUM $URL"
+            exit 0
+          fi
+
+          echo "No existing PR found. Creating PR..."
+          BODY="Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage. This PR exists to trigger CodeQL analysis on pull_request."
+          DATA=$(jq -nc --arg title "chore(docs): add CI badges and clarify .env.example" \
+                       --arg body "$BODY" \
+                       --arg head "$BRANCH" \
+                       --arg base "main" \
+                       '{title:$title, body:$body, head:$head, base:$base, maintainer_can_modify:true, draft:false}')
+          RES=$(curl -sS -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API_URL/repos/$REPO_FULL/pulls" -d "$DATA")
+          echo "$RES" | jq -r '.html_url // "PR created"'

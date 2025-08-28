@@ -21,51 +21,33 @@ jobs:
     env:
       PR_BRANCH: chore/docs-badges-and-env-example
     steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
       - name: Tip if you want to use a PAT instead
         run: |
           echo "If this step fails with 'not permitted to create or approve pull requests', you can either:"
           echo "  1) Enable the repo setting: Actions > General > 'Allow GitHub Actions to create and approve pull requests'"
           echo "  2) Add a fine-scoped PAT secret named PAT_CREATE_PR and switch this job to use it (see workflow comments)"
 
-      - name: Create PR via GitHub API (GITHUB_TOKEN fallback)
-        # Pin to commit SHA to satisfy action allowlist/pinning policy
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+      - name: Ensure a tiny diff to guarantee PR creation
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          mkdir -p .github/ci
+          date +%s > .github/ci/auto-pr-trigger.txt
+          git add -A
+          git commit -m "chore(ci): ensure diff for auto-PR workflow" || true
+
+      - name: Create PR (peter-evans/create-pull-request)
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const branch = process.env.PR_BRANCH;
-            const { owner, repo } = context.repo;
-            const openPrs = await github.paginate(github.rest.pulls.list, {
-              owner,
-              repo,
-              state: 'open',
-              head: `${owner}:${branch}`,
-              base: 'main'
-            });
-            if (openPrs.length > 0) {
-              core.info(`PR already exists: #${openPrs[0].number} ${openPrs[0].html_url}`);
-              return;
-            }
-            try {
-              const res = await github.rest.pulls.create({
-                owner,
-                repo,
-                title: 'chore(docs): add CI badges and clarify .env.example',
-                body: 'Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage. This PR exists to trigger CodeQL analysis on pull_request.',
-                base: 'main',
-                head: branch,
-                maintainer_can_modify: true,
-                draft: false
-              });
-              core.info(`Created PR #${res.data.number}: ${res.data.html_url}`);
-            } catch (err) {
-              const msg = String(err && err.message || err);
-              const forbidden = err && (err.status === 403 || msg.includes('not permitted to create or approve pull requests'));
-              if (forbidden) {
-                core.warning('GITHUB_TOKEN is not permitted to create or approve pull requests for this repository.');
-                core.warning('Options: 1) Enable "Allow GitHub Actions to create and approve pull requests" in Settings > Actions > General; 2) Add a fine-scoped PAT secret PAT_CREATE_PR and re-run; 3) Open manually.');
-                core.info(`Manual PR URL: https://github.com/${owner}/${repo}/pull/new/${branch}`);
-                return;
-              }
-              throw err;
-            }
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.PR_BRANCH }}
+          base: main
+          title: 'chore(docs): add CI badges and clarify .env.example'
+          body: |
+            Adds CI badges (CodeQL, ZAP) to README and clarifies .env.example for ZAP/Pact local usage.
+            This PR exists to trigger CodeQL analysis on pull_request.
+          maintainer-can-modify: true
+          draft: false

@@ -4,7 +4,7 @@
 # Disallow using "ci-bot" or ci@example.com for any local commit
 if [ "${GIT_COMMITTER_NAME-}" = "ci-bot" ] || [ "${GIT_AUTHOR_NAME-}" = "ci-bot" ] || \
 	 [ "${GIT_COMMITTER_EMAIL-}" = "ci@example.com" ] || [ "${GIT_AUTHOR_EMAIL-}" = "ci@example.com" ]; then
-	echo "❌ Commit blocked: 'ci-bot' identity is not allowed in this repo."
+	echo "Commit blocked: 'ci-bot' identity is not allowed in this repo."
 	echo "   Please set your identity:"
 	echo "     git config user.name 'yusufakajose'"
 	echo "     git config user.email 'yusufakajose@users.noreply.github.com'"
@@ -15,7 +15,7 @@ fi
 NAME_CFG="$(git config user.name 2>/dev/null || true)"
 EMAIL_CFG="$(git config user.email 2>/dev/null || true)"
 if [ "$NAME_CFG" = "ci-bot" ] || [ "$EMAIL_CFG" = "ci@example.com" ]; then
-	echo "❌ Commit blocked: local git config is set to 'ci-bot' or ci@example.com."
+	echo "Commit blocked: local git config is set to 'ci-bot' or ci@example.com."
 	echo "   Run: git config user.name 'yusufakajose' && git config user.email 'yusufakajose@users.noreply.github.com'"
 	exit 1
 fi

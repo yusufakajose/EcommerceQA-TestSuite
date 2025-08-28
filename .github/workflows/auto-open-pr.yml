@@ -21,7 +21,6 @@ jobs:
     steps:
       - name: Ensure PR exists (curl)
         env:
-          GH_PR_TOKEN: ${{ secrets.GH_PR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
@@ -29,8 +28,7 @@ jobs:
           REPO_FULL="${GITHUB_REPOSITORY}"
           OWNER="${REPO_FULL%%/*}"
           API_URL="${GITHUB_API_URL:-https://api.github.com}"
-          TOKEN="${GH_PR_TOKEN:-${GITHUB_TOKEN}}"
-          echo "Using token: ${GH_PR_TOKEN:+PAT (masked)}${GH_PR_TOKEN:+' '}${GH_PR_TOKEN:+' '}${GH_PR_TOKEN:+' '}${GH_PR_TOKEN:+' '}" >/dev/null 2>&1 || true
+          TOKEN="${GITHUB_TOKEN}"
 
           echo "Checking for existing PR from ${BRANCH} to main..."
           PRS=$(curl -sS -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \

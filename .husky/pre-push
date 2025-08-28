@@ -1,31 +1,61 @@
 #!/usr/bin/env sh
 
-# Prevent pushing any commits authored/committed by the forbidden identity
-set -e
+# Block pushing commits authored/committed by disallowed identities,
+# but only for the commits actually being pushed (from stdin).
+# See: https://git-scm.com/docs/githooks#_pre_push
 
-# Determine the range being pushed when possible (fallback scans last 200 commits)
-RANGE="$(git rev-list --max-count=200 HEAD 2>/dev/null || true)"
+# POSIX sh: avoid bash-only options like 'pipefail'
+set -eu
 
-if git log -n 200 --format=%an | grep -qi '^ci-bot$'; then
-  echo "❌ Push blocked: found commits with author 'ci-bot' in recent history."
-  echo "   Amend those commits or ensure your identity is set to 'yusufakajose'."
-  exit 1
-fi
+REMOTE_NAME=${1:-origin}
+REMOTE_URL=${2:-}
 
-if git log -n 200 --format=%cn | grep -qi '^ci-bot$'; then
-  echo "❌ Push blocked: found commits with committer 'ci-bot' in recent history."
-  echo "   Amend those commits or ensure your identity is set to 'yusufakajose'."
-  exit 1
-fi
+DISALLOWED_NAMES='^(ci-bot)$'
+DISALLOWED_EMAILS='^(ci@example\.com)$'
 
-if git log -n 200 --format=%ae | grep -qi '^ci@example\.com$'; then
-  echo "❌ Push blocked: found commits with author email ci@example.com."
-  exit 1
-fi
+err=0
 
-if git log -n 200 --format=%ce | grep -qi '^ci@example\.com$'; then
-  echo "❌ Push blocked: found commits with committer email ci@example.com."
-  exit 1
-fi
+# Read ref updates from stdin: <local-ref> <local-oid> <remote-ref> <remote-oid>
+while read -r local_ref local_oid remote_ref remote_oid; do
+  # Deletion: local_oid is all zeros -> nothing new to check
+  if printf %s "$local_oid" | grep -qE '^[0]{40}$'; then
+    continue
+  fi
 
-exit 0
+  # Compute range of commits to be pushed for this ref update
+  if printf %s "$remote_oid" | grep -qE '^[0]{40}$'; then
+    # New branch/tag on remote: conservatively list commits reachable from new tip
+    RANGE_COMMITS=$(git rev-list "$local_oid" --not --remotes="$REMOTE_NAME" 2>/dev/null || true)
+  else
+    # Normal update: commits in old..new
+    RANGE_COMMITS=$(git rev-list "$remote_oid".."$local_oid" 2>/dev/null || true)
+  fi
+
+  # If range couldn't be determined (e.g., shallow), fall back to last 50 from the new tip
+  if [ -z "${RANGE_COMMITS:-}" ]; then
+    RANGE_COMMITS=$(git rev-list -n 50 "$local_oid" 2>/dev/null || true)
+  fi
+
+  # Inspect commits
+  if [ -n "${RANGE_COMMITS:-}" ]; then
+    # For each commit, check author/committer name/email (portable, no xargs)
+    for sha in $RANGE_COMMITS; do
+      line=$(git log -n 1 --format='%H|%an|%ae|%cn|%ce' "$sha" 2>/dev/null || true)
+      [ -n "$line" ] || continue
+      an=$(printf '%s' "$line" | cut -d'|' -f2)
+      ae=$(printf '%s' "$line" | cut -d'|' -f3)
+      cn=$(printf '%s' "$line" | cut -d'|' -f4)
+      ce=$(printf '%s' "$line" | cut -d'|' -f5)
+      if printf %s "$an" | grep -Eqi "$DISALLOWED_NAMES"; then
+        echo "Push blocked: disallowed author name in $sha: $an" >&2; err=1; fi
+      if printf %s "$cn" | grep -Eqi "$DISALLOWED_NAMES"; then
+        echo "Push blocked: disallowed committer name in $sha: $cn" >&2; err=1; fi
+      if printf %s "$ae" | grep -Eqi "$DISALLOWED_EMAILS"; then
+        echo "Push blocked: disallowed author email in $sha: $ae" >&2; err=1; fi
+      if printf %s "$ce" | grep -Eqi "$DISALLOWED_EMAILS"; then
+        echo "Push blocked: disallowed committer email in $sha: $ce" >&2; err=1; fi
+    done
+  fi
+done
+
+exit "$err"

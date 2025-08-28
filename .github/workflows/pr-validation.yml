@@ -76,7 +76,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run smoke tests
-        run: npm run test:ci:smoke
+        run: npm run test:ci:smoke+flakes
         env:
           CI: true
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -108,6 +108,7 @@ jobs:
           const fs = require("fs");
           const path = require("path");
           const reportPath = path.join("reports","test-execution","development","test-results.json");
+          const flakesPath = path.join("reports","test-execution","development","flakes.json");
           const totals = { total: 0, passed: 0, failed: 0, skipped: 0 };
           function walkSuite(suite){
             for(const s of suite.suites||[]) walkSuite(s);
@@ -128,6 +129,10 @@ jobs:
               if(data && Array.isArray(data.suites)) walkSuite({ suites: data.suites });
             }
           }catch(e){}
+          let flaky = null;
+          try{
+            if(fs.existsSync(flakesPath)) flaky = JSON.parse(fs.readFileSync(flakesPath, "utf8"));
+          }catch(e){}
           const lines = [];
           lines.push("# PR Smoke Test Summary");
           lines.push("");
@@ -138,6 +143,15 @@ jobs:
           lines.push(`| Failed | ${totals.failed} |`);
           lines.push(`| Skipped | ${totals.skipped} |`);
           lines.push("");
+          if(flaky && flaky.flakyTests && flaky.flakyTests.length){
+            lines.push("## Top flaky tests (this run)");
+            lines.push("| Test | Project | Attempts | Statuses |");
+            lines.push("|---|---|---:|---|");
+            for(const t of flaky.flakyTests.slice(0,5)){
+              lines.push(`| ${t.title} | ${t.project||''} | ${t.attempts} | ${t.statuses.join(', ')} |`);
+            }
+            lines.push("");
+          }
           lines.push(`View workflow and artifacts: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
           '

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/// <reference types="newman" />
+// @ts-check
 /**
  * Newman Test Runner
  * Simplified script to run Postman collections with Newman
@@ -71,6 +73,12 @@ class NewmanRunner {
   /**
    * Run Newman collection
    */
+  /**
+   * Run Newman collection
+   * @param {string} collectionName
+   * @param {string} [environmentName]
+   * @param {Partial<import('newman').NewmanRunOptions> & { verbose?: boolean }} [options]
+   */
   async runCollection(collectionName, environmentName = 'development', options = {}) {
     const collection = this.config.collections[collectionName];
     const environment = this.config.environments[environmentName];
@@ -83,17 +91,24 @@ class NewmanRunner {
       throw new Error(`Environment '${environmentName}' not found in config`);
     }
 
+    /** @type {import('newman').NewmanRunOptions} */
     const newmanOptions = {
+      ...options,
       collection: path.resolve(collection),
       environment: path.resolve(environment),
       reporters: this.config.defaultOptions.reporters,
       timeout: this.config.defaultOptions.timeout,
       delayRequest: this.config.defaultOptions.delayRequest,
-      ...options,
     };
 
     // Set up HTML reporter
-    if (newmanOptions.reporters.includes('htmlextra')) {
+    const reporters = Array.isArray(newmanOptions.reporters)
+      ? newmanOptions.reporters
+      : newmanOptions.reporters
+        ? [newmanOptions.reporters]
+        : [];
+
+    if (reporters.includes('htmlextra')) {
       const reportName = `${collectionName}-${environmentName}-report.html`;
       newmanOptions.reporter = {
         htmlextra: {
@@ -108,7 +123,7 @@ class NewmanRunner {
     }
 
     // Set up JSON reporter if specified
-    if (newmanOptions.reporters.includes('json')) {
+    if (reporters.includes('json')) {
       const jsonReportName = `${collectionName}-${environmentName}-results.json`;
       newmanOptions.reporter = {
         ...newmanOptions.reporter,
@@ -127,7 +142,7 @@ class NewmanRunner {
     }
 
     return new Promise((resolve, reject) => {
-      newman.run(newmanOptions, (err, summary) => {
+      newman.run(newmanOptions, (err, /** @type {import('newman').NewmanRunSummary} */ summary) => {
         if (err) {
           console.error('❌ Newman run failed:', err);
           reject(err);
@@ -160,7 +175,9 @@ class NewmanRunner {
           console.log(`\n📄 HTML Report: ${reportPath}`);
         }
 
-        if (stats.assertions.failed > 0 || stats.requests.failed > 0) {
+        const failedAssertions = stats.assertions.failed || 0;
+        const failedRequests = stats.requests.failed || 0;
+        if (failedAssertions > 0 || failedRequests > 0) {
           console.log('\n⚠️  Some tests failed. Check the detailed report for more information.');
           resolve({ success: false, summary });
         } else {

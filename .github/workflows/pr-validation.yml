@@ -109,6 +109,7 @@ jobs:
           const path = require("path");
           const reportPath = path.join("reports","test-execution","development","test-results.json");
           const flakesPath = path.join("reports","test-execution","development","flakes.json");
+          const flakesHistPath = path.join("reports","test-execution","development","flakes-history.json");
           const totals = { total: 0, passed: 0, failed: 0, skipped: 0 };
           function walkSuite(suite){
             for(const s of suite.suites||[]) walkSuite(s);
@@ -133,6 +134,10 @@ jobs:
           try{
             if(fs.existsSync(flakesPath)) flaky = JSON.parse(fs.readFileSync(flakesPath, "utf8"));
           }catch(e){}
+          let hist = null;
+          try{
+            if(fs.existsSync(flakesHistPath)) hist = JSON.parse(fs.readFileSync(flakesHistPath, "utf8"));
+          }catch(e){}
           const lines = [];
           lines.push("# PR Smoke Test Summary");
           lines.push("");
@@ -151,6 +156,37 @@ jobs:
               lines.push(`| ${t.title} | ${t.project||''} | ${t.attempts} | ${t.statuses.join(', ')} |`);
             }
             lines.push("");
+          }
+          // Aggregate history into top flaky spec files
+          if(Array.isArray(hist) && hist.length){
+            /** @type {Record<string, {file:string,count:number,tests:Set<string>,lastSeen:number,totalAttempts:number}>} */
+            const byFile = {};
+            for(const entry of hist){
+              const ts = Date.parse(entry && entry.timestamp || '') || 0;
+              const tests = (entry && entry.flakyTests) || [];
+              for(const t of tests){
+                const file = t && t.file || 'unknown';
+                if(!byFile[file]) byFile[file] = { file, count: 0, tests: new Set(), lastSeen: 0, totalAttempts: 0 };
+                byFile[file].count += 1;
+                if(t && t.title) byFile[file].tests.add(t.title);
+                if(t && typeof t.attempts === 'number') byFile[file].totalAttempts += t.attempts;
+                if(ts && ts > byFile[file].lastSeen) byFile[file].lastSeen = ts;
+              }
+            }
+            const top = Object.values(byFile)
+              .sort((a,b) => b.count - a.count || b.totalAttempts - a.totalAttempts || b.lastSeen - a.lastSeen)
+              .slice(0,5);
+            if(top.length){
+              lines.push("## Top flaky specs (last runs)");
+              lines.push("| Spec file | Flaky occurrences | Distinct tests | Avg attempts | Last seen |");
+              lines.push("|---|---:|---:|---:|---|");
+              for(const item of top){
+                const avgAttempts = item.count ? (item.totalAttempts / item.count) : 0;
+                const last = item.lastSeen ? new Date(item.lastSeen).toISOString() : '';
+                lines.push(`| ${item.file} | ${item.count} | ${item.tests.size} | ${avgAttempts.toFixed(2)} | ${last} |`);
+              }
+              lines.push("");
+            }
           }
           lines.push(`View workflow and artifacts: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");

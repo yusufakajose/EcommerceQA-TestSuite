@@ -1,6 +1,6 @@
 # CI Job Summary
 
-Generated: 2025-08-27T22:03:37.731Z
+Generated: 2025-08-28T21:02:48.953Z
 
 ## k6 Scenarios
 - smoke: PASS (p95=450ms, err=0.00%, thr=1/s)

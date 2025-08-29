@@ -4,14 +4,18 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node", "newman"],
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": [
     "config/**/*.js",
     "scripts/test-execution/**/*.js",
     "scripts/load-testing/jmeter-jtl-parser.js",
     "scripts/load-testing/k6-wrapper.js",
-    "scripts/load-testing/load-test-runner.js"
+    "scripts/load-testing/load-test-runner.js",
+    "scripts/api-tests/**/*.js",
+    "types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
@@ -19,7 +23,6 @@
     "reports",
     "test-results",
     "automated-tests",
-    "scripts/api-tests",
     "scripts/notifications",
     "scripts/security",
     "scripts/ci",

@@ -635,6 +635,49 @@ jobs:
           echo "| Performance Tests | ${{ needs.performance-tests.result == 'success' && 'Passed' || needs.performance-tests.result == 'skipped' && 'Skipped' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Security Tests | ${{ needs.security-tests.result == 'success' && 'Passed' || needs.security-tests.result == 'skipped' && 'Skipped' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
+          # Append Top Flaky Specs (from history, if available)
+          node -e '
+          const fs = require("fs");
+          const path = require("path");
+          const histPath = path.join("reports","test-execution","development","flakes-history.json");
+          try {
+            if (fs.existsSync(histPath)) {
+              const hist = JSON.parse(fs.readFileSync(histPath, "utf8"));
+              if (Array.isArray(hist) && hist.length) {
+                /** @type {Record<string, {file:string,count:number,tests:Set<string>,lastSeen:number,totalAttempts:number}>} */
+                const byFile = {};
+                for (const entry of hist) {
+                  const ts = Date.parse((entry && entry.timestamp) || "") || 0;
+                  const tests = (entry && entry.flakyTests) || [];
+                  for (const t of tests) {
+                    const file = (t && t.file) || "unknown";
+                    byFile[file] ||= { file, count: 0, tests: new Set(), lastSeen: 0, totalAttempts: 0 };
+                    byFile[file].count += 1;
+                    if (t && t.title) byFile[file].tests.add(t.title);
+                    if (t && typeof t.attempts === "number") byFile[file].totalAttempts += t.attempts;
+                    if (ts && ts > byFile[file].lastSeen) byFile[file].lastSeen = ts;
+                  }
+                }
+                const top = Object.values(byFile)
+                  .sort((a,b) => b.count - a.count || b.totalAttempts - a.totalAttempts || b.lastSeen - a.lastSeen)
+                  .slice(0,5);
+                if (top.length) {
+                  const lines = [];
+                  lines.push("\n## Top flaky specs (last runs)\n");
+                  lines.push("| Spec file | Flaky occurrences | Distinct tests | Avg attempts | Last seen |");
+                  lines.push("|---|---:|---:|---:|---|");
+                  for (const item of top) {
+                    const avgAttempts = item.count ? (item.totalAttempts / item.count) : 0;
+                    const last = item.lastSeen ? new Date(item.lastSeen).toISOString() : "";
+                    lines.push(`| ${item.file} | ${item.count} | ${item.tests.size} | ${avgAttempts.toFixed(2)} | ${last} |`);
+                  }
+                  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+                }
+              }
+            }
+          } catch (_) {}
+          '
+
       - name: Upload consolidated reports
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

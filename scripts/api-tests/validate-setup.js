@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// @ts-check
 /**
  * API Test Setup Validator
  * Validates that all required files and configurations are in place for API testing
@@ -296,6 +297,7 @@ class APITestValidator {
   /**
    * Load configuration
    */
+  /** @returns {null | { environments?: Record<string,string>, collections?: Record<string,string>, data?: Record<string,string>, scripts?: Record<string, any> }} */
   loadConfig() {
     try {
       if (fs.existsSync(this.configPath)) {

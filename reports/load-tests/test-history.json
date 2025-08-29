@@ -682,5 +682,41 @@
         "status": "PASS"
       }
     }
+  },
+  {
+    "timestamp": "2025-08-28T21:02:48.820Z",
+    "summary": {
+      "totalTests": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "totalRequests": 4030,
+      "totalErrors": 140,
+      "averageResponseTime": 1404,
+      "maxResponseTime": 2340,
+      "overallThroughput": 13,
+      "overallErrorRate": 3.47
+    },
+    "k6": {
+      "smoke": {
+        "p95": 450,
+        "error_rate": 0,
+        "throughput": 1,
+        "status": "PASS"
+      },
+      "load": {
+        "p95": 810,
+        "error_rate": 1,
+        "throughput": 5,
+        "status": "PASS"
+      }
+    },
+    "jmeter": {
+      "ecommerce-load-test.jmx": {
+        "p95": 1250,
+        "error_percentage": 5,
+        "throughput": 8.33,
+        "status": "PASS"
+      }
+    }
   }
 ]

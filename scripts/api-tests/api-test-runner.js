@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/// <reference types="newman" />
+// @ts-check
 /**
  * Enhanced API Test Runner
  * Provides advanced Newman automation with data-driven testing capabilities
@@ -81,6 +83,12 @@ class APITestRunner {
   /**
    * Run a single collection with enhanced options
    */
+  /**
+   * Run a single collection with enhanced options
+   * @param {string} collectionName
+   * @param {string} [environmentName]
+   * @param {Partial<import('newman').NewmanRunOptions> & { dataFile?: string, collectionDelay?: number }} [options]
+   */
   async runCollection(collectionName, environmentName = 'development', options = {}) {
     const collection = this.config.collections[collectionName];
     const environment = this.config.environments[environmentName];
@@ -96,6 +104,7 @@ class APITestRunner {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const reportPrefix = `${collectionName}-${environmentName}-${timestamp}`;
 
+    /** @type {import('newman').NewmanRunOptions} */
     const newmanOptions = {
       collection: path.resolve(collection),
       environment: path.resolve(environment),
@@ -108,9 +117,14 @@ class APITestRunner {
     };
 
     // Configure reporters
+    const reporters = Array.isArray(newmanOptions.reporters)
+      ? newmanOptions.reporters
+      : newmanOptions.reporters
+        ? [newmanOptions.reporters]
+        : [];
     newmanOptions.reporter = {};
 
-    if (newmanOptions.reporters.includes('htmlextra')) {
+    if (reporters.includes('htmlextra')) {
       newmanOptions.reporter.htmlextra = {
         export: path.join(this.reportsDir, `${reportPrefix}-report.html`),
         logs: true,
@@ -124,13 +138,13 @@ class APITestRunner {
       };
     }
 
-    if (newmanOptions.reporters.includes('json')) {
+    if (reporters.includes('json')) {
       newmanOptions.reporter.json = {
         export: path.join(this.resultsDir, `${reportPrefix}-results.json`),
       };
     }
 
-    if (newmanOptions.reporters.includes('junit')) {
+    if (reporters.includes('junit')) {
       newmanOptions.reporter.junit = {
         export: path.join(this.resultsDir, `${reportPrefix}-junit.xml`),
       };
@@ -151,7 +165,7 @@ class APITestRunner {
     }
 
     return new Promise((resolve, reject) => {
-      newman.run(newmanOptions, (err, summary) => {
+      newman.run(newmanOptions, (err, /** @type {import('newman').NewmanRunSummary} */ summary) => {
         if (err) {
           console.error('❌ Newman run failed:', err);
           reject(err);
@@ -172,6 +186,12 @@ class APITestRunner {
   /**
    * Process Newman summary and create detailed results
    */
+  /**
+   * Process Newman summary and create detailed results
+   * @param {import('newman').NewmanRunSummary} summary
+   * @param {string} collectionName
+   * @param {string} environmentName
+   */
   processSummary(summary, collectionName, environmentName) {
     const stats = summary.run.stats;
     const failures = summary.run.failures;
@@ -181,7 +201,18 @@ class APITestRunner {
       collection: collectionName,
       environment: environmentName,
       timestamp: new Date().toISOString(),
-      duration: summary.run.timings.completed - summary.run.timings.started,
+      // Guard optional timings from Newman summary
+      duration: (() => {
+        const started =
+          summary.run.timings && typeof summary.run.timings.started === 'number'
+            ? summary.run.timings.started
+            : 0;
+        const completed =
+          summary.run.timings && typeof summary.run.timings.completed === 'number'
+            ? summary.run.timings.completed
+            : started;
+        return completed - started;
+      })(),
       stats: {
         requests: {
           total: stats.requests.total,
@@ -210,10 +241,12 @@ class APITestRunner {
         message: failure.error.message,
         test: failure.error.test,
         source: failure.source
-          ? {
-              name: failure.source.name,
-              type: failure.source.type,
-            }
+          ? (() => {
+              // Some typings for Newman don't expose `type` on source; cast to any for safe access
+              /** @type {any} */
+              const src = failure.source;
+              return { name: src.name, type: src.type };
+            })()
           : null,
       })),
       requests: executions.map((execution) => ({
@@ -372,6 +405,13 @@ class APITestRunner {
 
   /**
    * Run data-driven tests with CSV data
+   */
+  /**
+   * Run data-driven tests with CSV data
+   * @param {string} collectionName
+   * @param {string} environmentName
+   * @param {string} dataFileName
+   * @param {number|null} [iterations]
    */
   async runDataDrivenTest(collectionName, environmentName, dataFileName, iterations = null) {
     const dataFile = this.config.data[dataFileName];

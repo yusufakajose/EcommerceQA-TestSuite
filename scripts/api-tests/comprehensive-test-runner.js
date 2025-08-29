@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// @ts-check
 /**
  * Comprehensive API Test Scenario Runner
  * Executes comprehensive test scenarios including positive, negative, and security tests
@@ -31,11 +32,16 @@ class ComprehensiveTestRunner extends APITestRunner {
   /**
    * Run comprehensive test suite
    */
+  /**
+   * @param {string} [environment]
+   * @param {Partial<import('newman').NewmanRunOptions> & { includePerformance?: boolean }} [options]
+   */
   async runComprehensiveTests(environment = 'development', options = {}) {
     console.log('🚀 Starting Comprehensive API Test Suite...');
     console.log(`📍 Environment: ${environment}`);
     console.log(`⏰ Started at: ${new Date().toISOString()}`);
 
+    /** @type {{ environment: string, startTime: string, endTime?: string, duration?: number, testSuites: any, summary: { totalSuites: number, passedSuites: number, failedSuites: number, totalTests: number, passedTests: number, failedTests: number, overallSuccess?: boolean }, error?: string }} */
     const results = {
       environment,
       startTime: new Date().toISOString(),
@@ -77,8 +83,14 @@ class ComprehensiveTestRunner extends APITestRunner {
 
       // Generate comprehensive summary
       results.endTime = new Date().toISOString();
-      results.duration = new Date(results.endTime) - new Date(results.startTime);
+      results.duration =
+        new Date(results.endTime).getTime() - new Date(results.startTime).getTime();
       this.generateComprehensiveSummary(results);
+
+      // Compute overall success based on suite summaries
+      const suites = Object.values(results.testSuites);
+      const allOk = suites.every((s) => s?.summary?.overallSuccess !== false);
+      results.summary.overallSuccess = allOk;
 
       // Save comprehensive results
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -102,6 +114,11 @@ class ComprehensiveTestRunner extends APITestRunner {
   /**
    * Run a specific test suite
    */
+  /**
+   * @param {keyof ComprehensiveTestRunner['testSuites']} suiteName
+   * @param {string} environment
+   * @param {Partial<import('newman').NewmanRunOptions> & { description?: string, collectionDelay?: number }} [options]
+   */
   async runTestSuite(suiteName, environment, options = {}) {
     const collections = this.testSuites[suiteName];
 
@@ -124,6 +141,10 @@ class ComprehensiveTestRunner extends APITestRunner {
 
   /**
    * Run security-focused tests
+   */
+  /**
+   * @param {string} environment
+   * @param {Partial<import('newman').NewmanRunOptions>} [options]
    */
   async runSecurityTests(environment, options = {}) {
     console.log('  🔐 Running security test scenarios...');
@@ -151,6 +172,10 @@ class ComprehensiveTestRunner extends APITestRunner {
   /**
    * Run performance tests
    */
+  /**
+   * @param {string} environment
+   * @param {Partial<import('newman').NewmanRunOptions>} [options]
+   */
   async runPerformanceTests(environment, options = {}) {
     console.log('  ⚡ Running performance test scenarios...');
 
@@ -167,7 +192,7 @@ class ComprehensiveTestRunner extends APITestRunner {
       'user-management',
       environment,
       'performance-test-data',
-      10 // 10 iterations for performance testing
+      /** @type {number} */ (10) // 10 iterations for performance testing
     );
 
     // Add performance-specific analysis
@@ -180,6 +205,7 @@ class ComprehensiveTestRunner extends APITestRunner {
    * Analyze security test results
    */
   analyzeSecurityResults(results) {
+    /** @type {{ vulnerabilitiesFound: Array<{type:string,severity:string,description:string}>, securityScore: number, recommendations: string[] }} */
     const analysis = {
       vulnerabilitiesFound: [],
       securityScore: 0,
@@ -241,6 +267,7 @@ class ComprehensiveTestRunner extends APITestRunner {
    * Analyze performance test results
    */
   analyzePerformanceResults(results) {
+    /** @type {{ averageResponseTime: number, maxResponseTime: number, minResponseTime: number, throughput: number, performanceScore: number, recommendations: string[] }} */
     const analysis = {
       averageResponseTime: 0,
       maxResponseTime: 0,

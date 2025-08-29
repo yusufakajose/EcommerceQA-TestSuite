@@ -141,6 +141,94 @@ class TestSetup {
   }
 
   /**
+   * Log in via UI using common data-testid selectors
+   */
+  async loginViaUI(email, password) {
+    await this.navigateToApp('/login');
+    await this.fillField('[data-testid="email-input"]', email);
+    await this.fillField('[data-testid="password-input"]', password);
+    await this.clickElement('[data-testid="login-button"]');
+    // Wait for post-login landing
+    await this.page.waitForURL(/\/(dashboard|home|profile|inventory)/, { timeout: 10000 });
+    console.log('✅ Logged in via UI');
+  }
+
+  /**
+   * Log out via UI (fallback to clearing browser data)
+   */
+  async logoutViaUI() {
+    try {
+      await this.navigateToApp('/logout');
+      // After logout, expect to be on login page
+      await this.page.waitForURL(/\/login/, { timeout: 10000 });
+      console.log('✅ Logged out via UI');
+    } catch (error) {
+      console.warn('⚠️  Logout via UI failed, clearing browser data');
+      await this.clearBrowserData();
+    }
+  }
+
+  /**
+   * Ensure cart is empty. Attempts UI clear, falls back to storage clear
+   */
+  async ensureCartEmpty() {
+    try {
+      await this.navigateToApp('/cart');
+      // Try clear-cart button first
+      const clearBtn = this.page.locator('[data-testid="clear-cart-button"]');
+      if (
+        await clearBtn
+          .first()
+          .isVisible({ timeout: 2000 })
+          .catch(() => false)
+      ) {
+        await clearBtn.first().click();
+        console.log('🛒 Cart cleared via UI button');
+        return;
+      }
+      // Fallback: remove individual items if buttons exist
+      const removeButtons = this.page.locator('[data-testid^="remove-from-cart-"]');
+      const count = await removeButtons.count();
+      if (count > 0) {
+        for (let i = 0; i < count; i++) {
+          await removeButtons
+            .nth(i)
+            .click()
+            .catch(() => {});
+        }
+        console.log('🛒 Cart cleared by removing items');
+        return;
+      }
+    } catch (e) {
+      // ignore and fall through to storage clear
+    }
+    // Last resort: clear browser storage
+    await this.clearBrowserData();
+    console.log('🛒 Cart cleared by storage reset');
+  }
+
+  /**
+   * Add items to cart by product IDs exposed as data-testid hooks
+   */
+  async addItemsToCartByIds(productIds = []) {
+    if (!productIds || productIds.length === 0) return [];
+    await this.navigateToApp('/products');
+    const added = [];
+    for (const id of productIds) {
+      const selector = `[data-testid="add-to-cart-${id}"]`;
+      try {
+        await this.clickElement(selector, { retries: 2 });
+        added.push(id);
+        await this.page.waitForTimeout(200);
+      } catch (error) {
+        console.warn(`⚠️  Could not add product ${id}: ${error.message}`);
+      }
+    }
+    console.log(`🛒 Added items to cart: ${JSON.stringify(added)}`);
+    return added;
+  }
+
+  /**
    * Wait for element with enhanced error handling
    */
   async waitForElement(selector, options = {}) {

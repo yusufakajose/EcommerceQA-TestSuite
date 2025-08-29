@@ -32,14 +32,8 @@ const test = base.extend({
       password: 'password123',
     };
 
-    // Navigate to login page and authenticate
-    await testSetup.navigateToApp('/login');
-    await testSetup.fillField('[data-testid="email-input"]', validUser.email);
-    await testSetup.fillField('[data-testid="password-input"]', validUser.password);
-    await testSetup.clickElement('[data-testid="login-button"]');
-
-    // Wait for successful login
-    await page.waitForURL(/\/dashboard|\/home|\/profile/, { timeout: 10000 });
+    // Authenticate using standard helper
+    await testSetup.loginViaUI(validUser.email, validUser.password);
 
     await use({ testSetup, user: validUser });
 
@@ -83,13 +77,7 @@ const test = base.extend({
     await use({ testSetup, cartItems });
 
     // Clear cart and cleanup
-    try {
-      await testSetup.navigateToApp('/cart');
-      await testSetup.clickElement('[data-testid="clear-cart-button"]');
-    } catch (error) {
-      console.warn('Could not clear cart, clearing session data');
-      await testSetup.clearBrowserData();
-    }
+    await testSetup.ensureCartEmpty();
 
     await testSetup.cleanup();
   },

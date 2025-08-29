@@ -98,6 +98,7 @@ A prioritized, actionable plan to complete performance engineering features, str
 
 ## Immediate Next (2 weeks)
 - [x] Finalize CI surfacing of flake telemetry (include top flaky specs table in PR/job summary)
-- Add email (SMTP via .env) and optional Slack notifications for failures with links to artifacts
-- Write troubleshooting doc section (k6/jmeter install, permissions, artifact paths)
-- Ensure consistent structure for `reports/` and `test-results/` across jobs; add a small schema check
+- Implement email (SMTP via .env) notifications and optional Slack webhooks for failures, with deep links to artifacts
+- Implement UI data seeding/state management helpers and fixtures; wire into PR smoke and comprehensive runs
+- Ensure consistent structure for `reports/` and `test-results/` across jobs; add a small schema check script and CI gate
+- Expand npm scripts for common run patterns; add pre-commit checks covering runners

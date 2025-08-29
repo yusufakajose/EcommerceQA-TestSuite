@@ -76,7 +76,13 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Pre-seed UI clean state (non-blocking)
-        run: npm run seed:ui:reset
+        run: |
+          mkdir -p reports/test-execution/development
+          if npm run seed:ui:reset; then
+            echo '{"status":"passed"}' > reports/test-execution/development/seed-reset.json
+          else
+            echo '{"status":"failed"}' > reports/test-execution/development/seed-reset.json
+          fi
         env:
           CI: true
           TEST_ENV: development
@@ -114,6 +120,15 @@ jobs:
           node -e '
           const fs = require("fs");
           const path = require("path");
+          // Summarize seeding outcome (if seed-reset.json exists)
+          try {
+            const seedPath = path.join("reports","test-execution","development","seed-reset.json");
+            if (fs.existsSync(seedPath)) {
+              const seed = JSON.parse(fs.readFileSync(seedPath, "utf8"));
+              const line = `UI seeding (reset) status: ${seed.status || "unknown"}`;
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, line + "\n\n");
+            }
+          } catch (_) {}
           const reportPath = path.join("reports","test-execution","development","test-results.json");
           const flakesPath = path.join("reports","test-execution","development","flakes.json");
           const flakesHistPath = path.join("reports","test-execution","development","flakes-history.json");

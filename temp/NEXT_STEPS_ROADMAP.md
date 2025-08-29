@@ -90,11 +90,13 @@ A prioritized, actionable plan to complete performance engineering features, str
 - [x] README cleanup (remove decorative icons)
 
 ## Milestones
-- Milestone 1: k6 wrapper + docs + CI wiring
-- Milestone 2: JMeter SLO config + streaming parser + tests
-- Milestone 3: Trend aggregation + report/index + CI summaries
-- Milestone 4: Pact Broker gating + ZAP AF stabilization
-- Milestone 5: Flake telemetry + data seeding; notifications and DX polish
+- [x] Milestone 1: k6 wrapper + docs + CI wiring
+- [x] Milestone 2: JMeter SLO config + streaming parser + tests
+- [x] Milestone 3: Trend aggregation + report/index + CI summaries
+- [x] Milestone 4: Pact Broker gating + ZAP AF stabilization
+- [ ] Milestone 5: Flake telemetry + data seeding; notifications and DX polish
+      - Done: flake telemetry (capture, history, CI surfacing)
+      - Pending: data seeding/state mgmt; email/Slack notifications; DX polish
 
 ## Immediate Next (2 weeks)
 - [x] Finalize CI surfacing of flake telemetry (include top flaky specs table in PR/job summary)

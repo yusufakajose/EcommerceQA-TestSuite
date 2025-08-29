@@ -75,6 +75,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      - name: Pre-seed UI clean state (non-blocking)
+        run: npm run seed:ui:reset
+        env:
+          CI: true
+          TEST_ENV: development
+        continue-on-error: true
+
       - name: Run smoke tests
         run: npm run test:ci:smoke+flakes
         env:

@@ -94,6 +94,13 @@ jobs:
           CI: true
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
+      - name: Run visual regression (Chromium, non-blocking)
+        run: npm run test:ui:vrt
+        env:
+          CI: true
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        continue-on-error: true
+
       - name: Upload Playwright traces on failure
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -120,6 +127,16 @@ jobs:
           node -e '
           const fs = require("fs");
           const path = require("path");
+          function findDiffPng(dir, acc){
+            if(!fs.existsSync(dir)) return acc;
+            for(const e of fs.readdirSync(dir)){
+              const p = path.join(dir,e);
+              const st = fs.statSync(p);
+              if(st.isDirectory()) findDiffPng(p, acc);
+              else if(/-diff\.png$/i.test(e)) acc.push(p);
+            }
+            return acc;
+          }
           // Summarize seeding outcome (if seed-reset.json exists)
           try {
             const seedPath = path.join("reports","test-execution","development","seed-reset.json");
@@ -209,6 +226,13 @@ jobs:
               }
               lines.push("");
             }
+          }
+          // Visual diff hint
+          const diffs = findDiffPng(".", []);
+          if(diffs.length){
+            lines.push("## Visual diffs detected");
+            lines.push(`Found ${diffs.length} diff images. See uploaded artifacts for details.`);
+            lines.push("");
           }
           lines.push(`View workflow and artifacts: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");

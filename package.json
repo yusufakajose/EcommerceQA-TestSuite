@@ -45,6 +45,8 @@
     "ci:monitor": "node scripts/ci/monitor.js",
     "test:ci:smoke": "playwright test automated-tests/ui-tests/smoke.spec.js --config=config/playwright.config.js --project=chromium",
     "test:ci:smoke+flakes": "npm run test:ci:smoke && node scripts/test-execution/flake-telemetry.js",
+    "test:ui:vrt": "playwright test automated-tests/ui-tests/visual-regression.spec.js --config=config/playwright.config.js --project=chromium",
+    "test:ui:vrt:update": "playwright test automated-tests/ui-tests/visual-regression.spec.js --config=config/playwright.config.js --project=chromium --update-snapshots",
     "seed:ui:login": "playwright test automated-tests/ui-tests/seeding/login-seed.spec.js --config=config/playwright.config.js --project=chromium",
     "seed:ui:cart": "playwright test automated-tests/ui-tests/seeding/cart-seed.spec.js --config=config/playwright.config.js --project=chromium",
     "seed:ui:reset": "playwright test automated-tests/ui-tests/seeding/reset-state.spec.js --config=config/playwright.config.js --project=chromium",

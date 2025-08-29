@@ -61,6 +61,33 @@ npm run test:ui
 npm run test:cross-browser
 
 # Mobile testing
+### UI Seeding and Clean State
+
+You can pre-seed or reset UI state for more reliable runs:
+## Visual Regression Testing
+
+This repo includes Playwright-based visual comparisons using `expect(page).toHaveScreenshot()`.
+
+- Run locally (Chromium only by default):
+  - `npm run test:ui:vrt`
+- Update baselines when a legitimate UI change occurs:
+  - `npm run test:ui:vrt:update`
+
+Notes:
+- Baseline snapshots are checked into version control under `*-snapshots` folders next to the spec.
+- To keep screenshots stable, animations are disabled and the caret is hidden by default in `config/playwright.config.js`.
+- In CI, diffs on failures are uploaded as artifacts for review.
+
+
+- Reset session/cart: `npm run seed:ui:reset`
+- Seed login/logout: `npm run seed:ui:login`
+- Seed cart items: `SEED_PRODUCT_IDS=1,2 npm run seed:ui:cart`
+
+Important:
+
+- Target URL comes from Playwright env configs at `config/environments/<env>.json` (select via `TEST_ENV`), or override with `BASE_URL`.
+- If the target app isn’t running and `BASE_URL` points to localhost, login seeding will be skipped gracefully; reset still clears storage.
+- For public demos set `TEST_ENV=development` (defaults to `https://www.saucedemo.com`) or `TEST_ENV=staging` (Magento demo).
 npm run test:mobile
 ```
 

@@ -208,8 +208,15 @@ module.exports = defineConfig({
   /* Expect timeout */
   expect: {
     timeout: 10 * 1000,
+    // Stabilize visual comparisons across environments
     toHaveScreenshot: {
       threshold: 0.2,
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
+      // Keep one of these unset by default to allow per-test tuning if needed
+      // maxDiffPixelRatio: 0.01,
+      // maxDiffPixels: 100,
     },
     toMatchSnapshot: {
       threshold: 0.2,

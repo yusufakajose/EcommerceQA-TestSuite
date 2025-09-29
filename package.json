@@ -81,7 +81,7 @@
   "license": "MIT",
   "devDependencies": {
     "@pact-foundation/pact": "^15.0.1",
-    "@playwright/test": "^1.40.0",
+    "@playwright/test": "^1.55.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/newman": "^5.3.6",

@@ -98,7 +98,7 @@
     "@axe-core/playwright": "^4.10.2"
   },
   "dependencies": {
-    "chart.js": "^4.4.0",
+    "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "csv-parse": "^5.5.6",
     "tdigest": "^0.1.2"

@@ -95,7 +95,7 @@
     "newman-reporter-htmlextra": "^1.23.1",
     "prettier": "^3.3.3",
     "typescript": "^5.9.2",
-    "@axe-core/playwright": "^4.10.2"
+    "@axe-core/playwright": "^4.11.0"
   },
   "dependencies": {
     "chart.js": "^4.4.0",

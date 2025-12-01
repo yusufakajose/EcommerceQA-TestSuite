@@ -93,7 +93,7 @@
     "lint-staged": "^16.1.5",
     "newman": "^6.2.1",
     "newman-reporter-htmlextra": "^1.23.1",
-    "prettier": "^3.3.3",
+    "prettier": "^3.7.3",
     "typescript": "^5.9.2",
     "@axe-core/playwright": "^4.10.2"
   },
